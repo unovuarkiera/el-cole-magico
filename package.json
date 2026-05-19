@@ -1,0 +1,22 @@
+{
+  "name": "colemagico-web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.97.1",
+    "anthropic": "^0.0.0",
+    "express": "^5.2.1",
+    "multer": "^2.1.1",
+    "nodemailer": "^8.0.7",
+    "openai": "^6.38.0",
+    "pdfkit": "^0.18.0"
+  }
+}
