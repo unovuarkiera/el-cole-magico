@@ -11,8 +11,8 @@ app.use('/imagenes', express.static('imagenes'));
 // Crear carpeta de imágenes si no existe
 if (!fs.existsSync('imagenes')) fs.mkdirSync('imagenes');
 
-const ANTHROPIC_KEY = "process.env.ANTHROPIC_KEY";
-const OPENAI_KEY = "process.env.OPENAI_KEY";
+jsconst ANTHROPIC_KEY = process.env.ANTHROPIC_KEY;
+const OPENAI_KEY = process.env.OPENAI_KEY;
 
 async function generarImagen(prompt, size, nombreArchivo) {
   const resp = await fetch('https://api.openai.com/v1/images/generations', {
