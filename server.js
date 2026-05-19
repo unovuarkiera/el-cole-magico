@@ -11,7 +11,7 @@ app.use('/imagenes', express.static('imagenes'));
 // Crear carpeta de imágenes si no existe
 if (!fs.existsSync('imagenes')) fs.mkdirSync('imagenes');
 
-jsconst ANTHROPIC_KEY = process.env.ANTHROPIC_KEY;
+const ANTHROPIC_KEY = process.env.ANTHROPIC_KEY;
 const OPENAI_KEY = process.env.OPENAI_KEY;
 
 async function generarImagen(prompt, size, nombreArchivo) {
