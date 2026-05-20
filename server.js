@@ -54,31 +54,46 @@ app.post('/generar-cuento', async (req, res) => {
     const gafas = opciones?.gafas || 'without glasses';
     const pecas = opciones?.pecas || '';
     const estiloIlustracion = estilo || 'Pixar CGI quality, 3D animation style, vibrant and detailed';
-
-    // Descripción fija y consistente del protagonista — se usa IGUAL en todas las imágenes
-    const protagonistaDesc = `a ${edad}-year-old ${genero} named ${nombre} with ${tipopelo} ${pelo} hair, ${ojos} eyes, ${piel}, ${gafas}${pecas ? ', ' + pecas : ''}, wearing a yellow t-shirt and blue dungarees`;
-    const personajeDesc = `${personaje} (same friendly appearance and consistent colors in every illustration)`;
     const estiloBase = `${estiloIlustracion}, family-friendly children's book illustration, cheerful and safe for children, warm lighting`;
 
-    send({ tipo: 'estado', mensaje: '🦉 El búho está escribiendo el cuento...' });
+    // Descripción fija del protagonista
+    const protagonistaDesc = `a ${edad}-year-old ${genero} named ${nombre} with ${tipopelo} ${pelo} hair, ${ojos} eyes, ${piel}, ${gafas}${pecas ? ', ' + pecas : ''}, always wearing a yellow t-shirt and blue dungarees`;
 
-    const anthropic = new Anthropic({ apiKey: ANTHROPIC_KEY });
-
-    // Adaptar el tono según la edad
     const tonoEdad = edad <= 5 ? 'muy sencillo, frases cortas, vocabulario básico, máximo 2 frases por página' :
                      edad <= 8 ? 'sencillo, frases cortas, aventuras y humor, 3-4 frases por página' :
                      edad <= 11 ? 'intermedio, algo de misterio y emoción, 4-5 frases por página' :
                                   'avanzado, trama más elaborada, personajes con profundidad, 5-6 frases por página';
 
+    send({ tipo: 'estado', mensaje: '🦉 El búho está creando los personajes...' });
+
+    const anthropic = new Anthropic({ apiKey: ANTHROPIC_KEY });
+
+    // PASO 1: Claude genera descripción visual fija del personaje secundario
+    const msgPersonaje = await anthropic.messages.create({
+      model: 'claude-sonnet-4-5',
+      max_tokens: 300,
+      messages: [{ role: 'user', content: `Genera una descripción visual detallada y consistente en inglés para este personaje de cuento infantil: "${personaje}".
+La descripción debe incluir: colores exactos, ropa o características físicas fijas, rasgos distintivos.
+Debe ser suficientemente detallada para que un generador de imágenes lo dibuje IGUAL en todas las ilustraciones.
+Responde SOLO con la descripción en inglés, sin explicaciones, máximo 40 palabras.` }]
+    });
+
+    const personajeDesc = msgPersonaje.content[0].text.trim();
+
+    send({ tipo: 'estado', mensaje: '🦉 El búho está escribiendo el cuento...' });
+
+    // PASO 2: Claude genera el cuento con 16 páginas
     const msg = await anthropic.messages.create({
       model: 'claude-sonnet-4-5',
-      max_tokens: 3000,
+      max_tokens: 5000,
       messages: [{ role: 'user', content: `Eres autor experto de cuentos infantiles en español.
 Crea un cuento mágico con estas características:
 - Protagonista: ${nombre}, ${edad} años, ${genero}
 - Personaje especial: ${personaje}
 - Tema: ${tema}
 - Tono y nivel: ${tonoEdad}
+
+El cuento debe tener una estructura narrativa completa con introducción, desarrollo y desenlace en 16 páginas.
 
 RESPONDE SOLO JSON sin texto antes ni después, sin backticks:
 {"titulo":"titulo poetico","dedicatoria":"dedicatoria emotiva para ${nombre}","paginas":[
@@ -89,7 +104,15 @@ RESPONDE SOLO JSON sin texto antes ni después, sin backticks:
 {"numero":5,"titulo":"titulo","texto":"texto","escena":"scene"},
 {"numero":6,"titulo":"titulo","texto":"texto","escena":"scene"},
 {"numero":7,"titulo":"titulo","texto":"texto","escena":"scene"},
-{"numero":8,"titulo":"titulo","texto":"texto","escena":"scene"}
+{"numero":8,"titulo":"titulo","texto":"texto","escena":"scene"},
+{"numero":9,"titulo":"titulo","texto":"texto","escena":"scene"},
+{"numero":10,"titulo":"titulo","texto":"texto","escena":"scene"},
+{"numero":11,"titulo":"titulo","texto":"texto","escena":"scene"},
+{"numero":12,"titulo":"titulo","texto":"texto","escena":"scene"},
+{"numero":13,"titulo":"titulo","texto":"texto","escena":"scene"},
+{"numero":14,"titulo":"titulo","texto":"texto","escena":"scene"},
+{"numero":15,"titulo":"titulo","texto":"texto","escena":"scene"},
+{"numero":16,"titulo":"titulo","texto":"texto","escena":"scene"}
 ]}` }]
     });
 
@@ -100,11 +123,11 @@ RESPONDE SOLO JSON sin texto antes ni después, sin backticks:
 
     send({ tipo: 'cuento', titulo: cuento.titulo, dedicatoria: cuento.dedicatoria });
 
-    // Portada
+    // PASO 3: Portada — vertical, personaje y secundario con descripciones fijas
     send({ tipo: 'estado', mensaje: '🎨 Generando portada...' });
     try {
       const portadaUrl = await generarImagen(
-        `${estiloBase}. Book cover: ${protagonistaDesc} with ${personajeDesc} in a magical glowing forest at sunset. Spanish title text: "${cuento.titulo}". Professional children's book cover.`,
+        `${estiloBase}. Book cover: ${protagonistaDesc} with ${personajeDesc} in a magical glowing forest at sunset. Spanish title text: "${cuento.titulo}". Professional children's book cover, portrait format.`,
         '1024x1536',
         `portada_${id}.png`
       );
@@ -114,14 +137,14 @@ RESPONDE SOLO JSON sin texto antes ni después, sin backticks:
       send({ tipo: 'imagen', url: '' });
     }
 
-    // Páginas — si falla una imagen el cuento continúa
+    // PASO 4: Páginas — todas verticales, personajes con descripciones fijas
     for (const pag of cuento.paginas) {
-      send({ tipo: 'estado', mensaje: `🎨 Generando ilustración página ${pag.numero}...` });
+      send({ tipo: 'estado', mensaje: `🎨 Generando ilustración página ${pag.numero} de ${cuento.paginas.length}...` });
       let imgUrl = '';
       try {
         imgUrl = await generarImagen(
-          `${estiloBase}. Scene: ${pag.escena}. Characters: ${protagonistaDesc} and ${personajeDesc}. Horizontal format, magical atmosphere, consistent character design throughout the book.`,
-          '1536x1024',
+          `${estiloBase}. ${protagonistaDesc} and ${personajeDesc}. Scene: ${pag.escena}. Portrait format, magical atmosphere, consistent character design throughout the book.`,
+          '1024x1536',
           `pag_${id}_${pag.numero}.png`
         );
       } catch (e) {

@@ -36,7 +36,6 @@ body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--dar
 .form-title em { font-style:italic; color:var(--gold-d); }
 .form-sub { text-align:center; color:var(--muted); font-size:17px; margin-bottom:48px; }
 .form-card { background:white; border-radius:28px; padding:48px; box-shadow:0 8px 40px rgba(58,32,112,.1); }
-
 .section-label { font-weight:800; font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--purple); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
 .section-label::after { content:''; flex:1; height:1px; background:rgba(58,32,112,.1); }
 .field { margin-bottom:28px; }
@@ -44,25 +43,20 @@ body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--dar
 .input { width:100%; padding:14px 18px; border:2px solid rgba(58,32,112,.12); border-radius:14px; font-family:'Nunito',sans-serif; font-size:16px; color:var(--dark); background:var(--cream); outline:none; transition:border-color .2s; }
 .input:focus { border-color:var(--purple-l); }
 .input::placeholder { color:rgba(26,15,48,.3); }
-
 .btn-group { display:flex; flex-wrap:wrap; gap:10px; }
 .opt-btn { padding:10px 18px; border-radius:20px; border:2px solid rgba(58,32,112,.15); background:white; font-family:'Nunito',sans-serif; font-size:14px; font-weight:700; color:var(--muted); cursor:pointer; transition:all .2s; display:flex; align-items:center; gap:6px; }
 .opt-btn:hover { border-color:var(--purple-l); color:var(--purple); }
 .opt-btn.active { background:var(--purple); border-color:var(--purple); color:white; }
-
 .color-group { display:flex; flex-wrap:wrap; gap:10px; }
 .color-btn { width:40px; height:40px; border-radius:50%; border:3px solid transparent; cursor:pointer; transition:all .2s; position:relative; }
 .color-btn:hover { transform:scale(1.1); }
 .color-btn.active { border-color:var(--purple); box-shadow:0 0 0 3px rgba(58,32,112,.2); transform:scale(1.15); }
 .color-btn .check { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:16px; opacity:0; }
 .color-btn.active .check { opacity:1; }
-
 .edad-display { font-family:'Fraunces',serif; font-size:48px; font-weight:900; color:var(--purple); text-align:center; margin-bottom:8px; }
 .edad-sub { text-align:center; color:var(--muted); font-size:14px; margin-bottom:16px; }
 input[type=range] { width:100%; accent-color:var(--purple); height:6px; border-radius:3px; }
-
 .row2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-
 .style-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:12px; }
 .style-card { border:2px solid rgba(58,32,112,.12); border-radius:16px; padding:16px 12px; text-align:center; cursor:pointer; transition:all .2s; background:white; }
 .style-card:hover { border-color:var(--purple-l); }
@@ -70,28 +64,26 @@ input[type=range] { width:100%; accent-color:var(--purple); height:6px; border-r
 .style-card .style-icon { font-size:32px; margin-bottom:8px; }
 .style-card .style-name { font-weight:800; font-size:13px; color:var(--dark); }
 .style-card .style-desc { font-size:11px; color:var(--muted); margin-top:3px; }
-
 .themes { display:flex; flex-wrap:wrap; gap:10px; }
 .theme-btn { padding:9px 18px; border-radius:20px; border:2px solid rgba(58,32,112,.15); background:white; font-family:'Nunito',sans-serif; font-size:14px; font-weight:700; color:var(--muted); cursor:pointer; transition:all .2s; }
 .theme-btn:hover { border-color:var(--purple-l); color:var(--purple); }
 .theme-btn.active { background:var(--purple); border-color:var(--purple); color:white; }
-
 .btn-generate { width:100%; padding:20px; background:linear-gradient(135deg,var(--purple-l),var(--purple)); color:white; font-family:'Fraunces',serif; font-size:22px; font-weight:900; border:none; border-radius:16px; cursor:pointer; margin-top:8px; box-shadow:0 8px 30px rgba(58,32,112,.3); transition:all .3s; }
 .btn-generate:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 14px 40px rgba(58,32,112,.4); }
 .btn-generate:disabled { opacity:.5; cursor:not-allowed; }
 
-.book-section { display:none; padding:60px 24px; max-width:900px; margin:0 auto; }
+.book-section { display:none; padding:60px 24px; max-width:700px; margin:0 auto; }
 .book-header { text-align:center; margin-bottom:48px; }
 .book-title { font-family:'Fraunces',serif; font-size:clamp(32px,5vw,56px); font-weight:900; color:var(--purple); line-height:1.1; margin-bottom:10px; }
 .book-ded { font-family:'Fraunces',serif; font-style:italic; font-size:18px; color:var(--muted); }
-.cover-img { width:100%; max-width:400px; border-radius:20px; box-shadow:0 20px 60px rgba(58,32,112,.25); display:block; margin:0 auto 48px; }
+.cover-img { width:100%; max-width:360px; border-radius:20px; box-shadow:0 20px 60px rgba(58,32,112,.25); display:block; margin:0 auto 48px; }
 .page { background:white; border-radius:24px; overflow:hidden; margin-bottom:32px; box-shadow:0 4px 24px rgba(58,32,112,.08); opacity:0; transform:translateY(20px); transition:all .5s; }
 .page.visible { opacity:1; transform:translateY(0); }
-.page-img { width:100%; aspect-ratio:3/2; object-fit:cover; }
-.page-body { padding:28px 32px; }
-.page-num { font-size:11px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--gold-d); margin-bottom:6px; }
-.page-title { font-family:'Fraunces',serif; font-size:22px; font-style:italic; color:var(--purple); margin-bottom:12px; }
-.page-text { font-size:17px; line-height:1.75; color:#3a3050; }
+.page-img { width:100%; aspect-ratio:2/3; object-fit:cover; }
+.page-body { padding:24px 28px 28px; background:linear-gradient(135deg,#faf7ff,#fff8f0); }
+.page-num { font-size:10px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--gold-d); margin-bottom:4px; }
+.page-title { font-family:'Fraunces',serif; font-size:20px; font-style:italic; color:var(--purple); margin-bottom:10px; }
+.page-text { font-size:16px; line-height:1.8; color:#3a3050; }
 .end-section { text-align:center; padding:40px 0 80px; }
 .end-icon { font-size:48px; margin-bottom:16px; display:block; }
 .end-title { font-family:'Fraunces',serif; font-size:28px; color:var(--purple); margin-bottom:24px; }
@@ -107,7 +99,7 @@ input[type=range] { width:100%; accent-color:var(--purple); height:6px; border-r
 .ring:nth-child(2) { inset:10px; border-right-color:var(--purple-l); --d:2s; animation-direction:reverse; }
 .ring:nth-child(3) { inset:20px; border-bottom-color:rgba(255,255,255,.5); --d:1s; }
 @keyframes spin { to{transform:rotate(360deg)} }
-.loading-msg { font-family:'Fraunces',serif; font-size:24px; color:white; margin-bottom:8px; }
+.loading-msg { font-family:'Fraunces',serif; font-size:24px; color:white; margin-bottom:8px; text-align:center; padding:0 24px; }
 .loading-sub { color:rgba(255,255,255,.6); font-size:16px; }
 
 @media(max-width:600px) { .row2{grid-template-columns:1fr} .form-card{padding:28px 20px} .style-grid{grid-template-columns:repeat(2,1fr)} }
@@ -126,22 +118,18 @@ input[type=range] { width:100%; accent-color:var(--purple); height:6px; border-r
 <section class="form-section" id="crear">
   <h2 class="form-title">Crea el cuento de <em>tu peque</em></h2>
   <p class="form-sub">Diseña el protagonista y nuestro búho creará una historia única</p>
-
   <div class="form-card">
-
     <div class="section-label">✨ El protagonista</div>
     <div class="field">
       <label class="label">Nombre</label>
       <input class="input" id="nombre" placeholder="Ej: Sofía, Lucas, Martina..." />
     </div>
-
     <div class="field">
       <label class="label">Edad</label>
       <div class="edad-display" id="edadDisplay">6</div>
       <div class="edad-sub" id="edadSub">Primaria — aventuras y amistad</div>
       <input type="range" id="edad" min="3" max="15" value="6" oninput="updateEdad(this.value)"/>
     </div>
-
     <div class="field">
       <label class="label">Es un...</label>
       <div class="btn-group">
@@ -150,10 +138,9 @@ input[type=range] { width:100%; accent-color:var(--purple); height:6px; border-r
         <button class="opt-btn" onclick="setOpt(this,'genero','protagonista')">🌟 Sorpresa</button>
       </div>
     </div>
-
     <div class="field">
       <label class="label">Tono de piel</label>
-      <div class="color-group" id="grupoPiel">
+      <div class="color-group">
         <div class="color-btn active" style="background:#FDDBB4" onclick="setColor(this,'piel','light, fair skin')" title="Clara"><span class="check">✓</span></div>
         <div class="color-btn" style="background:#F0C08A" onclick="setColor(this,'piel','medium light skin')" title="Mediana clara"><span class="check">✓</span></div>
         <div class="color-btn" style="background:#C68642" onclick="setColor(this,'piel','medium brown skin')" title="Mediana"><span class="check">✓</span></div>
@@ -161,10 +148,9 @@ input[type=range] { width:100%; accent-color:var(--purple); height:6px; border-r
         <div class="color-btn" style="background:#4A2912" onclick="setColor(this,'piel','deep dark skin')" title="Oscura"><span class="check">✓</span></div>
       </div>
     </div>
-
     <div class="field">
       <label class="label">Color de pelo</label>
-      <div class="color-group" id="grupoPelo">
+      <div class="color-group">
         <div class="color-btn active" style="background:#F5E6A3" onclick="setColor(this,'pelo','bright blonde')" title="Rubio claro"><span class="check">✓</span></div>
         <div class="color-btn" style="background:#D4A017" onclick="setColor(this,'pelo','golden blonde')" title="Rubio dorado"><span class="check">✓</span></div>
         <div class="color-btn" style="background:#A0522D" onclick="setColor(this,'pelo','light brown')" title="Castaño claro"><span class="check">✓</span></div>
@@ -174,7 +160,6 @@ input[type=range] { width:100%; accent-color:var(--purple); height:6px; border-r
         <div class="color-btn" style="background:#E8E8E8;border:1px solid #ccc" onclick="setColor(this,'pelo','white or silver')" title="Blanco"><span class="check" style="color:#333">✓</span></div>
       </div>
     </div>
-
     <div class="field">
       <label class="label">Tipo de pelo</label>
       <div class="btn-group">
@@ -185,10 +170,9 @@ input[type=range] { width:100%; accent-color:var(--purple); height:6px; border-r
         <button class="opt-btn" onclick="setOpt(this,'tipopelo','long braided')">💈 Trenzas</button>
       </div>
     </div>
-
     <div class="field">
       <label class="label">Color de ojos</label>
-      <div class="color-group" id="grupoOjos">
+      <div class="color-group">
         <div class="color-btn active" style="background:#6B4226" onclick="setColor(this,'ojos','brown')" title="Marrones"><span class="check">✓</span></div>
         <div class="color-btn" style="background:#4A90D9" onclick="setColor(this,'ojos','blue')" title="Azules"><span class="check">✓</span></div>
         <div class="color-btn" style="background:#2E8B57" onclick="setColor(this,'ojos','green')" title="Verdes"><span class="check">✓</span></div>
@@ -196,7 +180,6 @@ input[type=range] { width:100%; accent-color:var(--purple); height:6px; border-r
         <div class="color-btn" style="background:#1C1C1C" onclick="setColor(this,'ojos','dark black')" title="Negros"><span class="check">✓</span></div>
       </div>
     </div>
-
     <div class="row2">
       <div class="field">
         <label class="label">¿Lleva gafas?</label>
@@ -274,9 +257,7 @@ input[type=range] { width:100%; accent-color:var(--purple); height:6px; border-r
 
 <div class="overlay" id="overlay">
   <div class="spinner">
-    <div class="ring"></div>
-    <div class="ring"></div>
-    <div class="ring"></div>
+    <div class="ring"></div><div class="ring"></div><div class="ring"></div>
   </div>
   <p class="loading-msg" id="loadingMsg">🦉 El búho está trabajando...</p>
   <p class="loading-sub">Esto puede tardar unos minutos</p>
@@ -303,20 +284,11 @@ input[type=range] { width:100%; accent-color:var(--purple); height:6px; border-r
 <script>
 let tema = 'la amistad';
 let estilo = 'Pixar CGI quality, 3D animation style, vibrant and detailed';
-let opciones = {
-  genero: 'niña',
-  tipopelo: 'straight',
-  gafas: 'without glasses',
-  pecas: '',
-  piel: 'light, fair skin',
-  pelo: 'bright blonde',
-  ojos: 'brown'
-};
+let opciones = { genero:'niña', tipopelo:'straight', gafas:'without glasses', pecas:'', piel:'light, fair skin', pelo:'bright blonde', ojos:'brown' };
 
 const starsEl = document.getElementById('stars');
 for(let i=0;i<60;i++){
-  const s=document.createElement('div');
-  s.className='star';
+  const s=document.createElement('div'); s.className='star';
   const sz=Math.random()*2.5+.5;
   s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${Math.random()*3+1.5}s;--dl:${Math.random()*3}s;`;
   starsEl.appendChild(s);
@@ -325,33 +297,26 @@ for(let i=0;i<60;i++){
 function scrollToForm(){ document.getElementById('crear').scrollIntoView({behavior:'smooth'}); }
 
 function updateEdad(v){
-  document.getElementById('edadDisplay').textContent = v;
-  const subs = {3:'Infantil — cuentos cortos y mágicos',4:'Infantil — cuentos cortos y mágicos',5:'Infantil — aventuras sencillas',6:'Primaria — aventuras y amistad',7:'Primaria — aventuras y amistad',8:'Primaria — misterio y humor',9:'Primaria — misterio y humor',10:'Primaria — historias con emoción',11:'Primaria — historias con emoción',12:'Secundaria — aventuras épicas',13:'Secundaria — aventuras épicas',14:'Secundaria — historias maduras',15:'Secundaria — historias maduras'};
-  document.getElementById('edadSub').textContent = subs[v]||'';
+  document.getElementById('edadDisplay').textContent=v;
+  const subs={3:'Infantil — cuentos cortos y mágicos',4:'Infantil — cuentos cortos y mágicos',5:'Infantil — aventuras sencillas',6:'Primaria — aventuras y amistad',7:'Primaria — aventuras y amistad',8:'Primaria — misterio y humor',9:'Primaria — misterio y humor',10:'Primaria — historias con emoción',11:'Primaria — historias con emoción',12:'Secundaria — aventuras épicas',13:'Secundaria — aventuras épicas',14:'Secundaria — historias maduras',15:'Secundaria — historias maduras'};
+  document.getElementById('edadSub').textContent=subs[v]||'';
 }
 
 function setOpt(btn,key,val){
   btn.closest('.btn-group').querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  opciones[key]=val;
+  btn.classList.add('active'); opciones[key]=val;
 }
-
 function setColor(el,key,val){
   el.closest('.color-group').querySelectorAll('.color-btn').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
-  opciones[key]=val;
+  el.classList.add('active'); opciones[key]=val;
 }
-
 function setTema(btn,t){
   document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  tema=t;
+  btn.classList.add('active'); tema=t;
 }
-
 function setEstilo(card,e){
   document.querySelectorAll('.style-card').forEach(c=>c.classList.remove('active'));
-  card.classList.add('active');
-  estilo=e;
+  card.classList.add('active'); estilo=e;
 }
 
 async function generar(){
@@ -364,9 +329,8 @@ async function generar(){
   document.getElementById('pagesContainer').innerHTML='';
   document.getElementById('endSection').style.display='none';
   const edad=document.getElementById('edad').value;
-  const datos={nombre,edad,tema,personaje,opciones,estilo};
   try {
-    const resp=await fetch('/generar-cuento',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(datos)});
+    const resp=await fetch('/generar-cuento',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre,edad,tema,personaje,opciones,estilo})});
     const reader=resp.body.getReader();
     const decoder=new TextDecoder();
     while(true){
@@ -423,31 +387,84 @@ async function descargarPDF(){
   try {
     const {jsPDF}=window.jspdf;
     const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-    const pageW=210,margin=15,imgW=pageW-margin*2;
+    const W=210, H=297, margin=0;
     const titulo=document.getElementById('bookTitle').textContent;
     const ded=document.getElementById('bookDed').textContent;
-    pdf.setFont('helvetica','bold'); pdf.setFontSize(26); pdf.setTextColor(58,32,112);
-    pdf.text(titulo,pageW/2,40,{align:'center',maxWidth:imgW});
-    if(ded){ pdf.setFont('helvetica','italic'); pdf.setFontSize(13); pdf.setTextColor(122,106,154); pdf.text(ded,pageW/2,56,{align:'center',maxWidth:imgW}); }
+
+    // === PÁGINA DE PORTADA ===
     const coverImg=document.getElementById('coverImg');
     if(coverImg&&coverImg.src&&coverImg.style.display!=='none'){
-      try{ const d=await toBase64(coverImg.src); pdf.addImage(d,'JPEG',margin,68,imgW,imgW*1.2); }catch(e){}
+      try{
+        const d=await toBase64(coverImg.src);
+        pdf.addImage(d,'JPEG',0,0,W,H); // imagen a sangre completa
+      }catch(e){}
     }
+    // Banda inferior con título y dedicatoria
+    pdf.setFillColor(26,15,48);
+    pdf.rect(0,210,W,87,'F');
+    pdf.setFont('helvetica','bold');
+    pdf.setFontSize(22);
+    pdf.setTextColor(247,201,75);
+    pdf.text(titulo,W/2,232,{align:'center',maxWidth:180});
+    if(ded){
+      pdf.setFont('helvetica','italic');
+      pdf.setFontSize(11);
+      pdf.setTextColor(200,180,255);
+      const lineas=pdf.splitTextToSize(ded,170);
+      pdf.text(lineas,W/2,248,{align:'center'});
+    }
+
+    // === PÁGINAS INTERIORES ===
     for(const page of document.querySelectorAll('.page')){
       pdf.addPage();
       const img=page.querySelector('.page-img');
       const num=page.querySelector('.page-num')?.textContent||'';
       const tit=page.querySelector('.page-title')?.textContent||'';
       const txt=page.querySelector('.page-text')?.textContent||'';
+
+      // Imagen ocupa los 2/3 superiores a sangre
       try{
-        const d=await toBase64(img.src); const h=imgW*(2/3);
-        pdf.addImage(d,'JPEG',margin,margin,imgW,h);
-        let y=margin+h+10;
-        pdf.setFont('helvetica','bold'); pdf.setFontSize(9); pdf.setTextColor(229,168,0); pdf.text(num.toUpperCase(),margin,y); y+=7;
-        pdf.setFont('helvetica','italic'); pdf.setFontSize(16); pdf.setTextColor(58,32,112); pdf.text(tit,margin,y); y+=9;
-        pdf.setFont('helvetica','normal'); pdf.setFontSize(13); pdf.setTextColor(58,48,80); pdf.text(pdf.splitTextToSize(txt,imgW),margin,y);
-      }catch(e){}
+        const d=await toBase64(img.src);
+        pdf.addImage(d,'JPEG',0,0,W,198);
+      }catch(e){
+        pdf.setFillColor(240,235,255);
+        pdf.rect(0,0,W,198,'F');
+      }
+
+      // Franja inferior con fondo degradado oscuro
+      pdf.setFillColor(26,15,48);
+      pdf.rect(0,195,W,102,'F');
+
+      // Línea dorada decorativa
+      pdf.setDrawColor(247,201,75);
+      pdf.setLineWidth(0.8);
+      pdf.line(15,200,195,200);
+
+      // Número de página
+      pdf.setFont('helvetica','bold');
+      pdf.setFontSize(9);
+      pdf.setTextColor(229,168,0);
+      pdf.text(num.toUpperCase(),15,210);
+
+      // Título de página
+      pdf.setFont('helvetica','italic');
+      pdf.setFontSize(18);
+      pdf.setTextColor(200,180,255);
+      pdf.text(tit,15,222,{maxWidth:180});
+
+      // Texto del cuento
+      pdf.setFont('helvetica','normal');
+      pdf.setFontSize(13);
+      pdf.setTextColor(240,235,255);
+      const lineas=pdf.splitTextToSize(txt,180);
+      pdf.text(lineas,15,235);
+
+      // Número de página abajo
+      pdf.setFontSize(9);
+      pdf.setTextColor(122,106,154);
+      pdf.text(`${num.replace('PÁGINA ','')}`,W/2,290,{align:'center'});
     }
+
     pdf.save(`${titulo||'cuento'}.pdf`);
   } catch(e){ alert('Error PDF: '+e.message); }
   btn.textContent='📄 Descargar PDF'; btn.disabled=false;
