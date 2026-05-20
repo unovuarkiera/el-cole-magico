@@ -288,3 +288,116 @@ Responde SOLO JSON sin backticks: {"titulo":"...","dedicatoria":"..."}` }]
     res.end();
   }
 });
+
+// =============================================
+// COLECCIÓN ESPECIAL: SE ME CAYÓ UN DIENTE
+// =============================================
+
+const ESCENAS_DIENTE = [
+  { numero:1, titulo:"El diente que baila", texto_base:"Hace días que [NOMBRE] nota algo raro. Su diente de delante se mueve un poquito. Lo toca con la lengua una y otra vez. ¡Se mueve de verdad!", escena:"A child touching a wobbly tooth with their tongue, looking at themselves in a mirror with a funny expression, cozy bathroom setting, morning light" },
+  { numero:2, titulo:"¡Qué miedo!", texto_base:"[NOMBRE] tiene un poco de miedo. ¿Dolerá cuando se caiga? ¿Quedará un hueco feo? Su amigo [PERSONAJE_NOMBRE] le dice que no pasa nada, que a todos les caen los dientes.", escena:"A child looking worried at their wobbly tooth in a mirror, a friend nearby reassuring them with a smile, warm cozy setting, gentle expressions" },
+  { numero:3, titulo:"¡Se cae!", texto_base:"Al morder una manzana... ¡CRAC! [NOMBRE] se lleva la mano a la boca. ¡El diente se ha caído! Lo mira en la palma de su mano — es pequeñito y brillante.", escena:"A child biting an apple and suddenly looking surprised, holding a tiny tooth in their palm, eyes wide with amazement and excitement, kitchen or garden setting" },
+  { numero:4, titulo:"¡Hay un hueco!", texto_base:"[NOMBRE] corre al espejo. Abre la boca muy grande y... ¡hay un hueco! La lengua no para de meterse ahí. Es rarísimo pero también graciosísimo.", escena:"A child opening their mouth wide in front of a mirror, pointing at the gap where the tooth was, laughing and surprised, funny and cute expression" },
+  { numero:5, titulo:"La noticia del cole", texto_base:"Al día siguiente, [NOMBRE] llega al cole con una gran noticia. \"¡Se me cayó un diente!\", anuncia a sus amigos. Todos quieren ver el hueco. ¡[NOMBRE] es el más famoso de la clase!", escena:"A child proudly showing their gap tooth to classmates at school, everyone gathering around with curious and happy faces, classroom setting, cheerful atmosphere" },
+  { numero:6, titulo:"El diente más limpio del mundo", texto_base:"En casa, [NOMBRE] lava el diente con mucho cuidado. Con agua, con jabón, con un trapito suave. Tiene que estar perfectamente limpio para esta noche.", escena:"A child carefully washing a tiny tooth in the sink, being very gentle and careful, determined and cute expression, bathroom setting with warm lighting" },
+  { numero:7, titulo:"La cajita especial", texto_base:"Mamá saca una cajita muy especial. [NOMBRE] pone el diente dentro con mucho cuidado. Esta noche la cajita irá bajo la almohada. ¡El visitante mágico vendrá!", escena:"A child placing a tiny tooth carefully in a small special box, parent watching lovingly, magical sparkles around the box, cozy bedroom setting" },
+  { numero:8, titulo:"¡Esta noche viene!", texto_base:"[NOMBRE] se mete en la cama muy emocionado. Pone la cajita bajo la almohada. \"¿Y si me quedo despierto para verle?\", pregunta. \"Viene solo cuando los niños duermen\", dice mamá.", escena:"A child lying in bed very excited, peeking under their pillow where the small box is, parent smiling from the doorway, cozy night bedroom with soft lamp light" },
+  { numero:9, titulo:"Las estrellas vigilan", texto_base:"[NOMBRE] intenta dormir pero está muy emocionado. Las estrellas brillan por la ventana. Los ojos se van cerrando poco a poco... poco a poco... hasta que se queda dormido.", escena:"A child slowly falling asleep in bed, stars visible through the bedroom window, peaceful and cozy atmosphere, soft moonlight entering the room, toys nearby" },
+  { numero:10, titulo:"El visitante de medianoche", texto_base:"A medianoche, cuando todo está en silencio, [VISITANTE_NOMBRE] aparece. Se mueve sin hacer ningún ruido. Levanta la almohada con mucho cuidado para no despertar a [NOMBRE].", escena:"[VISITANTE_DESC] sneaking into a moonlit bedroom at midnight, very quietly lifting a pillow, magical glowing light around them, the sleeping child visible in bed, magical and enchanting night scene" },
+  { numero:11, titulo:"El intercambio mágico", texto_base:"[VISITANTE_NOMBRE] coge la cajita con el diente y deja en su lugar una moneda que brilla como una estrella. También deja un papelito doblado. Todo con mucho amor y cuidado.", escena:"[VISITANTE_DESC] carefully replacing a small box with a glowing magical coin and a tiny folded note, magical sparkles and soft glow, moonlit bedroom, delicate and magical moment" },
+  { numero:12, titulo:"¡Buenos días!", texto_base:"Por la mañana, [NOMBRE] se despierta de golpe. ¡La almohada! Mete la mano corriendo y... ¡nota algo diferente! Saca la mano muy despacio...", escena:"A child waking up with sudden excitement, reaching under their pillow very carefully, eyes wide with anticipation, morning sunlight in a cozy bedroom" },
+  { numero:13, titulo:"La moneda mágica", texto_base:"¡Una moneda que brilla! [NOMBRE] la pone al sol y brilla con todos los colores del arcoíris. \"¡Vino! ¡Vino de verdad!\", grita [NOMBRE] corriendo por la casa.", escena:"A child holding up a magical glowing coin that shimmers with rainbow colors in the sunlight, running excitedly through the house, pure joy and amazement, morning light" },
+  { numero:14, titulo:"El mensaje secreto", texto_base:"[NOMBRE] también encuentra el papelito. Lo desdobla con cuidado. Dice: \"Tu diente era tan valiente como tú. Cuida bien los nuevos. Con cariño, [VISITANTE_NOMBRE].\"", escena:"A child carefully unfolding and reading a tiny magical letter, eyes wide with wonder, sitting on their bed in morning light, magical sparkles around the letter, emotional and sweet moment" },
+  { numero:15, titulo:"El hueco tiene nombre", texto_base:"[NOMBRE] corre al espejo. Abre la boca y mira el hueco. Ya no da miedo. Es la prueba de que está creciendo. \"Mi hueco mágico\", dice [NOMBRE] muy orgulloso.", escena:"A child smiling proudly at their reflection showing their gap tooth, no longer scared but proud, pointing at the gap happily, bright bathroom morning light, confident and happy expression" },
+  { numero:16, titulo:"Crecer es mágico", texto_base:"Esa noche, [NOMBRE] se duerme sonriendo. El hueco es como una medalla. Una medalla que dice: \"Soy valiente, estoy creciendo y la magia existe de verdad.\"", escena:"A child sleeping peacefully with a happy smile, the magical coin and tiny note visible on the bedside table, moonlight through the window, cozy and magical atmosphere, stars outside" }
+];
+
+app.post('/generar-diente', async (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
+  const send = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
+
+  try {
+    const { nombre, visitanteId, visitanteNombre, visitanteDesc, opciones, estilo } = req.body;
+    const id = Date.now();
+
+    const genero = opciones?.genero || 'niño';
+    const piel = opciones?.piel || 'light, fair skin';
+    const pelo = opciones?.pelo || 'brown';
+    const tipopelo = opciones?.tipopelo || 'straight';
+    const ojos = opciones?.ojos || 'brown';
+    const gafas = opciones?.gafas || 'without glasses';
+    const pecas = opciones?.pecas || '';
+    const estiloIlustracion = estilo || 'Pixar CGI quality, 3D animation style, vibrant and detailed';
+    const estiloBase = `${estiloIlustracion}, family-friendly children's book illustration, cheerful and safe for children, warm lighting`;
+    const protagonistaDesc = `a ${genero} named ${nombre} with ${tipopelo} ${pelo} hair, ${ojos} eyes, ${piel}, ${gafas}${pecas ? ', ' + pecas : ''}, always wearing a yellow t-shirt and blue dungarees`;
+
+    send({ tipo: 'estado', mensaje: '🦷 Preparando la historia del diente...' });
+
+    const anthropic = new Anthropic({ apiKey: ANTHROPIC_KEY });
+
+    // Título y dedicatoria
+    const msgTitulo = await anthropic.messages.create({
+      model: 'claude-sonnet-4-5',
+      max_tokens: 300,
+      messages: [{ role: 'user', content: `Genera un título poético y emotivo para un cuento infantil sobre el momento en que a ${nombre} se le cae su primer diente y viene ${visitanteNombre} a recogerlo.
+Genera también una dedicatoria emotiva de 2-3 frases para ${nombre}.
+Responde SOLO JSON sin backticks: {"titulo":"...","dedicatoria":"..."}` }]
+    });
+    const tituloData = JSON.parse(msgTitulo.content[0].text.match(/\{[\s\S]*\}/)[0]);
+
+    send({ tipo: 'cuento', titulo: tituloData.titulo, dedicatoria: tituloData.dedicatoria });
+
+    // Portada
+    send({ tipo: 'estado', mensaje: '🎨 Generando portada...' });
+    try {
+      const portadaUrl = await generarImagen(
+        `${estiloBase}. Book cover: ${protagonistaDesc} holding a tiny glowing tooth, with ${visitanteDesc} appearing magically nearby with sparkles and stars. Nighttime magical atmosphere. Spanish title: "${tituloData.titulo}". Professional children's book cover, portrait format.`,
+        '1024x1536',
+        `diente_portada_${id}.png`
+      );
+      send({ tipo: 'imagen', url: portadaUrl });
+    } catch(e) {
+      console.error('Error portada:', e.message);
+      send({ tipo: 'imagen', url: '' });
+    }
+
+    // 16 páginas
+    for (const escena of ESCENAS_DIENTE) {
+      send({ tipo: 'estado', mensaje: `🎨 Generando página ${escena.numero} de 16...` });
+
+      const texto = escena.texto_base
+        .replace(/\[NOMBRE\]/g, nombre)
+        .replace(/\[VISITANTE_NOMBRE\]/g, visitanteNombre)
+        .replace(/\[PERSONAJE_NOMBRE\]/g, visitanteNombre);
+
+      const escenaImg = escena.escena
+        .replace(/\[VISITANTE_DESC\]/g, visitanteDesc)
+        .replace(/the child/g, protagonistaDesc)
+        .replace(/A child/g, protagonistaDesc.charAt(0).toUpperCase() + protagonistaDesc.slice(1))
+        .replace(/\[NOMBRE\]/g, nombre);
+
+      let imgUrl = '';
+      try {
+        imgUrl = await generarImagen(
+          `${estiloBase}. ${escenaImg}. Main character: ${protagonistaDesc}. Portrait format, consistent character design throughout the book, magical and warm atmosphere.`,
+          '1024x1536',
+          `diente_${id}_${escena.numero}.png`
+        );
+      } catch(e) {
+        console.error(`Error página ${escena.numero}:`, e.message);
+      }
+
+      send({ tipo: 'pagina', numero: escena.numero, titulo: escena.titulo, texto, url: imgUrl });
+    }
+
+    send({ tipo: 'completado' });
+    res.end();
+
+  } catch(err) {
+    send({ tipo: 'error', mensaje: err.message });
+    res.end();
+  }
+});
