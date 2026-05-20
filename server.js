@@ -8,7 +8,6 @@ app.use(express.json());
 app.use(express.static('.'));
 app.use('/imagenes', express.static('imagenes'));
 
-// Crear carpeta de imágenes si no existe
 if (!fs.existsSync('imagenes')) fs.mkdirSync('imagenes');
 
 const ANTHROPIC_KEY = process.env.ANTHROPIC_KEY;
@@ -82,24 +81,47 @@ RESPONDE SOLO JSON sin texto antes ni después, sin backticks:
 
     send({ tipo: 'cuento', titulo: cuento.titulo, dedicatoria: cuento.dedicatoria });
 
+    // Descripción fija y consistente del protagonista y personaje secundario
+    // Se usa IGUAL en portada y en todas las páginas para mantener coherencia visual
+    const colorPelo = pelo.includes('rubio') ? 'bright blonde' :
+                      pelo.includes('castaño') ? 'brown' :
+                      pelo.includes('moreno') ? 'dark black' : 'red';
+    const colorOjos = ojos === 'marrones' ? 'brown' :
+                      ojos === 'azules' ? 'blue' :
+                      ojos === 'verdes' ? 'green' : 'dark';
+    const esLiso = pelo.includes('liso') ? 'straight' : 'curly';
+
+    const protagonistaDesc = `a ${edad}-year-old child named ${nombre} with ${esLiso} ${colorPelo} hair, ${colorOjos} eyes, wearing a yellow t-shirt and blue dungarees`;
+    const personajeDesc = `${personaje} (always drawn with the same friendly appearance, consistent colors and features across all illustrations)`;
+    const estiloBase = `Children's book illustration, Pixar CGI quality, warm soft lighting, vibrant colors, family-friendly, cheerful and safe for children`;
+
     // Portada
     send({ tipo: 'estado', mensaje: '🎨 Generando portada...' });
-    const personajeDesc = `A ${edad} year old girl named ${nombre} with ${pelo} hair and ${ojos} eyes`;
-    const portadaUrl = await generarImagen(
-      `Children's book cover, Pixar quality digital illustration, vibrant warm colors. ${personajeDesc} hugging ${personaje} with kind eyes in a magical glowing forest at sunset. Title in golden Spanish text: "${cuento.titulo}". Professional children's book cover.`,
-      '1024x1536',
-      `portada_${id}.png`
-    );
-    send({ tipo: 'imagen', url: portadaUrl });
+    try {
+      const portadaUrl = await generarImagen(
+        `${estiloBase}. Book cover showing ${protagonistaDesc} hugging ${personajeDesc} in a magical glowing forest at sunset. Golden title text in Spanish: "${cuento.titulo}". Professional children's book cover layout.`,
+        '1024x1536',
+        `portada_${id}.png`
+      );
+      send({ tipo: 'imagen', url: portadaUrl });
+    } catch (e) {
+      console.error('Error portada:', e.message);
+      send({ tipo: 'imagen', url: '' });
+    }
 
-    // Páginas
+    // Páginas — si una imagen falla, el cuento continúa sin ella
     for (const pag of cuento.paginas) {
       send({ tipo: 'estado', mensaje: `🎨 Generando ilustración página ${pag.numero}...` });
-      const imgUrl = await generarImagen(
-        `Children's book illustration, Pixar quality, vibrant warm colors. ${personajeDesc} and ${personaje} with kind eyes. Scene: ${pag.escena}. Horizontal format, magical atmosphere.`,
-        '1536x1024',
-        `pag_${id}_${pag.numero}.png`
-      );
+      let imgUrl = '';
+      try {
+        imgUrl = await generarImagen(
+          `${estiloBase}. ${protagonistaDesc} and ${personajeDesc}. Scene: ${pag.escena}. Horizontal format, magical atmosphere, same character designs as previous illustrations.`,
+          '1536x1024',
+          `pag_${id}_${pag.numero}.png`
+        );
+      } catch (e) {
+        console.error(`Error imagen página ${pag.numero}:`, e.message);
+      }
       send({ tipo: 'pagina', numero: pag.numero, titulo: pag.titulo, texto: pag.texto, url: imgUrl });
     }
 
