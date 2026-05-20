@@ -19,7 +19,6 @@
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--dark); overflow-x:hidden; }
 
-/* HERO */
 .hero { min-height:100vh; background:linear-gradient(160deg,#1a0f30 0%,#3a2070 50%,#1a0f30 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px 24px; text-align:center; position:relative; overflow:hidden; }
 .stars { position:absolute; inset:0; pointer-events:none; }
 .star { position:absolute; background:white; border-radius:50%; animation:twinkle var(--d) var(--dl) infinite alternate; }
@@ -32,37 +31,55 @@ body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--dar
 .btn-gold { background:var(--gold); color:var(--dark); font-family:'Fraunces',serif; font-weight:900; font-size:20px; padding:18px 48px; border-radius:50px; border:none; cursor:pointer; box-shadow:0 8px 40px rgba(247,201,75,.4); transition:all .25s; text-decoration:none; display:inline-block; }
 .btn-gold:hover { transform:translateY(-3px); box-shadow:0 14px 50px rgba(247,201,75,.5); }
 
-/* FORM */
-.form-section { padding:80px 24px; max-width:700px; margin:0 auto; }
+.form-section { padding:80px 24px; max-width:760px; margin:0 auto; }
 .form-title { font-family:'Fraunces',serif; font-size:42px; font-weight:900; color:var(--purple); text-align:center; margin-bottom:8px; }
 .form-title em { font-style:italic; color:var(--gold-d); }
 .form-sub { text-align:center; color:var(--muted); font-size:17px; margin-bottom:48px; }
 .form-card { background:white; border-radius:28px; padding:48px; box-shadow:0 8px 40px rgba(58,32,112,.1); }
-.row { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-.field { margin-bottom:24px; }
-.label { display:block; font-weight:800; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--purple); margin-bottom:8px; }
-.input, .select { width:100%; padding:14px 18px; border:2px solid rgba(58,32,112,.12); border-radius:14px; font-family:'Nunito',sans-serif; font-size:16px; color:var(--dark); background:var(--cream); outline:none; transition:border-color .2s; }
-.input:focus, .select:focus { border-color:var(--purple-l); }
+
+.section-label { font-weight:800; font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--purple); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+.section-label::after { content:''; flex:1; height:1px; background:rgba(58,32,112,.1); }
+.field { margin-bottom:28px; }
+.label { display:block; font-weight:800; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--purple); margin-bottom:10px; }
+.input { width:100%; padding:14px 18px; border:2px solid rgba(58,32,112,.12); border-radius:14px; font-family:'Nunito',sans-serif; font-size:16px; color:var(--dark); background:var(--cream); outline:none; transition:border-color .2s; }
+.input:focus { border-color:var(--purple-l); }
 .input::placeholder { color:rgba(26,15,48,.3); }
+
+.btn-group { display:flex; flex-wrap:wrap; gap:10px; }
+.opt-btn { padding:10px 18px; border-radius:20px; border:2px solid rgba(58,32,112,.15); background:white; font-family:'Nunito',sans-serif; font-size:14px; font-weight:700; color:var(--muted); cursor:pointer; transition:all .2s; display:flex; align-items:center; gap:6px; }
+.opt-btn:hover { border-color:var(--purple-l); color:var(--purple); }
+.opt-btn.active { background:var(--purple); border-color:var(--purple); color:white; }
+
+.color-group { display:flex; flex-wrap:wrap; gap:10px; }
+.color-btn { width:40px; height:40px; border-radius:50%; border:3px solid transparent; cursor:pointer; transition:all .2s; position:relative; }
+.color-btn:hover { transform:scale(1.1); }
+.color-btn.active { border-color:var(--purple); box-shadow:0 0 0 3px rgba(58,32,112,.2); transform:scale(1.15); }
+.color-btn .check { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:16px; opacity:0; }
+.color-btn.active .check { opacity:1; }
+
+.edad-display { font-family:'Fraunces',serif; font-size:48px; font-weight:900; color:var(--purple); text-align:center; margin-bottom:8px; }
+.edad-sub { text-align:center; color:var(--muted); font-size:14px; margin-bottom:16px; }
+input[type=range] { width:100%; accent-color:var(--purple); height:6px; border-radius:3px; }
+
+.row2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+
+.style-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:12px; }
+.style-card { border:2px solid rgba(58,32,112,.12); border-radius:16px; padding:16px 12px; text-align:center; cursor:pointer; transition:all .2s; background:white; }
+.style-card:hover { border-color:var(--purple-l); }
+.style-card.active { border-color:var(--purple); background:rgba(58,32,112,.04); }
+.style-card .style-icon { font-size:32px; margin-bottom:8px; }
+.style-card .style-name { font-weight:800; font-size:13px; color:var(--dark); }
+.style-card .style-desc { font-size:11px; color:var(--muted); margin-top:3px; }
+
 .themes { display:flex; flex-wrap:wrap; gap:10px; }
 .theme-btn { padding:9px 18px; border-radius:20px; border:2px solid rgba(58,32,112,.15); background:white; font-family:'Nunito',sans-serif; font-size:14px; font-weight:700; color:var(--muted); cursor:pointer; transition:all .2s; }
 .theme-btn:hover { border-color:var(--purple-l); color:var(--purple); }
 .theme-btn.active { background:var(--purple); border-color:var(--purple); color:white; }
+
 .btn-generate { width:100%; padding:20px; background:linear-gradient(135deg,var(--purple-l),var(--purple)); color:white; font-family:'Fraunces',serif; font-size:22px; font-weight:900; border:none; border-radius:16px; cursor:pointer; margin-top:8px; box-shadow:0 8px 30px rgba(58,32,112,.3); transition:all .3s; }
 .btn-generate:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 14px 40px rgba(58,32,112,.4); }
 .btn-generate:disabled { opacity:.5; cursor:not-allowed; }
 
-/* LOADING */
-.spinner { width:80px; height:80px; margin:0 auto 28px; position:relative; }
-.ring { position:absolute; inset:0; border-radius:50%; border:3px solid transparent; animation:spin var(--d) linear infinite; }
-.ring:nth-child(1) { border-top-color:var(--gold); --d:1.5s; }
-.ring:nth-child(2) { inset:10px; border-right-color:var(--purple-l); --d:2s; animation-direction:reverse; }
-.ring:nth-child(3) { inset:20px; border-bottom-color:rgba(255,255,255,.5); --d:1s; }
-@keyframes spin { to{transform:rotate(360deg)} }
-.loading-msg { font-family:'Fraunces',serif; font-size:24px; color:white; margin-bottom:8px; }
-.loading-sub { color:rgba(255,255,255,.6); font-size:16px; }
-
-/* BOOK */
 .book-section { display:none; padding:60px 24px; max-width:900px; margin:0 auto; }
 .book-header { text-align:center; margin-bottom:48px; }
 .book-title { font-family:'Fraunces',serif; font-size:clamp(32px,5vw,56px); font-weight:900; color:var(--purple); line-height:1.1; margin-bottom:10px; }
@@ -82,16 +99,22 @@ body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--dar
 .btn-nuevo:hover { background:var(--purple-l); transform:translateY(-2px); }
 .btn-nuevo:disabled { opacity:.5; cursor:not-allowed; }
 
-/* OVERLAY LOADING */
 .overlay { display:none; position:fixed; inset:0; background:linear-gradient(160deg,#1a0f30,#3a2070); z-index:100; flex-direction:column; align-items:center; justify-content:center; }
 .overlay.show { display:flex; }
+.spinner { width:80px; height:80px; margin:0 auto 28px; position:relative; }
+.ring { position:absolute; inset:0; border-radius:50%; border:3px solid transparent; animation:spin var(--d) linear infinite; }
+.ring:nth-child(1) { border-top-color:var(--gold); --d:1.5s; }
+.ring:nth-child(2) { inset:10px; border-right-color:var(--purple-l); --d:2s; animation-direction:reverse; }
+.ring:nth-child(3) { inset:20px; border-bottom-color:rgba(255,255,255,.5); --d:1s; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.loading-msg { font-family:'Fraunces',serif; font-size:24px; color:white; margin-bottom:8px; }
+.loading-sub { color:rgba(255,255,255,.6); font-size:16px; }
 
-@media(max-width:600px) { .row{grid-template-columns:1fr} .form-card{padding:28px 20px} }
+@media(max-width:600px) { .row2{grid-template-columns:1fr} .form-card{padding:28px 20px} .style-grid{grid-template-columns:repeat(2,1fr)} }
 </style>
 </head>
 <body>
 
-<!-- HERO -->
 <section class="hero" id="hero">
   <div class="stars" id="stars"></div>
   <div class="owl">🦉</div>
@@ -100,50 +123,105 @@ body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--dar
   <a href="#crear" class="btn-gold" onclick="scrollToForm()">✨ Crear mi cuento ahora</a>
 </section>
 
-<!-- FORM -->
 <section class="form-section" id="crear">
   <h2 class="form-title">Crea el cuento de <em>tu peque</em></h2>
-  <p class="form-sub">Rellena los datos y nuestro búho creará una historia única en minutos</p>
+  <p class="form-sub">Diseña el protagonista y nuestro búho creará una historia única</p>
 
   <div class="form-card">
-    <div class="row">
-      <div class="field">
-        <label class="label">Nombre ✨</label>
-        <input class="input" id="nombre" placeholder="Ej: Sofía" />
-      </div>
-      <div class="field">
-        <label class="label">Edad</label>
-        <select class="select" id="edad">
-          <option>3</option><option>4</option><option selected>5</option>
-          <option>6</option><option>7</option><option>8</option>
-          <option>9</option><option>10</option>
-        </select>
-      </div>
+
+    <div class="section-label">✨ El protagonista</div>
+    <div class="field">
+      <label class="label">Nombre</label>
+      <input class="input" id="nombre" placeholder="Ej: Sofía, Lucas, Martina..." />
     </div>
 
-    <div class="row">
-      <div class="field">
-        <label class="label">Color de pelo</label>
-        <select class="select" id="pelo">
-          <option>rubio liso</option><option>rubio rizado</option>
-          <option>castaño liso</option><option>castaño rizado</option>
-          <option>moreno liso</option><option>pelirrojo</option>
-        </select>
-      </div>
-      <div class="field">
-        <label class="label">Color de ojos</label>
-        <select class="select" id="ojos">
-          <option>marrones</option><option>azules</option>
-          <option>verdes</option><option>negros</option>
-        </select>
+    <div class="field">
+      <label class="label">Edad</label>
+      <div class="edad-display" id="edadDisplay">6</div>
+      <div class="edad-sub" id="edadSub">Primaria — aventuras y amistad</div>
+      <input type="range" id="edad" min="3" max="15" value="6" oninput="updateEdad(this.value)"/>
+    </div>
+
+    <div class="field">
+      <label class="label">Es un...</label>
+      <div class="btn-group">
+        <button class="opt-btn active" onclick="setOpt(this,'genero','niña')">👧 Niña</button>
+        <button class="opt-btn" onclick="setOpt(this,'genero','niño')">👦 Niño</button>
+        <button class="opt-btn" onclick="setOpt(this,'genero','protagonista')">🌟 Sorpresa</button>
       </div>
     </div>
 
     <div class="field">
-      <label class="label">Personaje especial 🐾</label>
-      <input class="input" id="personaje" placeholder="Ej: un lobo bonachón, un dragón azul, su gato Michi..." />
+      <label class="label">Tono de piel</label>
+      <div class="color-group" id="grupoPiel">
+        <div class="color-btn active" style="background:#FDDBB4" onclick="setColor(this,'piel','light, fair skin')" title="Clara"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#F0C08A" onclick="setColor(this,'piel','medium light skin')" title="Mediana clara"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#C68642" onclick="setColor(this,'piel','medium brown skin')" title="Mediana"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#8D5524" onclick="setColor(this,'piel','dark brown skin')" title="Morena"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#4A2912" onclick="setColor(this,'piel','deep dark skin')" title="Oscura"><span class="check">✓</span></div>
+      </div>
     </div>
 
+    <div class="field">
+      <label class="label">Color de pelo</label>
+      <div class="color-group" id="grupoPelo">
+        <div class="color-btn active" style="background:#F5E6A3" onclick="setColor(this,'pelo','bright blonde')" title="Rubio claro"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#D4A017" onclick="setColor(this,'pelo','golden blonde')" title="Rubio dorado"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#A0522D" onclick="setColor(this,'pelo','light brown')" title="Castaño claro"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#6B3A2A" onclick="setColor(this,'pelo','dark brown')" title="Castaño oscuro"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#1C1C1C" onclick="setColor(this,'pelo','black')" title="Negro"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#C0392B" onclick="setColor(this,'pelo','red')" title="Pelirrojo"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#E8E8E8;border:1px solid #ccc" onclick="setColor(this,'pelo','white or silver')" title="Blanco"><span class="check" style="color:#333">✓</span></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Tipo de pelo</label>
+      <div class="btn-group">
+        <button class="opt-btn active" onclick="setOpt(this,'tipopelo','straight')">〰️ Liso</button>
+        <button class="opt-btn" onclick="setOpt(this,'tipopelo','curly')">🌀 Rizado</button>
+        <button class="opt-btn" onclick="setOpt(this,'tipopelo','wavy')">〜 Ondulado</button>
+        <button class="opt-btn" onclick="setOpt(this,'tipopelo','very short')">✂️ Muy corto</button>
+        <button class="opt-btn" onclick="setOpt(this,'tipopelo','long braided')">💈 Trenzas</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Color de ojos</label>
+      <div class="color-group" id="grupoOjos">
+        <div class="color-btn active" style="background:#6B4226" onclick="setColor(this,'ojos','brown')" title="Marrones"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#4A90D9" onclick="setColor(this,'ojos','blue')" title="Azules"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#2E8B57" onclick="setColor(this,'ojos','green')" title="Verdes"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#708090" onclick="setColor(this,'ojos','grey')" title="Grises"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#1C1C1C" onclick="setColor(this,'ojos','dark black')" title="Negros"><span class="check">✓</span></div>
+      </div>
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label class="label">¿Lleva gafas?</label>
+        <div class="btn-group">
+          <button class="opt-btn active" onclick="setOpt(this,'gafas','without glasses')">😊 No</button>
+          <button class="opt-btn" onclick="setOpt(this,'gafas','wearing round glasses')">🤓 Redondas</button>
+          <button class="opt-btn" onclick="setOpt(this,'gafas','wearing square glasses')">😎 Cuadradas</button>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">¿Tiene pecas?</label>
+        <div class="btn-group">
+          <button class="opt-btn active" onclick="setOpt(this,'pecas','')">✨ No</button>
+          <button class="opt-btn" onclick="setOpt(this,'pecas','with cute freckles on the nose')">🌟 Sí</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-top:8px">🐾 Personaje especial</div>
+    <div class="field">
+      <label class="label">¿Quién le acompaña?</label>
+      <input class="input" id="personaje" placeholder="Ej: su perro Toby, un dragón azul, su gato Michi..." />
+    </div>
+
+    <div class="section-label">💫 La historia</div>
     <div class="field">
       <label class="label">Tema del cuento</label>
       <div class="themes">
@@ -157,13 +235,43 @@ body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--dar
       </div>
     </div>
 
+    <div class="section-label">🎨 Estilo de ilustración</div>
+    <div class="field">
+      <div class="style-grid">
+        <div class="style-card active" onclick="setEstilo(this,'Pixar CGI quality, 3D animation style, vibrant and detailed')">
+          <div class="style-icon">🎬</div>
+          <div class="style-name">Pixar</div>
+          <div class="style-desc">3D vivo y colorido</div>
+        </div>
+        <div class="style-card" onclick="setEstilo(this,'soft watercolor illustration style, delicate brushstrokes, pastel colors')">
+          <div class="style-icon">🎨</div>
+          <div class="style-name">Acuarela</div>
+          <div class="style-desc">Suave y soñador</div>
+        </div>
+        <div class="style-card" onclick="setEstilo(this,'comic book illustration style, bold outlines, flat colors, fun and dynamic')">
+          <div class="style-icon">💥</div>
+          <div class="style-name">Cómic</div>
+          <div class="style-desc">Dinámico y divertido</div>
+        </div>
+        <div class="style-card" onclick="setEstilo(this,'classic storybook illustration, detailed painted style, warm golden tones')">
+          <div class="style-icon">📖</div>
+          <div class="style-name">Clásico</div>
+          <div class="style-desc">Cuento tradicional</div>
+        </div>
+        <div class="style-card" onclick="setEstilo(this,'anime manga style illustration, expressive eyes, clean lines, Japanese animation')">
+          <div class="style-icon">⛩️</div>
+          <div class="style-name">Manga</div>
+          <div class="style-desc">Estilo japonés</div>
+        </div>
+      </div>
+    </div>
+
     <button class="btn-generate" id="btnGenerar" onclick="generar()">
       🦉 Crear mi cuento mágico
     </button>
   </div>
 </section>
 
-<!-- OVERLAY LOADING -->
 <div class="overlay" id="overlay">
   <div class="spinner">
     <div class="ring"></div>
@@ -171,10 +279,9 @@ body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--dar
     <div class="ring"></div>
   </div>
   <p class="loading-msg" id="loadingMsg">🦉 El búho está trabajando...</p>
-  <p class="loading-sub" id="loadingSub">Esto puede tardar unos minutos</p>
+  <p class="loading-sub">Esto puede tardar unos minutos</p>
 </div>
 
-<!-- BOOK -->
 <section class="book-section" id="bookSection">
   <div class="book-header">
     <div style="font-size:56px;margin-bottom:16px">📖</div>
@@ -195,8 +302,17 @@ body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--dar
 
 <script>
 let tema = 'la amistad';
+let estilo = 'Pixar CGI quality, 3D animation style, vibrant and detailed';
+let opciones = {
+  genero: 'niña',
+  tipopelo: 'straight',
+  gafas: 'without glasses',
+  pecas: '',
+  piel: 'light, fair skin',
+  pelo: 'bright blonde',
+  ojos: 'brown'
+};
 
-// Stars
 const starsEl = document.getElementById('stars');
 for(let i=0;i<60;i++){
   const s=document.createElement('div');
@@ -208,195 +324,138 @@ for(let i=0;i<60;i++){
 
 function scrollToForm(){ document.getElementById('crear').scrollIntoView({behavior:'smooth'}); }
 
-function setTema(btn, t){
+function updateEdad(v){
+  document.getElementById('edadDisplay').textContent = v;
+  const subs = {3:'Infantil — cuentos cortos y mágicos',4:'Infantil — cuentos cortos y mágicos',5:'Infantil — aventuras sencillas',6:'Primaria — aventuras y amistad',7:'Primaria — aventuras y amistad',8:'Primaria — misterio y humor',9:'Primaria — misterio y humor',10:'Primaria — historias con emoción',11:'Primaria — historias con emoción',12:'Secundaria — aventuras épicas',13:'Secundaria — aventuras épicas',14:'Secundaria — historias maduras',15:'Secundaria — historias maduras'};
+  document.getElementById('edadSub').textContent = subs[v]||'';
+}
+
+function setOpt(btn,key,val){
+  btn.closest('.btn-group').querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  opciones[key]=val;
+}
+
+function setColor(el,key,val){
+  el.closest('.color-group').querySelectorAll('.color-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  opciones[key]=val;
+}
+
+function setTema(btn,t){
   document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  tema = t;
+  tema=t;
+}
+
+function setEstilo(card,e){
+  document.querySelectorAll('.style-card').forEach(c=>c.classList.remove('active'));
+  card.classList.add('active');
+  estilo=e;
 }
 
 async function generar(){
-  const nombre = document.getElementById('nombre').value.trim();
-  const personaje = document.getElementById('personaje').value.trim();
-  if(!nombre || !personaje){ alert('Pon el nombre y el personaje especial'); return; }
-
+  const nombre=document.getElementById('nombre').value.trim();
+  const personaje=document.getElementById('personaje').value.trim();
+  if(!nombre||!personaje){alert('Pon el nombre y el personaje especial');return;}
   document.getElementById('overlay').classList.add('show');
-  document.getElementById('btnGenerar').disabled = true;
-  document.getElementById('bookSection').style.display = 'none';
-  document.getElementById('pagesContainer').innerHTML = '';
-  document.getElementById('endSection').style.display = 'none';
-
-  const datos = {
-    nombre,
-    edad: document.getElementById('edad').value,
-    pelo: document.getElementById('pelo').value,
-    ojos: document.getElementById('ojos').value,
-    piel: 'blanca',
-    personaje,
-    tema
-  };
-
+  document.getElementById('btnGenerar').disabled=true;
+  document.getElementById('bookSection').style.display='none';
+  document.getElementById('pagesContainer').innerHTML='';
+  document.getElementById('endSection').style.display='none';
+  const edad=document.getElementById('edad').value;
+  const datos={nombre,edad,tema,personaje,opciones,estilo};
   try {
-    const resp = await fetch('/generar-cuento', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(datos)
-    });
-
-    const reader = resp.body.getReader();
-    const decoder = new TextDecoder();
-
+    const resp=await fetch('/generar-cuento',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(datos)});
+    const reader=resp.body.getReader();
+    const decoder=new TextDecoder();
     while(true){
-      const {done, value} = await reader.read();
-      if(done) break;
-
-      const chunk = decoder.decode(value);
-      const lines = chunk.split('\n');
-
-      for(const line of lines){
-        if(!line.startsWith('data:')) continue;
-        try {
-          const data = JSON.parse(line.slice(5));
-          procesarEvento(data);
-        } catch(e){}
+      const {done,value}=await reader.read();
+      if(done)break;
+      for(const line of decoder.decode(value).split('\n')){
+        if(!line.startsWith('data:'))continue;
+        try{procesarEvento(JSON.parse(line.slice(5)));}catch(e){}
       }
     }
   } catch(e){
-    alert('Error: ' + e.message);
+    alert('Error: '+e.message);
     document.getElementById('overlay').classList.remove('show');
-    document.getElementById('btnGenerar').disabled = false;
+    document.getElementById('btnGenerar').disabled=false;
   }
 }
 
 function procesarEvento(data){
-  if(data.tipo === 'estado'){
-    document.getElementById('loadingMsg').textContent = data.mensaje;
-  }
-  else if(data.tipo === 'cuento'){
-    document.getElementById('bookTitle').textContent = data.titulo;
-    document.getElementById('bookDed').textContent = data.dedicatoria;
-    document.getElementById('bookSection').style.display = 'block';
+  if(data.tipo==='estado') document.getElementById('loadingMsg').textContent=data.mensaje;
+  else if(data.tipo==='cuento'){
+    document.getElementById('bookTitle').textContent=data.titulo;
+    document.getElementById('bookDed').textContent=data.dedicatoria;
+    document.getElementById('bookSection').style.display='block';
     document.getElementById('bookSection').scrollIntoView({behavior:'smooth'});
-  }
-  else if(data.tipo === 'imagen'){
-    const img = document.getElementById('coverImg');
-    img.src = data.url;
-    img.style.display = 'block';
-  }
-  else if(data.tipo === 'pagina'){
-    const container = document.getElementById('pagesContainer');
-    const page = document.createElement('div');
-    page.className = 'page';
-    page.innerHTML = `
-      <img class="page-img" src="${data.url}" alt="Página ${data.numero}" loading="lazy"/>
+  } else if(data.tipo==='imagen'){
+    const img=document.getElementById('coverImg');
+    img.src=data.url; img.style.display='block';
+  } else if(data.tipo==='pagina'){
+    const container=document.getElementById('pagesContainer');
+    const page=document.createElement('div');
+    page.className='page';
+    page.innerHTML=`<img class="page-img" src="${data.url}" alt="Página ${data.numero}" loading="lazy"/>
       <div class="page-body">
         <div class="page-num">Página ${data.numero}</div>
         <div class="page-title">${data.titulo}</div>
         <p class="page-text">${data.texto}</p>
       </div>`;
     container.appendChild(page);
-    setTimeout(()=>page.classList.add('visible'), 100);
-  }
-  else if(data.tipo === 'completado'){
+    setTimeout(()=>page.classList.add('visible'),100);
+  } else if(data.tipo==='completado'){
     document.getElementById('overlay').classList.remove('show');
-    document.getElementById('endSection').style.display = 'block';
-    document.getElementById('btnGenerar').disabled = false;
-  }
-  else if(data.tipo === 'error'){
+    document.getElementById('endSection').style.display='block';
+    document.getElementById('btnGenerar').disabled=false;
+  } else if(data.tipo==='error'){
     document.getElementById('overlay').classList.remove('show');
-    document.getElementById('btnGenerar').disabled = false;
-    alert('Error: ' + data.mensaje);
+    document.getElementById('btnGenerar').disabled=false;
+    alert('Error: '+data.mensaje);
   }
 }
 
 async function descargarPDF(){
-  const btn = document.getElementById('btnPdf');
-  btn.textContent = '⏳ Generando PDF...';
-  btn.disabled = true;
-
+  const btn=document.getElementById('btnPdf');
+  btn.textContent='⏳ Generando PDF...'; btn.disabled=true;
   try {
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
-    const pageW = 210, margin = 15;
-    const imgW = pageW - margin * 2;
-
-    const titulo = document.getElementById('bookTitle').textContent;
-    const ded = document.getElementById('bookDed').textContent;
-
-    // Portada con título y dedicatoria
-    pdf.setFont('helvetica','bold');
-    pdf.setFontSize(26);
-    pdf.setTextColor(58, 32, 112);
-    pdf.text(titulo, pageW/2, 40, {align:'center', maxWidth: imgW});
-
-    if(ded){
-      pdf.setFont('helvetica','italic');
-      pdf.setFontSize(13);
-      pdf.setTextColor(122, 106, 154);
-      pdf.text(ded, pageW/2, 56, {align:'center', maxWidth: imgW});
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const pageW=210,margin=15,imgW=pageW-margin*2;
+    const titulo=document.getElementById('bookTitle').textContent;
+    const ded=document.getElementById('bookDed').textContent;
+    pdf.setFont('helvetica','bold'); pdf.setFontSize(26); pdf.setTextColor(58,32,112);
+    pdf.text(titulo,pageW/2,40,{align:'center',maxWidth:imgW});
+    if(ded){ pdf.setFont('helvetica','italic'); pdf.setFontSize(13); pdf.setTextColor(122,106,154); pdf.text(ded,pageW/2,56,{align:'center',maxWidth:imgW}); }
+    const coverImg=document.getElementById('coverImg');
+    if(coverImg&&coverImg.src&&coverImg.style.display!=='none'){
+      try{ const d=await toBase64(coverImg.src); pdf.addImage(d,'JPEG',margin,68,imgW,imgW*1.2); }catch(e){}
     }
-
-    // Imagen de portada
-    const coverImg = document.getElementById('coverImg');
-    if(coverImg && coverImg.src && coverImg.style.display !== 'none'){
-      try {
-        const coverData = await toBase64(coverImg.src);
-        const coverH = imgW * 1.2;
-        pdf.addImage(coverData, 'JPEG', margin, 68, imgW, coverH);
-      } catch(e){ console.warn('Portada no cargada', e); }
-    }
-
-    // Páginas
-    const pages = document.querySelectorAll('.page');
-    for(const page of pages){
+    for(const page of document.querySelectorAll('.page')){
       pdf.addPage();
-      const img = page.querySelector('.page-img');
-      const num = page.querySelector('.page-num')?.textContent || '';
-      const tit = page.querySelector('.page-title')?.textContent || '';
-      const txt = page.querySelector('.page-text')?.textContent || '';
-
-      try {
-        const imgData = await toBase64(img.src);
-        const imgH = imgW * (2/3);
-        pdf.addImage(imgData, 'JPEG', margin, margin, imgW, imgH);
-
-        let y = margin + imgH + 10;
-
-        pdf.setFont('helvetica','bold');
-        pdf.setFontSize(9);
-        pdf.setTextColor(229, 168, 0);
-        pdf.text(num.toUpperCase(), margin, y); y += 7;
-
-        pdf.setFont('helvetica','italic');
-        pdf.setFontSize(16);
-        pdf.setTextColor(58, 32, 112);
-        pdf.text(tit, margin, y); y += 9;
-
-        pdf.setFont('helvetica','normal');
-        pdf.setFontSize(13);
-        pdf.setTextColor(58, 48, 80);
-        const lines = pdf.splitTextToSize(txt, imgW);
-        pdf.text(lines, margin, y);
-      } catch(e){ console.warn('Página no cargada', e); }
+      const img=page.querySelector('.page-img');
+      const num=page.querySelector('.page-num')?.textContent||'';
+      const tit=page.querySelector('.page-title')?.textContent||'';
+      const txt=page.querySelector('.page-text')?.textContent||'';
+      try{
+        const d=await toBase64(img.src); const h=imgW*(2/3);
+        pdf.addImage(d,'JPEG',margin,margin,imgW,h);
+        let y=margin+h+10;
+        pdf.setFont('helvetica','bold'); pdf.setFontSize(9); pdf.setTextColor(229,168,0); pdf.text(num.toUpperCase(),margin,y); y+=7;
+        pdf.setFont('helvetica','italic'); pdf.setFontSize(16); pdf.setTextColor(58,32,112); pdf.text(tit,margin,y); y+=9;
+        pdf.setFont('helvetica','normal'); pdf.setFontSize(13); pdf.setTextColor(58,48,80); pdf.text(pdf.splitTextToSize(txt,imgW),margin,y);
+      }catch(e){}
     }
-
-    pdf.save(`${titulo || 'cuento'}.pdf`);
-  } catch(e){
-    alert('Error generando PDF: ' + e.message);
-  }
-
-  btn.textContent = '📄 Descargar PDF';
-  btn.disabled = false;
+    pdf.save(`${titulo||'cuento'}.pdf`);
+  } catch(e){ alert('Error PDF: '+e.message); }
+  btn.textContent='📄 Descargar PDF'; btn.disabled=false;
 }
 
 async function toBase64(url){
-  const resp = await fetch(url);
-  const blob = await resp.blob();
-  return new Promise((res, rej) => {
-    const r = new FileReader();
-    r.onload = () => res(r.result);
-    r.onerror = rej;
-    r.readAsDataURL(blob);
-  });
+  const blob=await (await fetch(url)).blob();
+  return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(blob); });
 }
 </script>
 </body>

@@ -24,14 +24,12 @@ async function generarImagen(prompt, size, nombreArchivo) {
 
   const item = data.data[0];
   let imgBuffer;
-
   if (item.b64_json) {
     imgBuffer = Buffer.from(item.b64_json, 'base64');
   } else {
     const imgResp = await fetch(item.url);
     imgBuffer = Buffer.from(await imgResp.arrayBuffer());
   }
-
   const filePath = path.join('imagenes', nombreArchivo);
   fs.writeFileSync(filePath, imgBuffer);
   return `/imagenes/${nombreArchivo}`;
@@ -45,25 +43,46 @@ app.post('/generar-cuento', async (req, res) => {
   const send = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
 
   try {
-    const { nombre, edad, pelo, ojos, personaje, tema } = req.body;
+    const { nombre, edad, tema, personaje, opciones, estilo } = req.body;
     const id = Date.now();
+
+    const genero = opciones?.genero || 'protagonista';
+    const piel = opciones?.piel || 'light, fair skin';
+    const pelo = opciones?.pelo || 'brown';
+    const tipopelo = opciones?.tipopelo || 'straight';
+    const ojos = opciones?.ojos || 'brown';
+    const gafas = opciones?.gafas || 'without glasses';
+    const pecas = opciones?.pecas || '';
+    const estiloIlustracion = estilo || 'Pixar CGI quality, 3D animation style, vibrant and detailed';
+
+    // Descripción fija y consistente del protagonista — se usa IGUAL en todas las imágenes
+    const protagonistaDesc = `a ${edad}-year-old ${genero} named ${nombre} with ${tipopelo} ${pelo} hair, ${ojos} eyes, ${piel}, ${gafas}${pecas ? ', ' + pecas : ''}, wearing a yellow t-shirt and blue dungarees`;
+    const personajeDesc = `${personaje} (same friendly appearance and consistent colors in every illustration)`;
+    const estiloBase = `${estiloIlustracion}, family-friendly children's book illustration, cheerful and safe for children, warm lighting`;
 
     send({ tipo: 'estado', mensaje: '🦉 El búho está escribiendo el cuento...' });
 
     const anthropic = new Anthropic({ apiKey: ANTHROPIC_KEY });
+
+    // Adaptar el tono según la edad
+    const tonoEdad = edad <= 5 ? 'muy sencillo, frases cortas, vocabulario básico, máximo 2 frases por página' :
+                     edad <= 8 ? 'sencillo, frases cortas, aventuras y humor, 3-4 frases por página' :
+                     edad <= 11 ? 'intermedio, algo de misterio y emoción, 4-5 frases por página' :
+                                  'avanzado, trama más elaborada, personajes con profundidad, 5-6 frases por página';
 
     const msg = await anthropic.messages.create({
       model: 'claude-sonnet-4-5',
       max_tokens: 3000,
       messages: [{ role: 'user', content: `Eres autor experto de cuentos infantiles en español.
 Crea un cuento mágico con estas características:
-- Protagonista: ${nombre}, ${edad} años, pelo ${pelo}, ojos ${ojos}
+- Protagonista: ${nombre}, ${edad} años, ${genero}
 - Personaje especial: ${personaje}
 - Tema: ${tema}
+- Tono y nivel: ${tonoEdad}
 
 RESPONDE SOLO JSON sin texto antes ni después, sin backticks:
 {"titulo":"titulo poetico","dedicatoria":"dedicatoria emotiva para ${nombre}","paginas":[
-{"numero":1,"titulo":"titulo pagina","texto":"texto 3-4 frases","escena":"detailed scene in English for image"},
+{"numero":1,"titulo":"titulo pagina","texto":"texto adaptado a la edad","escena":"detailed scene in English for image generation"},
 {"numero":2,"titulo":"titulo","texto":"texto","escena":"scene"},
 {"numero":3,"titulo":"titulo","texto":"texto","escena":"scene"},
 {"numero":4,"titulo":"titulo","texto":"texto","escena":"scene"},
@@ -81,25 +100,11 @@ RESPONDE SOLO JSON sin texto antes ni después, sin backticks:
 
     send({ tipo: 'cuento', titulo: cuento.titulo, dedicatoria: cuento.dedicatoria });
 
-    // Descripción fija y consistente del protagonista y personaje secundario
-    // Se usa IGUAL en portada y en todas las páginas para mantener coherencia visual
-    const colorPelo = pelo.includes('rubio') ? 'bright blonde' :
-                      pelo.includes('castaño') ? 'brown' :
-                      pelo.includes('moreno') ? 'dark black' : 'red';
-    const colorOjos = ojos === 'marrones' ? 'brown' :
-                      ojos === 'azules' ? 'blue' :
-                      ojos === 'verdes' ? 'green' : 'dark';
-    const esLiso = pelo.includes('liso') ? 'straight' : 'curly';
-
-    const protagonistaDesc = `a ${edad}-year-old child named ${nombre} with ${esLiso} ${colorPelo} hair, ${colorOjos} eyes, wearing a yellow t-shirt and blue dungarees`;
-    const personajeDesc = `${personaje} (always drawn with the same friendly appearance, consistent colors and features across all illustrations)`;
-    const estiloBase = `Children's book illustration, Pixar CGI quality, warm soft lighting, vibrant colors, family-friendly, cheerful and safe for children`;
-
     // Portada
     send({ tipo: 'estado', mensaje: '🎨 Generando portada...' });
     try {
       const portadaUrl = await generarImagen(
-        `${estiloBase}. Book cover showing ${protagonistaDesc} hugging ${personajeDesc} in a magical glowing forest at sunset. Golden title text in Spanish: "${cuento.titulo}". Professional children's book cover layout.`,
+        `${estiloBase}. Book cover: ${protagonistaDesc} with ${personajeDesc} in a magical glowing forest at sunset. Spanish title text: "${cuento.titulo}". Professional children's book cover.`,
         '1024x1536',
         `portada_${id}.png`
       );
@@ -109,13 +114,13 @@ RESPONDE SOLO JSON sin texto antes ni después, sin backticks:
       send({ tipo: 'imagen', url: '' });
     }
 
-    // Páginas — si una imagen falla, el cuento continúa sin ella
+    // Páginas — si falla una imagen el cuento continúa
     for (const pag of cuento.paginas) {
       send({ tipo: 'estado', mensaje: `🎨 Generando ilustración página ${pag.numero}...` });
       let imgUrl = '';
       try {
         imgUrl = await generarImagen(
-          `${estiloBase}. ${protagonistaDesc} and ${personajeDesc}. Scene: ${pag.escena}. Horizontal format, magical atmosphere, same character designs as previous illustrations.`,
+          `${estiloBase}. Scene: ${pag.escena}. Characters: ${protagonistaDesc} and ${personajeDesc}. Horizontal format, magical atmosphere, consistent character design throughout the book.`,
           '1536x1024',
           `pag_${id}_${pag.numero}.png`
         );
