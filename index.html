@@ -4,6 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>El Cole Mágico — Cuentos únicos para tu peque</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -52,7 +53,6 @@ body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--dar
 .btn-generate:disabled { opacity:.5; cursor:not-allowed; }
 
 /* LOADING */
-.loading { display:none; text-align:center; padding:60px 24px; }
 .spinner { width:80px; height:80px; margin:0 auto 28px; position:relative; }
 .ring { position:absolute; inset:0; border-radius:50%; border:3px solid transparent; animation:spin var(--d) linear infinite; }
 .ring:nth-child(1) { border-top-color:var(--gold); --d:1.5s; }
@@ -71,7 +71,6 @@ body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--dar
 .page { background:white; border-radius:24px; overflow:hidden; margin-bottom:32px; box-shadow:0 4px 24px rgba(58,32,112,.08); opacity:0; transform:translateY(20px); transition:all .5s; }
 .page.visible { opacity:1; transform:translateY(0); }
 .page-img { width:100%; aspect-ratio:3/2; object-fit:cover; }
-.page-img.placeholder { background:linear-gradient(135deg,#e8e0ff,#f0ebff); display:flex; align-items:center; justify-content:center; font-size:48px; }
 .page-body { padding:28px 32px; }
 .page-num { font-size:11px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--gold-d); margin-bottom:6px; }
 .page-title { font-family:'Fraunces',serif; font-size:22px; font-style:italic; color:var(--purple); margin-bottom:12px; }
@@ -81,6 +80,7 @@ body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--dar
 .end-title { font-family:'Fraunces',serif; font-size:28px; color:var(--purple); margin-bottom:24px; }
 .btn-nuevo { background:var(--purple); color:white; font-family:'Fraunces',serif; font-weight:700; font-size:18px; padding:16px 40px; border-radius:50px; border:none; cursor:pointer; transition:all .25s; }
 .btn-nuevo:hover { background:var(--purple-l); transform:translateY(-2px); }
+.btn-nuevo:disabled { opacity:.5; cursor:not-allowed; }
 
 /* OVERLAY LOADING */
 .overlay { display:none; position:fixed; inset:0; background:linear-gradient(160deg,#1a0f30,#3a2070); z-index:100; flex-direction:column; align-items:center; justify-content:center; }
@@ -186,7 +186,10 @@ body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--dar
   <div class="end-section" id="endSection" style="display:none">
     <span class="end-icon">🌙</span>
     <h3 class="end-title">¡El cuento está listo!</h3>
-    <button class="btn-nuevo" onclick="location.reload()">✨ Crear otro cuento</button>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <button class="btn-nuevo" id="btnPdf" onclick="descargarPDF()">📄 Descargar PDF</button>
+      <button class="btn-nuevo" onclick="location.reload()" style="background:var(--purple-l)">✨ Crear otro cuento</button>
+    </div>
   </div>
 </section>
 
@@ -303,6 +306,97 @@ function procesarEvento(data){
     document.getElementById('btnGenerar').disabled = false;
     alert('Error: ' + data.mensaje);
   }
+}
+
+async function descargarPDF(){
+  const btn = document.getElementById('btnPdf');
+  btn.textContent = '⏳ Generando PDF...';
+  btn.disabled = true;
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+    const pageW = 210, margin = 15;
+    const imgW = pageW - margin * 2;
+
+    const titulo = document.getElementById('bookTitle').textContent;
+    const ded = document.getElementById('bookDed').textContent;
+
+    // Portada con título y dedicatoria
+    pdf.setFont('helvetica','bold');
+    pdf.setFontSize(26);
+    pdf.setTextColor(58, 32, 112);
+    pdf.text(titulo, pageW/2, 40, {align:'center', maxWidth: imgW});
+
+    if(ded){
+      pdf.setFont('helvetica','italic');
+      pdf.setFontSize(13);
+      pdf.setTextColor(122, 106, 154);
+      pdf.text(ded, pageW/2, 56, {align:'center', maxWidth: imgW});
+    }
+
+    // Imagen de portada
+    const coverImg = document.getElementById('coverImg');
+    if(coverImg && coverImg.src && coverImg.style.display !== 'none'){
+      try {
+        const coverData = await toBase64(coverImg.src);
+        const coverH = imgW * 1.2;
+        pdf.addImage(coverData, 'JPEG', margin, 68, imgW, coverH);
+      } catch(e){ console.warn('Portada no cargada', e); }
+    }
+
+    // Páginas
+    const pages = document.querySelectorAll('.page');
+    for(const page of pages){
+      pdf.addPage();
+      const img = page.querySelector('.page-img');
+      const num = page.querySelector('.page-num')?.textContent || '';
+      const tit = page.querySelector('.page-title')?.textContent || '';
+      const txt = page.querySelector('.page-text')?.textContent || '';
+
+      try {
+        const imgData = await toBase64(img.src);
+        const imgH = imgW * (2/3);
+        pdf.addImage(imgData, 'JPEG', margin, margin, imgW, imgH);
+
+        let y = margin + imgH + 10;
+
+        pdf.setFont('helvetica','bold');
+        pdf.setFontSize(9);
+        pdf.setTextColor(229, 168, 0);
+        pdf.text(num.toUpperCase(), margin, y); y += 7;
+
+        pdf.setFont('helvetica','italic');
+        pdf.setFontSize(16);
+        pdf.setTextColor(58, 32, 112);
+        pdf.text(tit, margin, y); y += 9;
+
+        pdf.setFont('helvetica','normal');
+        pdf.setFontSize(13);
+        pdf.setTextColor(58, 48, 80);
+        const lines = pdf.splitTextToSize(txt, imgW);
+        pdf.text(lines, margin, y);
+      } catch(e){ console.warn('Página no cargada', e); }
+    }
+
+    pdf.save(`${titulo || 'cuento'}.pdf`);
+  } catch(e){
+    alert('Error generando PDF: ' + e.message);
+  }
+
+  btn.textContent = '📄 Descargar PDF';
+  btn.disabled = false;
+}
+
+async function toBase64(url){
+  const resp = await fetch(url);
+  const blob = await resp.blob();
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = rej;
+    r.readAsDataURL(blob);
+  });
 }
 </script>
 </body>
