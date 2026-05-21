@@ -3,141 +3,117 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>El Cole Mágico — ¡El Verano Más Mágico!</title>
+<title>StoryOwl — ¡El Verano Más Mágico!</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root {
-  --purple: #3a2070;
-  --purple-l: #6b3fa8;
-  --gold: #f7c94b;
-  --gold-d: #e5a800;
-  --cream: #fffdf7;
-  --dark: #1a0f30;
-  --muted: #7a6a9a;
-  --orange: #f97316;
-  --orange-l: #fb923c;
-  --sky: #0ea5e9;
-}
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--dark); overflow-x:hidden; }
-
-.hero { min-height:100vh; background:linear-gradient(160deg,#0c1a2e 0%,#1e3a5f 40%,#7c3a00 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px 24px; text-align:center; position:relative; overflow:hidden; }
-.stars { position:absolute; inset:0; pointer-events:none; }
-.star { position:absolute; background:white; border-radius:50%; animation:twinkle var(--d) var(--dl) infinite alternate; }
-.sun { position:absolute; bottom:-60px; right:-60px; width:300px; height:300px; background:radial-gradient(circle,rgba(251,146,60,.4),transparent 70%); border-radius:50%; pointer-events:none; }
-.wave { position:absolute; bottom:0; left:0; right:0; height:80px; background:linear-gradient(to top,rgba(14,165,233,.3),transparent); pointer-events:none; }
-@keyframes twinkle { from{opacity:.1;transform:scale(.7)} to{opacity:.9;transform:scale(1.3)} }
-.beach-icon { font-size:80px; animation:float 3s ease-in-out infinite; filter:drop-shadow(0 0 30px rgba(249,115,22,.5)); margin-bottom:16px; }
-@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
-.hero h1 { font-family:'Fraunces',serif; font-size:clamp(36px,6vw,72px); font-weight:900; color:white; line-height:1; margin-bottom:12px; }
-.hero h1 em { font-style:italic; color:var(--orange-l); display:block; }
-.hero p { font-size:18px; color:rgba(255,255,255,.75); margin-bottom:40px; max-width:560px; }
-.btn-orange { background:linear-gradient(135deg,var(--orange),var(--orange-l)); color:white; font-family:'Fraunces',serif; font-weight:900; font-size:20px; padding:18px 48px; border-radius:50px; border:none; cursor:pointer; box-shadow:0 8px 40px rgba(249,115,22,.4); transition:all .25s; text-decoration:none; display:inline-block; }
-.btn-orange:hover { transform:translateY(-3px); box-shadow:0 14px 50px rgba(249,115,22,.5); }
-.badge { display:inline-block; background:rgba(249,115,22,.15); border:1px solid rgba(249,115,22,.3); color:var(--orange-l); font-size:12px; font-weight:800; letter-spacing:2px; text-transform:uppercase; padding:6px 16px; border-radius:20px; margin-bottom:24px; }
-.back-link { display:inline-flex; align-items:center; gap:8px; color:rgba(255,255,255,.5); font-size:14px; text-decoration:none; margin-top:24px; transition:color .2s; }
-.back-link:hover { color:white; }
-
-.form-section { padding:80px 24px; max-width:760px; margin:0 auto; }
-.form-title { font-family:'Fraunces',serif; font-size:38px; font-weight:900; color:var(--purple); text-align:center; margin-bottom:8px; }
-.form-title em { font-style:italic; color:var(--orange); }
-.form-sub { text-align:center; color:var(--muted); font-size:17px; margin-bottom:48px; }
-.form-card { background:white; border-radius:28px; padding:48px; box-shadow:0 8px 40px rgba(58,32,112,.1); }
-.section-label { font-weight:800; font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--purple); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
-.section-label::after { content:''; flex:1; height:1px; background:rgba(58,32,112,.1); }
-.field { margin-bottom:28px; }
-.label { display:block; font-weight:800; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--purple); margin-bottom:10px; }
-.input { width:100%; padding:14px 18px; border:2px solid rgba(58,32,112,.12); border-radius:14px; font-family:'Nunito',sans-serif; font-size:16px; color:var(--dark); background:var(--cream); outline:none; transition:border-color .2s; }
-.input:focus { border-color:var(--orange); }
-.input::placeholder { color:rgba(26,15,48,.3); }
-.btn-group { display:flex; flex-wrap:wrap; gap:10px; }
-.opt-btn { padding:10px 18px; border-radius:20px; border:2px solid rgba(58,32,112,.15); background:white; font-family:'Nunito',sans-serif; font-size:14px; font-weight:700; color:var(--muted); cursor:pointer; transition:all .2s; }
-.opt-btn:hover { border-color:var(--orange); color:var(--orange); }
-.opt-btn.active { background:var(--orange); border-color:var(--orange); color:white; }
-.color-group { display:flex; flex-wrap:wrap; gap:10px; }
-.color-btn { width:40px; height:40px; border-radius:50%; border:3px solid transparent; cursor:pointer; transition:all .2s; position:relative; }
-.color-btn:hover { transform:scale(1.1); }
-.color-btn.active { border-color:var(--orange); box-shadow:0 0 0 3px rgba(249,115,22,.2); transform:scale(1.15); }
-.color-btn .check { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:16px; opacity:0; }
-.color-btn.active .check { opacity:1; }
-.row2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-
-/* Selector de destino */
-.destino-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
-.destino-card { border:2px solid rgba(58,32,112,.12); border-radius:16px; padding:20px 12px; text-align:center; cursor:pointer; transition:all .2s; background:white; }
-.destino-card:hover { border-color:var(--orange); }
-.destino-card.active { border-color:var(--orange); background:rgba(249,115,22,.05); }
-.destino-card .d-icon { font-size:36px; margin-bottom:8px; }
-.destino-card .d-name { font-weight:800; font-size:14px; color:var(--dark); }
-.destino-card .d-desc { font-size:11px; color:var(--muted); margin-top:3px; }
-
-.style-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:12px; }
-.style-card { border:2px solid rgba(58,32,112,.12); border-radius:16px; padding:16px 12px; text-align:center; cursor:pointer; transition:all .2s; background:white; }
-.style-card:hover { border-color:var(--orange); }
-.style-card.active { border-color:var(--orange); background:rgba(249,115,22,.04); }
-.style-card .style-icon { font-size:32px; margin-bottom:8px; }
-.style-card .style-name { font-weight:800; font-size:13px; color:var(--dark); }
-.style-card .style-desc { font-size:11px; color:var(--muted); margin-top:3px; }
-.btn-generate { width:100%; padding:20px; background:linear-gradient(135deg,var(--orange-l),var(--orange)); color:white; font-family:'Fraunces',serif; font-size:22px; font-weight:900; border:none; border-radius:16px; cursor:pointer; margin-top:8px; box-shadow:0 8px 30px rgba(249,115,22,.3); transition:all .3s; }
-.btn-generate:hover:not(:disabled) { transform:translateY(-2px); }
-.btn-generate:disabled { opacity:.5; cursor:not-allowed; }
-
-.book-section { display:none; padding:60px 24px; max-width:700px; margin:0 auto; }
-.book-header { text-align:center; margin-bottom:48px; }
-.book-title { font-family:'Fraunces',serif; font-size:clamp(28px,5vw,52px); font-weight:900; color:var(--purple); line-height:1.1; margin-bottom:10px; }
-.book-ded { font-family:'Fraunces',serif; font-style:italic; font-size:18px; color:var(--muted); }
-.cover-img { width:100%; max-width:360px; border-radius:20px; box-shadow:0 20px 60px rgba(249,115,22,.25); display:block; margin:0 auto 48px; }
-.page { background:white; border-radius:24px; overflow:hidden; margin-bottom:32px; box-shadow:0 4px 24px rgba(58,32,112,.08); opacity:0; transform:translateY(20px); transition:all .5s; }
-.page.visible { opacity:1; transform:translateY(0); }
-.page-img { width:100%; aspect-ratio:2/3; object-fit:cover; }
-.page-body { padding:24px 28px 28px; background:linear-gradient(135deg,#fff8f0,#fffdf7); }
-.page-num { font-size:10px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--orange); margin-bottom:4px; }
-.page-title { font-family:'Fraunces',serif; font-size:20px; font-style:italic; color:var(--purple); margin-bottom:10px; }
-.page-text { font-size:16px; line-height:1.8; color:#3a3050; }
-.end-section { text-align:center; padding:40px 0 80px; }
-.end-icon { font-size:48px; margin-bottom:16px; display:block; }
-.end-title { font-family:'Fraunces',serif; font-size:28px; color:var(--purple); margin-bottom:24px; }
-.btn-nuevo { background:var(--purple); color:white; font-family:'Fraunces',serif; font-weight:700; font-size:18px; padding:16px 40px; border-radius:50px; border:none; cursor:pointer; transition:all .25s; }
-.btn-nuevo:hover { background:var(--purple-l); transform:translateY(-2px); }
-.btn-nuevo:disabled { opacity:.5; cursor:not-allowed; }
-.overlay { display:none; position:fixed; inset:0; background:linear-gradient(160deg,#0c1a2e,#1e3a5f); z-index:100; flex-direction:column; align-items:center; justify-content:center; }
-.overlay.show { display:flex; }
-.spinner { width:80px; height:80px; margin:0 auto 28px; position:relative; }
-.ring { position:absolute; inset:0; border-radius:50%; border:3px solid transparent; animation:spin var(--d) linear infinite; }
-.ring:nth-child(1) { border-top-color:var(--gold); --d:1.5s; }
-.ring:nth-child(2) { inset:10px; border-right-color:var(--orange-l); --d:2s; animation-direction:reverse; }
-.ring:nth-child(3) { inset:20px; border-bottom-color:rgba(255,255,255,.5); --d:1s; }
-@keyframes spin { to{transform:rotate(360deg)} }
-.loading-msg { font-family:'Fraunces',serif; font-size:22px; color:white; margin-bottom:8px; text-align:center; padding:0 24px; }
-.loading-sub { color:rgba(255,255,255,.6); font-size:15px; }
-@media(max-width:600px) { .row2{grid-template-columns:1fr} .form-card{padding:28px 20px} .style-grid{grid-template-columns:repeat(2,1fr)} .destino-grid{grid-template-columns:1fr} }
+:root{--purple:#3a2070;--purple-l:#6b3fa8;--gold:#f7c94b;--gold-d:#e5a800;--cream:#fffdf7;--dark:#1a0f30;--muted:#7a6a9a;--orange:#f97316;--orange-l:#fb923c;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--dark);overflow-x:hidden;}
+.hero{min-height:100vh;background:linear-gradient(160deg,#0c1a2e 0%,#1e3a5f 40%,#7c3a00 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;text-align:center;position:relative;overflow:hidden;}
+.stars{position:absolute;inset:0;pointer-events:none;}
+.star{position:absolute;background:white;border-radius:50%;animation:twinkle var(--d) var(--dl) infinite alternate;}
+.sun{position:absolute;bottom:-60px;right:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(251,146,60,.4),transparent 70%);border-radius:50%;pointer-events:none;}
+@keyframes twinkle{from{opacity:.1;transform:scale(.7)}to{opacity:.9;transform:scale(1.3)}}
+.beach-icon{font-size:80px;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 0 30px rgba(249,115,22,.5));margin-bottom:16px;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.hero h1{font-family:'Fraunces',serif;font-size:clamp(36px,6vw,72px);font-weight:900;color:white;line-height:1;margin-bottom:12px;}
+.hero h1 em{font-style:italic;color:var(--orange-l);display:block;}
+.hero p{font-size:18px;color:rgba(255,255,255,.75);margin-bottom:40px;max-width:560px;}
+.btn-orange{background:linear-gradient(135deg,var(--orange),var(--orange-l));color:white;font-family:'Fraunces',serif;font-weight:900;font-size:20px;padding:18px 48px;border-radius:50px;border:none;cursor:pointer;box-shadow:0 8px 40px rgba(249,115,22,.4);transition:all .25s;text-decoration:none;display:inline-block;}
+.btn-orange:hover{transform:translateY(-3px);}
+.badge{display:inline-block;background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.3);color:var(--orange-l);font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:6px 16px;border-radius:20px;margin-bottom:24px;}
+.back-link{display:inline-flex;align-items:center;gap:8px;color:rgba(255,255,255,.5);font-size:14px;text-decoration:none;margin-top:24px;transition:color .2s;}
+.back-link:hover{color:white;}
+.form-section{padding:80px 24px;max-width:760px;margin:0 auto;}
+.form-title{font-family:'Fraunces',serif;font-size:38px;font-weight:900;color:var(--purple);text-align:center;margin-bottom:8px;}
+.form-title em{font-style:italic;color:var(--orange);}
+.form-sub{text-align:center;color:var(--muted);font-size:17px;margin-bottom:48px;}
+.form-card{background:white;border-radius:28px;padding:48px;box-shadow:0 8px 40px rgba(58,32,112,.1);}
+.section-label{font-weight:800;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--purple);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.section-label::after{content:'';flex:1;height:1px;background:rgba(58,32,112,.1);}
+.field{margin-bottom:28px;}
+.label{display:block;font-weight:800;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--purple);margin-bottom:10px;}
+.input{width:100%;padding:14px 18px;border:2px solid rgba(58,32,112,.12);border-radius:14px;font-family:'Nunito',sans-serif;font-size:16px;color:var(--dark);background:var(--cream);outline:none;transition:border-color .2s;}
+.input:focus{border-color:var(--orange);}
+.input::placeholder{color:rgba(26,15,48,.3);}
+.btn-group{display:flex;flex-wrap:wrap;gap:10px;}
+.opt-btn{padding:10px 18px;border-radius:20px;border:2px solid rgba(58,32,112,.15);background:white;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s;}
+.opt-btn:hover{border-color:var(--orange);color:var(--orange);}
+.opt-btn.active{background:var(--orange);border-color:var(--orange);color:white;}
+.color-group{display:flex;flex-wrap:wrap;gap:10px;}
+.color-btn{width:40px;height:40px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:all .2s;position:relative;}
+.color-btn:hover{transform:scale(1.1);}
+.color-btn.active{border-color:var(--orange);box-shadow:0 0 0 3px rgba(249,115,22,.2);transform:scale(1.15);}
+.color-btn .check{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;opacity:0;}
+.color-btn.active .check{opacity:1;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.destino-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.destino-card{border:2px solid rgba(58,32,112,.12);border-radius:16px;padding:20px 12px;text-align:center;cursor:pointer;transition:all .2s;background:white;}
+.destino-card:hover{border-color:var(--orange);}
+.destino-card.active{border-color:var(--orange);background:rgba(249,115,22,.05);}
+.destino-card .d-icon{font-size:36px;margin-bottom:8px;}
+.destino-card .d-name{font-weight:800;font-size:14px;color:var(--dark);}
+.destino-card .d-desc{font-size:11px;color:var(--muted);margin-top:3px;}
+.style-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;}
+.style-card{border:2px solid rgba(58,32,112,.12);border-radius:16px;padding:16px 12px;text-align:center;cursor:pointer;transition:all .2s;background:white;}
+.style-card:hover{border-color:var(--orange);}
+.style-card.active{border-color:var(--orange);background:rgba(249,115,22,.04);}
+.style-card .style-icon{font-size:32px;margin-bottom:8px;}
+.style-card .style-name{font-weight:800;font-size:13px;color:var(--dark);}
+.style-card .style-desc{font-size:11px;color:var(--muted);margin-top:3px;}
+.btn-generate{width:100%;padding:20px;background:linear-gradient(135deg,var(--orange-l),var(--orange));color:white;font-family:'Fraunces',serif;font-size:22px;font-weight:900;border:none;border-radius:16px;cursor:pointer;margin-top:8px;box-shadow:0 8px 30px rgba(249,115,22,.3);transition:all .3s;}
+.btn-generate:hover:not(:disabled){transform:translateY(-2px);}
+.btn-generate:disabled{opacity:.5;cursor:not-allowed;}
+.book-section{display:none;padding:60px 24px;max-width:700px;margin:0 auto;}
+.book-header{text-align:center;margin-bottom:48px;}
+.book-title{font-family:'Fraunces',serif;font-size:clamp(28px,5vw,52px);font-weight:900;color:var(--purple);line-height:1.1;margin-bottom:10px;}
+.book-ded{font-family:'Fraunces',serif;font-style:italic;font-size:18px;color:var(--muted);}
+.cover-img{width:100%;max-width:360px;border-radius:20px;box-shadow:0 20px 60px rgba(249,115,22,.25);display:block;margin:0 auto 48px;}
+.page{background:white;border-radius:24px;overflow:hidden;margin-bottom:32px;box-shadow:0 4px 24px rgba(58,32,112,.08);opacity:0;transform:translateY(20px);transition:all .5s;}
+.page.visible{opacity:1;transform:translateY(0);}
+.page-img{width:100%;aspect-ratio:2/3;object-fit:cover;}
+.page-body{padding:24px 28px 28px;background:linear-gradient(135deg,#fff8f0,#fffdf7);}
+.page-num{font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--orange);margin-bottom:4px;}
+.page-title{font-family:'Fraunces',serif;font-size:20px;font-style:italic;color:var(--purple);margin-bottom:10px;}
+.page-text{font-size:16px;line-height:1.8;color:#3a3050;}
+.end-section{text-align:center;padding:40px 0 80px;}
+.end-icon{font-size:48px;margin-bottom:16px;display:block;}
+.end-title{font-family:'Fraunces',serif;font-size:28px;color:var(--purple);margin-bottom:24px;}
+.btn-nuevo{background:var(--purple);color:white;font-family:'Fraunces',serif;font-weight:700;font-size:18px;padding:16px 40px;border-radius:50px;border:none;cursor:pointer;transition:all .25s;}
+.btn-nuevo:hover{background:var(--purple-l);transform:translateY(-2px);}
+.btn-nuevo:disabled{opacity:.5;cursor:not-allowed;}
+.overlay{display:none!important;}
+@keyframes pageSlideIn{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+.page-live{animation:pageSlideIn 0.6s ease both;}
+.generating-indicator{display:flex;align-items:center;gap:10px;padding:16px 20px;background:rgba(249,115,22,.06);border-radius:12px;margin-bottom:16px;font-size:14px;color:#7a6a9a;border:1px solid rgba(249,115,22,.1);}
+.generating-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);animation:pulse 1s infinite;flex-shrink:0;}
+@keyframes pulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+#progress-bar{position:fixed;top:0;left:0;height:4px;width:0%;background:linear-gradient(90deg,var(--orange),var(--orange-l),var(--orange));background-size:200% 100%;animation:shimmer 2s infinite;z-index:9999;transition:width 0.5s ease;}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+#status-bar{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(12,26,46,.92);backdrop-filter:blur(12px);color:white;padding:12px 24px;border-radius:50px;font-size:14px;font-weight:700;z-index:9998;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);white-space:nowrap;}
+#status-bar .status-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);animation:pulse 1s infinite;flex-shrink:0;}
+@media(max-width:600px){.row2{grid-template-columns:1fr}.form-card{padding:28px 20px}.style-grid{grid-template-columns:repeat(2,1fr)}.destino-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-
 <section class="hero" id="hero">
   <div class="stars" id="stars"></div>
   <div class="sun"></div>
-  <div class="wave"></div>
   <div class="beach-icon">🏖️</div>
   <div class="badge">✨ Colección Especial</div>
   <h1>El verano<em>más mágico</em></h1>
   <p>Una historia única sobre el mejor verano de su vida — aventuras, risas y momentos que recordará para siempre</p>
   <a href="#crear" class="btn-orange" onclick="scrollToForm()">☀️ Crear mi cuento de verano</a>
-  <a href="/" class="back-link">← Volver al Cole Mágico</a>
+  <a href="/landing.html" class="back-link">← Volver a las colecciones</a>
 </section>
 
 <section class="form-section" id="crear">
   <h2 class="form-title">El cuento del <em>verano</em></h2>
   <p class="form-sub">Diseña al protagonista y elige dónde pasa el mejor verano de su vida</p>
   <div class="form-card">
-
     <div class="section-label">☀️ El protagonista</div>
-    <div class="field">
-      <label class="label">¿Cómo se llama?</label>
-      <input class="input" id="nombre" placeholder="Ej: Sofía, Lucas, Martina..." />
-    </div>
+    <div class="field"><label class="label">¿Cómo se llama?</label><input class="input" id="nombre" placeholder="Ej: Sofía, Lucas, Martina..."/></div>
     <div class="field">
       <label class="label">Es un...</label>
       <div class="btn-group">
@@ -202,94 +178,65 @@ body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--dar
         </div>
       </div>
     </div>
-
     <div class="section-label">🗺️ El destino</div>
     <div class="field">
       <label class="label">¿Dónde pasa el verano?</label>
       <div class="destino-grid">
         <div class="destino-card active" onclick="setDestino(this,'playa','the beach','sunny beach with golden sand, blue sea, waves, beach umbrella, colorful beach towels')">
-          <div class="d-icon">🏖️</div>
-          <div class="d-name">La playa</div>
-          <div class="d-desc">Arena, sol y olas</div>
+          <div class="d-icon">🏖️</div><div class="d-name">La playa</div><div class="d-desc">Arena, sol y olas</div>
         </div>
-        <div class="destino-card" onclick="setDestino(this,'piscina','the swimming pool','colorful swimming pool with water slides, pool floats, sunny summer day, garden with flowers')">
-          <div class="d-icon">🏊</div>
-          <div class="d-name">La piscina</div>
-          <div class="d-desc">Chapuzones y diversión</div>
+        <div class="destino-card" onclick="setDestino(this,'piscina','the swimming pool','colorful swimming pool with water slides, pool floats, sunny summer day')">
+          <div class="d-icon">🏊</div><div class="d-name">La piscina</div><div class="d-desc">Chapuzones y diversión</div>
         </div>
-        <div class="destino-card" onclick="setDestino(this,'montaña','the mountains','green mountains with pine trees, fresh air, mountain streams, wildflowers, blue sky')">
-          <div class="d-icon">⛰️</div>
-          <div class="d-name">La montaña</div>
-          <div class="d-desc">Naturaleza y aventura</div>
+        <div class="destino-card" onclick="setDestino(this,'montaña','the mountains','green mountains with pine trees, fresh air, mountain streams, wildflowers')">
+          <div class="d-icon">⛰️</div><div class="d-name">La montaña</div><div class="d-desc">Naturaleza y aventura</div>
         </div>
-        <div class="destino-card" onclick="setDestino(this,'pueblo','the village','charming small village with cobblestone streets, grandparents house, garden, summer flowers')">
-          <div class="d-icon">🏡</div>
-          <div class="d-name">El pueblo</div>
-          <div class="d-desc">Casa de los abuelos</div>
+        <div class="destino-card" onclick="setDestino(this,'pueblo','the village','charming small village, grandparents house, garden, summer flowers')">
+          <div class="d-icon">🏡</div><div class="d-name">El pueblo</div><div class="d-desc">Casa de los abuelos</div>
         </div>
-        <div class="destino-card" onclick="setDestino(this,'camping','the camping','camping site with colorful tents, campfire, forest, stars at night, nature sounds')">
-          <div class="d-icon">⛺</div>
-          <div class="d-name">Camping</div>
-          <div class="d-desc">Aventura en la natura</div>
+        <div class="destino-card" onclick="setDestino(this,'camping','the camping','camping site with colorful tents, campfire, forest, stars at night')">
+          <div class="d-icon">⛺</div><div class="d-name">Camping</div><div class="d-desc">Aventura en la natura</div>
         </div>
-        <div class="destino-card" onclick="setDestino(this,'ciudad','an exciting city','exciting city with parks, fountains, colorful markets, museums, street performers')">
-          <div class="d-icon">🌆</div>
-          <div class="d-name">Ciudad</div>
-          <div class="d-desc">Explorar y descubrir</div>
+        <div class="destino-card" onclick="setDestino(this,'ciudad','an exciting city','exciting city with parks, fountains, colorful markets, street performers')">
+          <div class="d-icon">🌆</div><div class="d-name">Ciudad</div><div class="d-desc">Explorar y descubrir</div>
         </div>
       </div>
     </div>
-
     <div class="section-label">🐾 Compañero de aventuras</div>
-    <div class="field">
-      <label class="label">¿Quién le acompaña?</label>
-      <input class="input" id="personaje" placeholder="Ej: su perro Toby, su prima Luna, un delfín mágico..." />
-    </div>
-
+    <div class="field"><label class="label">¿Quién le acompaña?</label><input class="input" id="personaje" placeholder="Ej: su perro Toby, su prima Luna, un delfín mágico..."/></div>
     <div class="section-label">🎨 Estilo de ilustración</div>
     <div class="field">
       <div class="style-grid">
         <div class="style-card active" onclick="setEstilo(this,'Pixar CGI quality, 3D animation style, vibrant and detailed')">
-          <div class="style-icon">🎬</div>
-          <div class="style-name">Pixar</div>
-          <div class="style-desc">3D vivo y colorido</div>
+          <div class="style-icon">🎬</div><div class="style-name">Pixar</div><div class="style-desc">3D vivo y colorido</div>
         </div>
         <div class="style-card" onclick="setEstilo(this,'soft watercolor illustration style, delicate brushstrokes, pastel colors')">
-          <div class="style-icon">🎨</div>
-          <div class="style-name">Acuarela</div>
-          <div class="style-desc">Suave y soñador</div>
+          <div class="style-icon">🎨</div><div class="style-name">Acuarela</div><div class="style-desc">Suave y soñador</div>
         </div>
         <div class="style-card" onclick="setEstilo(this,'comic book illustration style, bold outlines, flat colors, fun and dynamic')">
-          <div class="style-icon">💥</div>
-          <div class="style-name">Cómic</div>
-          <div class="style-desc">Dinámico y divertido</div>
+          <div class="style-icon">💥</div><div class="style-name">Cómic</div><div class="style-desc">Dinámico y divertido</div>
         </div>
         <div class="style-card" onclick="setEstilo(this,'classic storybook illustration, detailed painted style, warm golden tones')">
-          <div class="style-icon">📖</div>
-          <div class="style-name">Clásico</div>
-          <div class="style-desc">Cuento tradicional</div>
+          <div class="style-icon">📖</div><div class="style-name">Clásico</div><div class="style-desc">Cuento tradicional</div>
         </div>
         <div class="style-card" onclick="setEstilo(this,'anime manga style illustration, expressive eyes, clean lines, Japanese animation')">
-          <div class="style-icon">⛩️</div>
-          <div class="style-name">Manga</div>
-          <div class="style-desc">Estilo japonés</div>
+          <div class="style-icon">⛩️</div><div class="style-name">Manga</div><div class="style-desc">Estilo japonés</div>
         </div>
       </div>
     </div>
-
-    <button class="btn-generate" id="btnGenerar" onclick="generar()">
-      ☀️ ¡Crear el cuento de verano!
-    </button>
+    <div class="section-label" style="margin-top:8px">💌 Dedicatoria personal</div>
+    <div class="field">
+      <label class="label">Escribe unas palabras para tu peque <span style="color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none;font-size:11px">(opcional — si lo dejas en blanco quedará un espacio para escribir a mano)</span></label>
+      <textarea class="input" id="dedicatoriaPersonal" rows="3" placeholder="Ej: Para mi niña Sofía, que llena nuestra vida de magia. Con todo nuestro amor, mamá y papá" style="resize:vertical;font-family:inherit;"></textarea>
+    </div>
+    <button class="btn-generate" id="btnGenerar" onclick="generar()">☀️ ¡Crear el cuento de verano!</button>
   </div>
+  <div id="dedicatoriaPersonalTexto" style="display:none"></div>
+  <div id="nombreFinalTexto" style="display:none"></div>
+  <div id="fechaFinalTexto" style="display:none"></div>
 </section>
 
-<div class="overlay" id="overlay">
-  <div class="spinner">
-    <div class="ring"></div><div class="ring"></div><div class="ring"></div>
-  </div>
-  <p class="loading-msg" id="loadingMsg">☀️ Preparando el mejor verano...</p>
-  <p class="loading-sub">Esto puede tardar unos minutos</p>
-</div>
+<div class="overlay" id="overlay"></div>
 
 <section class="book-section" id="bookSection">
   <div class="book-header">
@@ -310,128 +257,199 @@ body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--dar
 </section>
 
 <script>
-let estilo = 'Pixar CGI quality, 3D animation style, vibrant and detailed';
-let destinoId = 'playa';
-let destinoNombre = 'la playa';
-let destinoDesc = 'sunny beach with golden sand, blue sea, waves, beach umbrella, colorful beach towels';
-let opciones = { genero:'niña', tipopelo:'straight', gafas:'without glasses', pecas:'', piel:'light, fair skin', pelo:'bright blonde', ojos:'brown' };
+let estilo='Pixar CGI quality, 3D animation style, vibrant and detailed';
+let destinoId='playa',destinoNombre='the beach',destinoDesc='sunny beach with golden sand, blue sea, waves, beach umbrella, colorful beach towels';
+let opciones={genero:'niña',tipopelo:'straight',gafas:'without glasses',pecas:'',piel:'light, fair skin',pelo:'bright blonde',ojos:'brown'};
 
-const starsEl = document.getElementById('stars');
-for(let i=0;i<60;i++){
-  const s=document.createElement('div'); s.className='star';
-  const sz=Math.random()*2.5+.5;
-  s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${Math.random()*3+1.5}s;--dl:${Math.random()*3}s;`;
-  starsEl.appendChild(s);
-}
+const starsEl=document.getElementById('stars');
+for(let i=0;i<60;i++){const s=document.createElement('div');s.className='star';const sz=Math.random()*2.5+.5;s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${Math.random()*3+1.5}s;--dl:${Math.random()*3}s;`;starsEl.appendChild(s);}
 
-function scrollToForm(){ document.getElementById('crear').scrollIntoView({behavior:'smooth'}); }
-function setOpt(btn,key,val){ btn.closest('.btn-group').querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); opciones[key]=val; }
-function setColor(el,key,val){ el.closest('.color-group').querySelectorAll('.color-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); opciones[key]=val; }
-function setEstilo(card,e){ document.querySelectorAll('.style-card').forEach(c=>c.classList.remove('active')); card.classList.add('active'); estilo=e; }
-function setDestino(card,id,nombre,desc){
-  document.querySelectorAll('.destino-card').forEach(c=>c.classList.remove('active'));
-  card.classList.add('active');
-  destinoId=id; destinoNombre=nombre; destinoDesc=desc;
+function scrollToForm(){document.getElementById('crear').scrollIntoView({behavior:'smooth'});}
+function setOpt(btn,key,val){btn.closest('.btn-group').querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');opciones[key]=val;}
+function setColor(el,key,val){el.closest('.color-group').querySelectorAll('.color-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');opciones[key]=val;}
+function setEstilo(card,e){document.querySelectorAll('.style-card').forEach(c=>c.classList.remove('active'));card.classList.add('active');estilo=e;}
+function setDestino(card,id,nombre,desc){document.querySelectorAll('.destino-card').forEach(c=>c.classList.remove('active'));card.classList.add('active');destinoId=id;destinoNombre=nombre;destinoDesc=desc;}
+
+function crearProgreso(){
+  let b=document.getElementById('progress-bar');
+  if(!b){b=document.createElement('div');b.id='progress-bar';document.body.appendChild(b);}
+  let s=document.getElementById('status-bar');
+  if(!s){s=document.createElement('div');s.id='status-bar';s.innerHTML='<div class="status-dot"></div><span id="status-text">☀️ Preparando el mejor verano...</span>';document.body.appendChild(s);}
 }
+function actualizarProgreso(n,total){const b=document.getElementById('progress-bar');if(b)b.style.width=Math.round((n/(total+2))*100)+'%';}
+function actualizarStatus(msg){const t=document.getElementById('status-text');if(t)t.textContent=msg;}
+function mostrarIndicador(n,total){
+  const c=document.getElementById('pagesContainer');if(!c)return;
+  const old=document.getElementById('gen-ind');if(old)old.remove();
+  const d=document.createElement('div');d.id='gen-ind';d.className='generating-indicator';
+  d.innerHTML=`<div class="generating-dot"></div><span>✨ Creando ilustración ${n} de ${total}...</span>`;
+  c.appendChild(d);d.scrollIntoView({behavior:'smooth',block:'end'});
+}
+function quitarIndicador(){const d=document.getElementById('gen-ind');if(d)d.remove();}
 
 async function generar(){
   const nombre=document.getElementById('nombre').value.trim();
   const personaje=document.getElementById('personaje').value.trim();
   if(!nombre||!personaje){alert('Pon el nombre y el compañero de aventuras');return;}
-  document.getElementById('overlay').classList.add('show');
   document.getElementById('btnGenerar').disabled=true;
   document.getElementById('bookSection').style.display='none';
   document.getElementById('pagesContainer').innerHTML='';
   document.getElementById('endSection').style.display='none';
-  try {
-    const resp=await fetch('/generar-verano',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre,personaje,destinoId,destinoNombre,destinoDesc,opciones,estilo})});
-    const reader=resp.body.getReader();
-    const decoder=new TextDecoder();
-    while(true){
-      const {done,value}=await reader.read();
-      if(done)break;
-      for(const line of decoder.decode(value).split('\n')){
-        if(!line.startsWith('data:'))continue;
-        try{procesarEvento(JSON.parse(line.slice(5)));}catch(e){}
-      }
+  const coverImg=document.getElementById('coverImg');coverImg.src='';coverImg.style.display='none';
+  crearProgreso();
+  try{
+    const resp=await fetch('/generar-verano',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre,personaje,destinoId,destinoNombre,destinoDesc,opciones,estilo,dedicatoriaPersonal:document.getElementById('dedicatoriaPersonal')?.value||''})});
+    const reader=resp.body.getReader();const decoder=new TextDecoder();
+    while(true){const{done,value}=await reader.read();if(done)break;
+      for(const line of decoder.decode(value).split('\n')){if(!line.startsWith('data:'))continue;try{procesarEvento(JSON.parse(line.slice(5)));}catch(e){}}
     }
-  } catch(e){
-    alert('Error: '+e.message);
-    document.getElementById('overlay').classList.remove('show');
-    document.getElementById('btnGenerar').disabled=false;
+  }catch(e){
+    const sb=document.getElementById('status-bar');if(sb)sb.remove();
+    const pb=document.getElementById('progress-bar');if(pb)pb.remove();
+    document.getElementById('btnGenerar').disabled=false;alert('Error: '+e.message);
   }
 }
 
+const TOTAL=16;
 function procesarEvento(data){
-  if(data.tipo==='estado') document.getElementById('loadingMsg').textContent=data.mensaje;
+  if(data.tipo==='estado'){actualizarStatus(data.mensaje);document.getElementById('bookSection').style.display='block';}
   else if(data.tipo==='cuento'){
     document.getElementById('bookTitle').textContent=data.titulo;
     document.getElementById('bookDed').textContent=data.dedicatoria;
     document.getElementById('bookSection').style.display='block';
     document.getElementById('bookSection').scrollIntoView({behavior:'smooth'});
+    actualizarProgreso(1,TOTAL);mostrarIndicador(1,TOTAL);
   } else if(data.tipo==='imagen'){
-    const img=document.getElementById('coverImg'); img.src=data.url; img.style.display='block';
+    const img=document.getElementById('coverImg');img.src=data.url;img.style.display='block';
+    actualizarProgreso(2,TOTAL);
   } else if(data.tipo==='pagina'){
+    quitarIndicador();
     const container=document.getElementById('pagesContainer');
-    const page=document.createElement('div'); page.className='page';
+    const page=document.createElement('div');page.className='page page-live';
     page.innerHTML=`<img class="page-img" src="${data.url}" alt="Página ${data.numero}" loading="lazy"/>
-      <div class="page-body">
-        <div class="page-num">Página ${data.numero}</div>
-        <div class="page-title">${data.titulo}</div>
-        <p class="page-text">${data.texto}</p>
-      </div>`;
-    container.appendChild(page);
-    setTimeout(()=>page.classList.add('visible'),100);
+      <div class="page-body"><div class="page-num">Página ${data.numero}</div><div class="page-title">${data.titulo}</div><p class="page-text">${data.texto}</p></div>`;
+    container.appendChild(page);setTimeout(()=>page.classList.add('visible'),50);
+    actualizarProgreso(data.numero+2,TOTAL);
+    if(data.numero<TOTAL)mostrarIndicador(data.numero+1,TOTAL);
+    page.scrollIntoView({behavior:'smooth',block:'end'});
   } else if(data.tipo==='completado'){
-    document.getElementById('overlay').classList.remove('show');
+    quitarIndicador();
+    if(data.dedicatoriaPersonal!==undefined){
+      const dt=document.getElementById('dedicatoriaPersonalTexto');
+      const nt=document.getElementById('nombreFinalTexto');
+      const ft=document.getElementById('fechaFinalTexto');
+      if(dt)dt.textContent=data.dedicatoriaPersonal||'';
+      if(nt)nt.textContent=data.nombre||'';
+      if(ft)ft.textContent=data.fecha||'';
+    }
+    const pb=document.getElementById('progress-bar');if(pb){pb.style.width='100%';setTimeout(()=>{pb.style.opacity='0';},1000);}
+    const sb=document.getElementById('status-bar');if(sb){sb.style.opacity='0';setTimeout(()=>sb.remove(),500);}
     document.getElementById('endSection').style.display='block';
+    document.getElementById('endSection').scrollIntoView({behavior:'smooth'});
     document.getElementById('btnGenerar').disabled=false;
   } else if(data.tipo==='error'){
-    document.getElementById('overlay').classList.remove('show');
-    document.getElementById('btnGenerar').disabled=false;
-    alert('Error: '+data.mensaje);
+    quitarIndicador();
+    const sb=document.getElementById('status-bar');if(sb)sb.remove();
+    const pb=document.getElementById('progress-bar');if(pb)pb.remove();
+    document.getElementById('btnGenerar').disabled=false;alert('Error: '+data.mensaje);
   }
 }
 
 async function descargarPDF(){
   const btn=document.getElementById('btnPdf');
-  btn.textContent='⏳ Generando PDF...'; btn.disabled=true;
-  try {
-    const {jsPDF}=window.jspdf;
+  btn.textContent='⏳ Generando PDF...';btn.disabled=true;
+  try{
+    const{jsPDF}=window.jspdf;
     const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
     const W=210,H=297;
     const titulo=document.getElementById('bookTitle').textContent;
     const ded=document.getElementById('bookDed').textContent;
+    const dedPersonal=document.getElementById('dedicatoriaPersonalTexto')?.textContent||'';
+    const nombreFinal=document.getElementById('nombreFinalTexto')?.textContent||'';
+    const fechaFinal=document.getElementById('fechaFinalTexto')?.textContent||'';
+
+    // PÁGINA 1 — DEDICATORIA
+    pdf.setFillColor(13,8,32);pdf.rect(0,0,W,H,'F');
+    [[30,40],[180,30],[15,150],[195,200],[100,20],[50,270],[160,260]].forEach(([x,y])=>{pdf.setFillColor(247,201,75);pdf.circle(x,y,0.8,'F');});
+    [[60,80],[140,60],[20,200],[190,180],[80,250],[150,240]].forEach(([x,y])=>{pdf.setFillColor(255,255,255);pdf.circle(x,y,0.5,'F');});
+    pdf.setFont('helvetica','bold');pdf.setFontSize(11);pdf.setTextColor(247,201,75);
+    pdf.text('StoryOwl',W/2,25,{align:'center'});
+    pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.5);pdf.line(60,35,150,35);
+    pdf.setFont('helvetica','italic');pdf.setFontSize(14);pdf.setTextColor(155,111,216);
+    pdf.text('Para',W/2,70,{align:'center'});
+    pdf.setFont('helvetica','bold');pdf.setFontSize(36);pdf.setTextColor(247,201,75);
+    pdf.text(nombreFinal||'',W/2,95,{align:'center'});
+    pdf.setDrawColor(107,63,168);pdf.setLineWidth(0.3);pdf.line(50,105,160,105);
+    if(dedPersonal&&dedPersonal.trim()){
+      pdf.setFont('helvetica','italic');pdf.setFontSize(14);pdf.setTextColor(210,190,255);
+      const lineas=pdf.splitTextToSize(dedPersonal,160);
+      let y=130;lineas.forEach(l=>{pdf.text(l,W/2,y,{align:'center'});y+=9;});
+    } else {
+      pdf.setDrawColor(107,63,168);pdf.setLineWidth(0.2);
+      [140,160,180,200].forEach(y=>{pdf.line(40,y,170,y);});
+      pdf.setFont('helvetica','italic');pdf.setFontSize(9);pdf.setTextColor(107,63,168);
+      pdf.text('Escribe aquí tu dedicatoria',W/2,215,{align:'center'});
+    }
+    pdf.setFont('helvetica','normal');pdf.setFontSize(20);pdf.setTextColor(233,30,140);
+    pdf.text('♥',W/2,260,{align:'center'});
+    pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.5);pdf.line(60,270,150,270);
+
+    // PORTADA
+    pdf.addPage();
     const coverImg=document.getElementById('coverImg');
     if(coverImg&&coverImg.src&&coverImg.style.display!=='none'){
-      try{ const d=await toBase64(coverImg.src); pdf.addImage(d,'JPEG',0,0,W,H); }catch(e){}
+      try{const d=await toBase64(coverImg.src);pdf.addImage(d,'JPEG',0,0,W,H);}catch(e){}
     }
-    pdf.setFillColor(12,26,46); pdf.rect(0,210,W,87,'F');
-    pdf.setFont('helvetica','bold'); pdf.setFontSize(22); pdf.setTextColor(249,115,22);
-    pdf.text(titulo,W/2,232,{align:'center',maxWidth:180});
-    if(ded){ pdf.setFont('helvetica','italic'); pdf.setFontSize(11); pdf.setTextColor(255,200,150); pdf.text(pdf.splitTextToSize(ded,170),W/2,248,{align:'center'}); }
+    pdf.setFillColor(26,15,48);pdf.rect(0,220,W,77,'F');
+    pdf.setFont('helvetica','bold');pdf.setFontSize(20);pdf.setTextColor(247,201,75);
+    pdf.text(titulo,W/2,238,{align:'center',maxWidth:180});
+    if(ded){pdf.setFont('helvetica','italic');pdf.setFontSize(11);pdf.setTextColor(200,180,255);pdf.text(pdf.splitTextToSize(ded,170),W/2,252,{align:'center'});}
+
+    // PÁGINAS INTERIORES
     for(const page of document.querySelectorAll('.page')){
       pdf.addPage();
       const img=page.querySelector('.page-img');
       const num=page.querySelector('.page-num')?.textContent||'';
       const tit=page.querySelector('.page-title')?.textContent||'';
       const txt=page.querySelector('.page-text')?.textContent||'';
-      try{ const d=await toBase64(img.src); pdf.addImage(d,'JPEG',0,0,W,198); }catch(e){ pdf.setFillColor(255,248,240); pdf.rect(0,0,W,198,'F'); }
-      pdf.setFillColor(12,26,46); pdf.rect(0,195,W,102,'F');
-      pdf.setDrawColor(249,115,22); pdf.setLineWidth(0.8); pdf.line(15,200,195,200);
-      pdf.setFont('helvetica','bold'); pdf.setFontSize(9); pdf.setTextColor(249,115,22); pdf.text(num.toUpperCase(),15,210);
-      pdf.setFont('helvetica','italic'); pdf.setFontSize(18); pdf.setTextColor(255,200,150); pdf.text(tit,15,222,{maxWidth:180});
-      pdf.setFont('helvetica','normal'); pdf.setFontSize(13); pdf.setTextColor(240,235,255); pdf.text(pdf.splitTextToSize(txt,180),15,235);
-      pdf.setFontSize(9); pdf.setTextColor(180,140,100); pdf.text(num.replace('PÁGINA ',''),W/2,290,{align:'center'});
+      try{const d=await toBase64(img.src);pdf.addImage(d,'JPEG',0,0,W,196);}
+      catch(e){pdf.setFillColor(240,235,255);pdf.rect(0,0,W,196,'F');}
+      pdf.setFillColor(26,15,48);pdf.rect(0,196,W,101,'F');
+      pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.6);pdf.line(15,202,195,202);
+      pdf.setFont('helvetica','bold');pdf.setFontSize(8);pdf.setTextColor(247,201,75);pdf.text(num.toUpperCase(),15,210);
+      pdf.setFont('helvetica','italic');pdf.setFontSize(16);pdf.setTextColor(210,190,255);pdf.text(tit,15,221,{maxWidth:180});
+      pdf.setFont('helvetica','normal');pdf.setFontSize(12);pdf.setTextColor(235,230,255);pdf.text(pdf.splitTextToSize(txt,180).slice(0,5),15,233);
+      pdf.setFontSize(8);pdf.setTextColor(100,80,150);pdf.text(num.replace('PÁGINA ',''),W/2,289,{align:'center'});
     }
-    pdf.save(`${titulo||'verano'}.pdf`);
-  } catch(e){ alert('Error PDF: '+e.message); }
-  btn.textContent='📄 Descargar PDF'; btn.disabled=false;
+
+    // PÁGINA FINAL — COLOFÓN
+    pdf.addPage();
+    pdf.setFillColor(13,8,32);pdf.rect(0,0,W,H,'F');
+    [[30,40],[180,30],[15,150],[195,200],[100,20],[50,270],[160,260],[80,120],[140,180]].forEach(([x,y])=>{pdf.setFillColor(247,201,75);pdf.circle(x,y,0.6,'F');});
+    pdf.setFont('helvetica','bold');pdf.setFontSize(22);pdf.setTextColor(247,201,75);pdf.text('StoryOwl',W/2,115,{align:'center'});
+    pdf.setDrawColor(107,63,168);pdf.setLineWidth(0.4);pdf.line(70,123,140,123);
+    pdf.setFont('helvetica','italic');pdf.setFontSize(12);pdf.setTextColor(155,111,216);pdf.text('Cuentos únicos para tu peque',W/2,135,{align:'center'});
+    pdf.setFont('helvetica','normal');pdf.setFontSize(11);pdf.setTextColor(200,180,255);pdf.text('Este cuento fue creado especialmente para',W/2,168,{align:'center'});
+    pdf.setFont('helvetica','bold');pdf.setFontSize(20);pdf.setTextColor(247,201,75);pdf.text(nombreFinal||'',W/2,185,{align:'center'});
+    pdf.setFont('helvetica','normal');pdf.setFontSize(10);pdf.setTextColor(155,111,216);pdf.text('el '+fechaFinal,W/2,197,{align:'center'});
+    pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.4);pdf.line(60,207,150,207);
+    pdf.setFont('helvetica','italic');pdf.setFontSize(11);pdf.setTextColor(210,190,255);
+    pdf.text('Una historia única en el mundo, igual que tú.',W/2,222,{align:'center'});
+    pdf.setFont('helvetica','bold');pdf.setFontSize(9);pdf.setTextColor(107,63,168);pdf.text('storyowl.com',W/2,260,{align:'center'});
+
+    pdf.save((titulo||'cuento')+'.pdf');
+  }catch(e){alert('Error PDF: '+e.message);}
+  btn.textContent='📄 Descargar PDF';btn.disabled=false;
 }
 
 async function toBase64(url){
-  const blob=await (await fetch(url)).blob();
-  return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(blob); });
+  const blob=await(await fetch(url)).blob();
+  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob);});
+}
+
+async function toBase64(url){
+  const blob=await(await fetch(url)).blob();
+  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob);});
 }
 </script>
 </body>

@@ -43,7 +43,7 @@ app.post('/generar-cuento', async (req, res) => {
   const send = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
 
   try {
-    const { nombre, edad, tema, personaje, opciones, estilo } = req.body;
+    const { nombre, edad, tema, personaje, opciones, estilo, dedicatoriaPersonal } = req.body;
     const id = Date.now();
 
     const genero = opciones?.genero || 'protagonista';
@@ -153,7 +153,7 @@ RESPONDE SOLO JSON sin texto antes ni después, sin backticks:
       send({ tipo: 'pagina', numero: pag.numero, titulo: pag.titulo, texto: pag.texto, url: imgUrl });
     }
 
-    send({ tipo: 'completado' });
+    send({ tipo: 'completado', dedicatoriaPersonal: dedicatoriaPersonal || '', nombre, fecha: new Date().toLocaleDateString('es-ES', {day:'numeric', month:'long', year:'numeric'}) });
     res.end();
 
   } catch (err) {
@@ -196,7 +196,7 @@ app.post('/generar-cumple', async (req, res) => {
   const send = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
 
   try {
-    const { nombre, edad, personaje, opciones, estilo } = req.body;
+    const { nombre, edad, personaje, opciones, estilo, dedicatoriaPersonal } = req.body;
     const id = Date.now();
 
     const genero = opciones?.genero || 'niño';
@@ -280,7 +280,7 @@ Responde SOLO JSON sin backticks: {"titulo":"...","dedicatoria":"..."}` }]
       send({ tipo: 'pagina', numero: escena.numero, titulo: escena.titulo, texto, url: imgUrl });
     }
 
-    send({ tipo: 'completado' });
+    send({ tipo: 'completado', dedicatoriaPersonal: dedicatoriaPersonal || '', nombre, fecha: new Date().toLocaleDateString('es-ES', {day:'numeric', month:'long', year:'numeric'}) });
     res.end();
 
   } catch(err) {
@@ -320,7 +320,7 @@ app.post('/generar-diente', async (req, res) => {
   const send = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
 
   try {
-    const { nombre, visitanteId, visitanteNombre, visitanteDesc, opciones, estilo } = req.body;
+    const { nombre, visitanteId, visitanteNombre, visitanteDesc, opciones, estilo, dedicatoriaPersonal } = req.body;
     const id = Date.now();
 
     const genero = opciones?.genero || 'niño';
@@ -393,7 +393,7 @@ Responde SOLO JSON sin backticks: {"titulo":"...","dedicatoria":"..."}` }]
       send({ tipo: 'pagina', numero: escena.numero, titulo: escena.titulo, texto, url: imgUrl });
     }
 
-    send({ tipo: 'completado' });
+    send({ tipo: 'completado', dedicatoriaPersonal: dedicatoriaPersonal || '', nombre, fecha: new Date().toLocaleDateString('es-ES', {day:'numeric', month:'long', year:'numeric'}) });
     res.end();
 
   } catch(err) {
@@ -433,7 +433,7 @@ app.post('/generar-verano', async (req, res) => {
   const send = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
 
   try {
-    const { nombre, personaje, destinoId, destinoNombre, destinoDesc, opciones, estilo } = req.body;
+    const { nombre, personaje, destinoId, destinoNombre, destinoDesc, opciones, estilo, dedicatoriaPersonal } = req.body;
     const id = Date.now();
 
     const genero = opciones?.genero || 'niño';
@@ -507,7 +507,7 @@ app.post('/generar-verano', async (req, res) => {
       send({ tipo: 'pagina', numero: escena.numero, titulo: escena.titulo, texto, url: imgUrl });
     }
 
-    send({ tipo: 'completado' });
+    send({ tipo: 'completado', dedicatoriaPersonal: dedicatoriaPersonal || '', nombre, fecha: new Date().toLocaleDateString('es-ES', {day:'numeric', month:'long', year:'numeric'}) });
     res.end();
 
   } catch(err) {

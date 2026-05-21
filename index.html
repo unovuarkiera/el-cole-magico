@@ -215,8 +215,16 @@ input[type=range]{width:100%;accent-color:var(--purple);height:6px;border-radius
         </div>
       </div>
     </div>
+    <div class="section-label" style="margin-top:8px">💌 Dedicatoria personal</div>
+    <div class="field">
+      <label class="label">Escribe unas palabras para tu peque <span style="color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none;font-size:11px">(opcional — si lo dejas en blanco quedará un espacio para escribir a mano)</span></label>
+      <textarea class="input" id="dedicatoriaPersonal" rows="3" placeholder="Ej: Para mi niña Sofía, que llena nuestra vida de magia. Con todo nuestro amor, mamá y papá" style="resize:vertical;font-family:inherit;"></textarea>
+    </div>
     <button class="btn-generate" id="btnGenerar" onclick="generar()">🦉 Crear mi cuento mágico</button>
   </div>
+  <div id="dedicatoriaPersonalTexto" style="display:none"></div>
+  <div id="nombreFinalTexto" style="display:none"></div>
+  <div id="fechaFinalTexto" style="display:none"></div>
 </section>
 
 <div class="overlay" id="overlay"></div>
@@ -343,6 +351,14 @@ function procesarEvento(data){
     page.scrollIntoView({behavior:'smooth',block:'end'});
   } else if(data.tipo==='completado'){
     quitarIndicador();
+    if(data.dedicatoriaPersonal!==undefined){
+      const dt=document.getElementById('dedicatoriaPersonalTexto');
+      const nt=document.getElementById('nombreFinalTexto');
+      const ft=document.getElementById('fechaFinalTexto');
+      if(dt)dt.textContent=data.dedicatoriaPersonal||'';
+      if(nt)nt.textContent=data.nombre||'';
+      if(ft)ft.textContent=data.fecha||'';
+    }
     const pb=document.getElementById('progress-bar');
     if(pb){pb.style.width='100%';setTimeout(()=>{pb.style.opacity='0';},1000);}
     const sb=document.getElementById('status-bar');
@@ -368,6 +384,38 @@ async function descargarPDF(){
     const W=210,H=297;
     const titulo=document.getElementById('bookTitle').textContent;
     const ded=document.getElementById('bookDed').textContent;
+    const dedPersonal=document.getElementById('dedicatoriaPersonalTexto')?.textContent||'';
+    const nombreFinal=document.getElementById('nombreFinalTexto')?.textContent||'';
+    const fechaFinal=document.getElementById('fechaFinalTexto')?.textContent||'';
+
+    // PÁGINA 1 — DEDICATORIA
+    pdf.setFillColor(13,8,32);pdf.rect(0,0,W,H,'F');
+    [[30,40],[180,30],[15,150],[195,200],[100,20],[50,270],[160,260]].forEach(([x,y])=>{pdf.setFillColor(247,201,75);pdf.circle(x,y,0.8,'F');});
+    [[60,80],[140,60],[20,200],[190,180],[80,250],[150,240]].forEach(([x,y])=>{pdf.setFillColor(255,255,255);pdf.circle(x,y,0.5,'F');});
+    pdf.setFont('helvetica','bold');pdf.setFontSize(11);pdf.setTextColor(247,201,75);
+    pdf.text('StoryOwl',W/2,25,{align:'center'});
+    pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.5);pdf.line(60,35,150,35);
+    pdf.setFont('helvetica','italic');pdf.setFontSize(14);pdf.setTextColor(155,111,216);
+    pdf.text('Para',W/2,70,{align:'center'});
+    pdf.setFont('helvetica','bold');pdf.setFontSize(36);pdf.setTextColor(247,201,75);
+    pdf.text(nombreFinal||'',W/2,95,{align:'center'});
+    pdf.setDrawColor(107,63,168);pdf.setLineWidth(0.3);pdf.line(50,105,160,105);
+    if(dedPersonal&&dedPersonal.trim()){
+      pdf.setFont('helvetica','italic');pdf.setFontSize(14);pdf.setTextColor(210,190,255);
+      const lineas=pdf.splitTextToSize(dedPersonal,160);
+      let y=130;lineas.forEach(l=>{pdf.text(l,W/2,y,{align:'center'});y+=9;});
+    } else {
+      pdf.setDrawColor(107,63,168);pdf.setLineWidth(0.2);
+      [140,160,180,200].forEach(y=>{pdf.line(40,y,170,y);});
+      pdf.setFont('helvetica','italic');pdf.setFontSize(9);pdf.setTextColor(107,63,168);
+      pdf.text('Escribe aquí tu dedicatoria',W/2,215,{align:'center'});
+    }
+    pdf.setFont('helvetica','normal');pdf.setFontSize(20);pdf.setTextColor(233,30,140);
+    pdf.text('♥',W/2,260,{align:'center'});
+    pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.5);pdf.line(60,270,150,270);
+
+    // PORTADA
+    pdf.addPage();
     const coverImg=document.getElementById('coverImg');
     if(coverImg&&coverImg.src&&coverImg.style.display!=='none'){
       try{const d=await toBase64(coverImg.src);pdf.addImage(d,'JPEG',0,0,W,H);}catch(e){}
@@ -376,24 +424,47 @@ async function descargarPDF(){
     pdf.setFont('helvetica','bold');pdf.setFontSize(20);pdf.setTextColor(247,201,75);
     pdf.text(titulo,W/2,238,{align:'center',maxWidth:180});
     if(ded){pdf.setFont('helvetica','italic');pdf.setFontSize(11);pdf.setTextColor(200,180,255);pdf.text(pdf.splitTextToSize(ded,170),W/2,252,{align:'center'});}
+
+    // PÁGINAS INTERIORES
     for(const page of document.querySelectorAll('.page')){
       pdf.addPage();
       const img=page.querySelector('.page-img');
       const num=page.querySelector('.page-num')?.textContent||'';
       const tit=page.querySelector('.page-title')?.textContent||'';
       const txt=page.querySelector('.page-text')?.textContent||'';
-      try{const d=await toBase64(img.src);pdf.addImage(d,'JPEG',0,0,W,196);}catch(e){pdf.setFillColor(240,235,255);pdf.rect(0,0,W,196,'F');}
+      try{const d=await toBase64(img.src);pdf.addImage(d,'JPEG',0,0,W,196);}
+      catch(e){pdf.setFillColor(240,235,255);pdf.rect(0,0,W,196,'F');}
       pdf.setFillColor(26,15,48);pdf.rect(0,196,W,101,'F');
       pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.6);pdf.line(15,202,195,202);
       pdf.setFont('helvetica','bold');pdf.setFontSize(8);pdf.setTextColor(247,201,75);pdf.text(num.toUpperCase(),15,210);
       pdf.setFont('helvetica','italic');pdf.setFontSize(16);pdf.setTextColor(210,190,255);pdf.text(tit,15,221,{maxWidth:180});
-      pdf.setFont('helvetica','normal');pdf.setFontSize(12);pdf.setTextColor(235,230,255);
-      pdf.text(pdf.splitTextToSize(txt,180).slice(0,5),15,233);
+      pdf.setFont('helvetica','normal');pdf.setFontSize(12);pdf.setTextColor(235,230,255);pdf.text(pdf.splitTextToSize(txt,180).slice(0,5),15,233);
       pdf.setFontSize(8);pdf.setTextColor(100,80,150);pdf.text(num.replace('PÁGINA ',''),W/2,289,{align:'center'});
     }
+
+    // PÁGINA FINAL — COLOFÓN
+    pdf.addPage();
+    pdf.setFillColor(13,8,32);pdf.rect(0,0,W,H,'F');
+    [[30,40],[180,30],[15,150],[195,200],[100,20],[50,270],[160,260],[80,120],[140,180]].forEach(([x,y])=>{pdf.setFillColor(247,201,75);pdf.circle(x,y,0.6,'F');});
+    pdf.setFont('helvetica','bold');pdf.setFontSize(22);pdf.setTextColor(247,201,75);pdf.text('StoryOwl',W/2,115,{align:'center'});
+    pdf.setDrawColor(107,63,168);pdf.setLineWidth(0.4);pdf.line(70,123,140,123);
+    pdf.setFont('helvetica','italic');pdf.setFontSize(12);pdf.setTextColor(155,111,216);pdf.text('Cuentos únicos para tu peque',W/2,135,{align:'center'});
+    pdf.setFont('helvetica','normal');pdf.setFontSize(11);pdf.setTextColor(200,180,255);pdf.text('Este cuento fue creado especialmente para',W/2,168,{align:'center'});
+    pdf.setFont('helvetica','bold');pdf.setFontSize(20);pdf.setTextColor(247,201,75);pdf.text(nombreFinal||'',W/2,185,{align:'center'});
+    pdf.setFont('helvetica','normal');pdf.setFontSize(10);pdf.setTextColor(155,111,216);pdf.text('el '+fechaFinal,W/2,197,{align:'center'});
+    pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.4);pdf.line(60,207,150,207);
+    pdf.setFont('helvetica','italic');pdf.setFontSize(11);pdf.setTextColor(210,190,255);
+    pdf.text('Una historia única en el mundo, igual que tú.',W/2,222,{align:'center'});
+    pdf.setFont('helvetica','bold');pdf.setFontSize(9);pdf.setTextColor(107,63,168);pdf.text('storyowl.com',W/2,260,{align:'center'});
+
     pdf.save((titulo||'cuento')+'.pdf');
   }catch(e){alert('Error PDF: '+e.message);}
   btn.textContent='📄 Descargar PDF';btn.disabled=false;
+}
+
+async function toBase64(url){
+  const blob=await(await fetch(url)).blob();
+  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob);});
 }
 
 async function toBase64(url){
