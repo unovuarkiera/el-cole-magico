@@ -401,3 +401,117 @@ Responde SOLO JSON sin backticks: {"titulo":"...","dedicatoria":"..."}` }]
     res.end();
   }
 });
+
+// =============================================
+// COLECCIÓN ESPECIAL: VACACIONES DE VERANO
+// =============================================
+
+const ESCENAS_VERANO = [
+  { numero:1, titulo:"¡Por fin vacaciones!", texto_base:"Suena el timbre por última vez. [NOMBRE] sale corriendo del cole con los brazos en alto. ¡Han llegado las vacaciones! [PERSONAJE] le espera en la puerta con una gran sonrisa.", escena:"A child running out of school on the last day, arms raised in celebration, backpack bouncing, sunny summer day, colorful school building, friends cheering around" },
+  { numero:2, titulo:"Haciendo las maletas", texto_base:"En casa, [NOMBRE] y [PERSONAJE] hacen las maletas juntos. [NOMBRE] mete el bañador, las gafas de sol y su juguete favorito. ¡Que no falte nada para la gran aventura!", escena:"A child and their companion happily packing a colorful suitcase together, throwing in swimwear, sunglasses, toys, sunny bedroom, excited expressions, summer clothes everywhere" },
+  { numero:3, titulo:"El viaje", texto_base:"En el coche, [NOMBRE] y [PERSONAJE] cantan canciones y juegan a los animales. El paisaje va cambiando por la ventana. \"¡Ya casi llegamos!\", dice papá.", escena:"A child and companion looking excitedly out of a car window during a road trip, singing and playing games, changing landscape outside, sunny day, happy family road trip" },
+  { numero:4, titulo:"¡El primer vistazo!", texto_base:"De repente, [NOMBRE] ve [DESTINO] por primera vez. Se le abren los ojos como platos. \"¡WOW!\", grita tan fuerte que todos se ríen. [PERSONAJE] le da un abrazo enorme.", escena:"A child seeing [DESTINO_DESC] for the first time, eyes wide with amazement and joy, mouth open in wonder, companion hugging them from behind, golden summer light, breathtaking view" },
+  { numero:5, titulo:"La primera aventura", texto_base:"Sin perder un minuto, [NOMBRE] y [PERSONAJE] se lanzan a explorar. Corren, saltan y descubren cada rincón. ¡El verano ha empezado de verdad!", escena:"A child and companion running and exploring [DESTINO_DESC], laughing and discovering every corner, summer adventure, golden light, pure joy and excitement" },
+  { numero:6, titulo:"El helado más grande", texto_base:"Después de tanto correr, [NOMBRE] pide el helado más grande que ha visto en su vida. Tres bolas de colores que casi no puede sujetar. [PERSONAJE] le ayuda antes de que caiga.", escena:"A child holding a giant colorful ice cream cone with three scoops, struggling to hold it, companion helping catch it before it falls, sunny [DESTINO_DESC] background, hot summer day, everyone laughing" },
+  { numero:7, titulo:"Un momento de susto", texto_base:"De repente, algo inesperado asusta a [NOMBRE]. El corazón le late muy fuerte. Pero [PERSONAJE] está ahí. \"No pasa nada\", dice [PERSONAJE]. Y [NOMBRE] respira y se siente valiente.", escena:"A child looking momentarily scared or surprised at [DESTINO_DESC], companion immediately beside them with a reassuring hand, child taking a brave breath, overcoming the fear, supportive and warm moment" },
+  { numero:8, titulo:"El atardecer mágico", texto_base:"Por la tarde, [NOMBRE] y [PERSONAJE] se sientan juntos a ver el atardecer. El cielo se pinta de naranja, rosa y morado. \"Es el más bonito del mundo\", susurra [NOMBRE].", escena:"A child and companion sitting together watching a spectacular sunset at [DESTINO_DESC], sky painted in orange pink and purple, peaceful and magical moment, silhouettes against the colorful sky, serene and beautiful" },
+  { numero:9, titulo:"Noche de estrellas", texto_base:"Por la noche, [NOMBRE] y [PERSONAJE] buscan constelaciones en el cielo. [PERSONAJE] señala la Osa Mayor. [NOMBRE] cierra un ojo y la sigue con el dedo. \"¡La veo, la veo!\"", escena:"A child and companion lying on the ground looking up at a spectacular starry sky at night, pointing at constellations, flashlight beam, magical night atmosphere, milky way visible, wonder and amazement" },
+  { numero:10, titulo:"El día de lluvia", texto_base:"Un día llueve y no se puede salir. ¡Pero [NOMBRE] y [PERSONAJE] inventan los juegos más divertidos del mundo! Construyen una cabaña con mantas y juegan hasta cansarse.", escena:"A child and companion building a cozy blanket fort inside, rainy day visible through the window, flashlight inside the fort, board games and books around, cozy and fun indoor adventure" },
+  { numero:11, titulo:"El tesoro escondido", texto_base:"[NOMBRE] y [PERSONAJE] deciden buscar tesoros. Con un palito, dibujan un mapa. Después de mucho buscar... ¡encuentran algo brillante! Es pequeño pero perfecto para guardar como recuerdo.", escena:"A child and companion searching for treasures at [DESTINO_DESC], hand-drawn map, digging or searching excitedly, finding something small and shiny, adventurous treasure hunt atmosphere" },
+  { numero:12, titulo:"Una tarde en familia", texto_base:"Una tarde, toda la familia se reúne. Comen juntos, ríen y cuentan historias. [NOMBRE] mira a su alrededor y piensa que este es el mejor momento del verano.", escena:"A happy family gathering at [DESTINO_DESC], eating together outdoors, laughing and telling stories, warm golden afternoon light, child looking around with gratitude and happiness, wholesome family moment" },
+  { numero:13, titulo:"La noche más mágica", texto_base:"La última noche, el cielo se llena de luces de colores. [NOMBRE] y [PERSONAJE] los miran con la boca abierta. Luego [NOMBRE] pide un deseo secreto.", escena:"Spectacular fireworks or meteor shower lighting up the night sky at [DESTINO_DESC], child and companion watching with open mouths, colorful lights reflecting in their eyes, magical and unforgettable night moment" },
+  { numero:14, titulo:"El último día", texto_base:"Ha llegado el último día. [NOMBRE] quiere guardarlo todo en la memoria. Hace una foto con [PERSONAJE] en su rincón favorito. \"¡Hasta el año que viene!\", dice [NOMBRE] con la voz entre contenta y triste.", escena:"A child and companion taking a final photo at their favorite spot at [DESTINO_DESC], bittersweet smiles, capturing the memory, golden afternoon light, summer ending atmosphere, nostalgic but happy" },
+  { numero:15, titulo:"El viaje de vuelta", texto_base:"En el coche de regreso, [NOMBRE] va callado mirando por la ventana. Piensa en todo lo vivido. [PERSONAJE] le aprieta la mano. \"Ha sido el mejor verano\", dice [NOMBRE] sonriendo.", escena:"A child looking pensively out of a car window on the way home, companion holding their hand, reflecting on summer memories, warm late afternoon light, peaceful and content expression, journey home" },
+  { numero:16, titulo:"El verano guardado en el corazón", texto_base:"En la cama, [NOMBRE] abraza su recuerdo favorito del verano. Cierra los ojos y sonríe. El mejor verano de su vida ya vive para siempre en su corazón. Y el próximo... ¡será incluso mejor!", escena:"A child lying peacefully in bed with a happy smile, summer souvenirs and photos visible nearby, warm bedroom lamp, eyes closed contentedly, dreaming of summer memories, peaceful and happy ending" }
+];
+
+app.post('/generar-verano', async (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
+  const send = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
+
+  try {
+    const { nombre, personaje, destinoId, destinoNombre, destinoDesc, opciones, estilo } = req.body;
+    const id = Date.now();
+
+    const genero = opciones?.genero || 'niño';
+    const piel = opciones?.piel || 'light, fair skin';
+    const pelo = opciones?.pelo || 'brown';
+    const tipopelo = opciones?.tipopelo || 'straight';
+    const ojos = opciones?.ojos || 'brown';
+    const gafas = opciones?.gafas || 'without glasses';
+    const pecas = opciones?.pecas || '';
+    const estiloIlustracion = estilo || 'Pixar CGI quality, 3D animation style, vibrant and detailed';
+    const estiloBase = `${estiloIlustracion}, family-friendly children's book illustration, cheerful and safe for children, warm summer lighting`;
+    const protagonistaDesc = `a ${genero} named ${nombre} with ${tipopelo} ${pelo} hair, ${ojos} eyes, ${piel}, ${gafas}${pecas ? ', ' + pecas : ''}, wearing a summer outfit`;
+
+    send({ tipo: 'estado', mensaje: '☀️ Preparando la aventura de verano...' });
+
+    const anthropic = new Anthropic({ apiKey: ANTHROPIC_KEY });
+
+    // Descripción visual fija del compañero
+    const msgPersonaje = await anthropic.messages.create({
+      model: 'claude-sonnet-4-5',
+      max_tokens: 300,
+      messages: [{ role: 'user', content: `Genera una descripción visual detallada y consistente en inglés para este personaje de cuento infantil: "${personaje}". Incluye colores exactos, características físicas fijas, rasgos distintivos. Máximo 40 palabras. Solo la descripción.` }]
+    });
+    const personajeDesc = msgPersonaje.content[0].text.trim();
+
+    // Título y dedicatoria
+    const msgTitulo = await anthropic.messages.create({
+      model: 'claude-sonnet-4-5',
+      max_tokens: 300,
+      messages: [{ role: 'user', content: `Genera un título poético para un cuento de verano donde ${nombre} vive aventuras increíbles en ${destinoNombre} con ${personaje}. También una dedicatoria emotiva de 2-3 frases. SOLO JSON sin backticks: {"titulo":"...","dedicatoria":"..."}` }]
+    });
+    const tituloData = JSON.parse(msgTitulo.content[0].text.match(/\{[\s\S]*\}/)[0]);
+
+    send({ tipo: 'cuento', titulo: tituloData.titulo, dedicatoria: tituloData.dedicatoria });
+
+    // Portada
+    send({ tipo: 'estado', mensaje: '🎨 Generando portada...' });
+    try {
+      const portadaUrl = await generarImagen(
+        `${estiloBase}. Book cover: ${protagonistaDesc} with ${personajeDesc} having fun at ${destinoNombre}, ${destinoDesc}. Bright summer colors, joyful and adventurous atmosphere. Spanish title: "${tituloData.titulo}". Professional children's book cover, portrait format.`,
+        '1024x1536', `verano_portada_${id}.png`
+      );
+      send({ tipo: 'imagen', url: portadaUrl });
+    } catch(e) {
+      console.error('Error portada:', e.message);
+      send({ tipo: 'imagen', url: '' });
+    }
+
+    // 16 páginas
+    for (const escena of ESCENAS_VERANO) {
+      send({ tipo: 'estado', mensaje: `🎨 Generando página ${escena.numero} de 16...` });
+
+      const texto = escena.texto_base
+        .replace(/\[NOMBRE\]/g, nombre)
+        .replace(/\[PERSONAJE\]/g, personaje);
+
+      const escenaImg = escena.escena
+        .replace(/\[DESTINO_DESC\]/g, destinoDesc)
+        .replace(/\[DESTINO\]/g, destinoNombre);
+
+      let imgUrl = '';
+      try {
+        imgUrl = await generarImagen(
+          `${estiloBase}. ${escenaImg}. Main character: ${protagonistaDesc}. Companion: ${personajeDesc}. Portrait format, consistent character design, bright summer colors.`,
+          '1024x1536', `verano_${id}_${escena.numero}.png`
+        );
+      } catch(e) {
+        console.error(`Error página ${escena.numero}:`, e.message);
+      }
+
+      send({ tipo: 'pagina', numero: escena.numero, titulo: escena.titulo, texto, url: imgUrl });
+    }
+
+    send({ tipo: 'completado' });
+    res.end();
+
+  } catch(err) {
+    send({ tipo: 'error', mensaje: err.message });
+    res.end();
+  }
+});
