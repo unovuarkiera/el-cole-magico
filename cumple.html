@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>StoryOwl — Cuento de Cumpleaños</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--purple:#3a2070;--purple-l:#6b3fa8;--gold:#f7c94b;--gold-d:#e5a800;--cream:#fffdf7;--dark:#1a0f30;--muted:#7a6a9a;--pink:#e91e8c;--pink-l:#ff6eb4;}
@@ -352,54 +353,87 @@ async function descargarPDF(){
     pdf.setFillColor(13,8,32);pdf.rect(0,0,W,H,'F');
     [[30,40],[180,30],[15,150],[195,200],[100,20],[50,270],[160,260]].forEach(([x,y])=>{pdf.setFillColor(247,201,75);pdf.circle(x,y,0.8,'F');});
     [[60,80],[140,60],[20,200],[190,180],[80,250],[150,240]].forEach(([x,y])=>{pdf.setFillColor(255,255,255);pdf.circle(x,y,0.5,'F');});
-    pdf.setFont('helvetica','bold');pdf.setFontSize(11);pdf.setTextColor(247,201,75);
-    pdf.text('StoryOwl',W/2,25,{align:'center'});
+    pdf.setFont('helvetica','bold');pdf.setFontSize(11);pdf.setTextColor(247,201,75);pdf.text('StoryOwl',W/2,25,{align:'center'});
     pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.5);pdf.line(60,35,150,35);
-    pdf.setFont('helvetica','italic');pdf.setFontSize(14);pdf.setTextColor(155,111,216);
-    pdf.text('Para',W/2,70,{align:'center'});
-    pdf.setFont('helvetica','bold');pdf.setFontSize(36);pdf.setTextColor(247,201,75);
-    pdf.text(nombreFinal||'',W/2,95,{align:'center'});
+    pdf.setFont('helvetica','italic');pdf.setFontSize(14);pdf.setTextColor(155,111,216);pdf.text('Para',W/2,70,{align:'center'});
+    pdf.setFont('helvetica','bold');pdf.setFontSize(36);pdf.setTextColor(247,201,75);pdf.text(nombreFinal||'',W/2,95,{align:'center'});
     pdf.setDrawColor(107,63,168);pdf.setLineWidth(0.3);pdf.line(50,105,160,105);
     if(dedPersonal&&dedPersonal.trim()){
       pdf.setFont('helvetica','italic');pdf.setFontSize(14);pdf.setTextColor(210,190,255);
-      const lineas=pdf.splitTextToSize(dedPersonal,160);
-      let y=130;lineas.forEach(l=>{pdf.text(l,W/2,y,{align:'center'});y+=9;});
+      const lineas=pdf.splitTextToSize(dedPersonal,160);let y=130;
+      lineas.forEach(l=>{pdf.text(l,W/2,y,{align:'center'});y+=9;});
     } else {
       pdf.setDrawColor(107,63,168);pdf.setLineWidth(0.2);
       [140,160,180,200].forEach(y=>{pdf.line(40,y,170,y);});
       pdf.setFont('helvetica','italic');pdf.setFontSize(9);pdf.setTextColor(107,63,168);
       pdf.text('Escribe aquí tu dedicatoria',W/2,215,{align:'center'});
     }
-    pdf.setFont('helvetica','normal');pdf.setFontSize(20);pdf.setTextColor(233,30,140);
-    pdf.text('♥',W/2,260,{align:'center'});
+    pdf.setFont('helvetica','normal');pdf.setFontSize(20);pdf.setTextColor(233,30,140);pdf.text('♥',W/2,260,{align:'center'});
     pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.5);pdf.line(60,270,150,270);
 
-    // PORTADA
+    // PORTADA — imagen a sangre completa
     pdf.addPage();
     const coverImg=document.getElementById('coverImg');
     if(coverImg&&coverImg.src&&coverImg.style.display!=='none'){
-      try{const d=await toBase64(coverImg.src);pdf.addImage(d,'JPEG',0,0,W,H);}catch(e){}
+      try{
+        const d=await toBase64(coverImg.src);
+        pdf.addImage(d,'JPEG',0,0,W,H);
+        // Overlay oscuro abajo con título
+        pdf.setFillColor(0,0,0);
+        pdf.setGState&&pdf.setGState(new pdf.GState({opacity:0.6}));
+        pdf.rect(0,H-80,W,80,'F');
+        pdf.setGState&&pdf.setGState(new pdf.GState({opacity:1}));
+        pdf.setFont('helvetica','bold');pdf.setFontSize(18);pdf.setTextColor(247,201,75);
+        pdf.text(titulo,W/2,H-55,{align:'center',maxWidth:180});
+        if(ded){pdf.setFont('helvetica','italic');pdf.setFontSize(10);pdf.setTextColor(220,200,255);pdf.text(pdf.splitTextToSize(ded,170),W/2,H-35,{align:'center'});}
+      }catch(e){}
     }
-    pdf.setFillColor(26,15,48);pdf.rect(0,220,W,77,'F');
-    pdf.setFont('helvetica','bold');pdf.setFontSize(20);pdf.setTextColor(247,201,75);
-    pdf.text(titulo,W/2,238,{align:'center',maxWidth:180});
-    if(ded){pdf.setFont('helvetica','italic');pdf.setFontSize(11);pdf.setTextColor(200,180,255);pdf.text(pdf.splitTextToSize(ded,170),W/2,252,{align:'center'});}
 
-    // PÁGINAS INTERIORES
-    for(const page of document.querySelectorAll('.page')){
+    // PÁGINAS — imagen a sangre + overlay con texto
+    const pages=document.querySelectorAll('.page');
+    let i=1;
+    for(const page of pages){
+      btn.textContent=`⏳ Página ${i} de ${pages.length}...`;
       pdf.addPage();
       const img=page.querySelector('.page-img');
       const num=page.querySelector('.page-num')?.textContent||'';
       const tit=page.querySelector('.page-title')?.textContent||'';
       const txt=page.querySelector('.page-text')?.textContent||'';
-      try{const d=await toBase64(img.src);pdf.addImage(d,'JPEG',0,0,W,196);}
-      catch(e){pdf.setFillColor(240,235,255);pdf.rect(0,0,W,196,'F');}
-      pdf.setFillColor(26,15,48);pdf.rect(0,196,W,101,'F');
-      pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.6);pdf.line(15,202,195,202);
-      pdf.setFont('helvetica','bold');pdf.setFontSize(8);pdf.setTextColor(247,201,75);pdf.text(num.toUpperCase(),15,210);
-      pdf.setFont('helvetica','italic');pdf.setFontSize(16);pdf.setTextColor(210,190,255);pdf.text(tit,15,221,{maxWidth:180});
-      pdf.setFont('helvetica','normal');pdf.setFontSize(12);pdf.setTextColor(235,230,255);pdf.text(pdf.splitTextToSize(txt,180).slice(0,5),15,233);
-      pdf.setFontSize(8);pdf.setTextColor(100,80,150);pdf.text(num.replace('PÁGINA ',''),W/2,289,{align:'center'});
+      
+      // Imagen a sangre completa
+      try{
+        const d=await toBase64(img.src);
+        pdf.addImage(d,'JPEG',0,0,W,H);
+      }catch(e){
+        pdf.setFillColor(30,20,60);pdf.rect(0,0,W,H,'F');
+      }
+      
+      // Overlay oscuro semitransparente en la parte inferior
+      // Usamos un rectángulo negro con alpha simulado por color
+      pdf.setFillColor(15,10,35);
+      pdf.rect(0,H-110,W,110,'F');
+      
+      // Línea dorada separadora
+      pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.8);pdf.line(10,H-108,W-10,H-108);
+      
+      // Número de página
+      pdf.setFont('helvetica','bold');pdf.setFontSize(8);pdf.setTextColor(247,201,75);
+      pdf.text(num.toUpperCase(),12,H-98);
+      
+      // Título
+      pdf.setFont('helvetica','italic');pdf.setFontSize(17);pdf.setTextColor(210,185,255);
+      pdf.text(tit,12,H-84,{maxWidth:W-24});
+      
+      // Texto
+      pdf.setFont('helvetica','normal');pdf.setFontSize(12);pdf.setTextColor(240,235,255);
+      const lineas=pdf.splitTextToSize(txt,W-24);
+      pdf.text(lineas.slice(0,5),12,H-68);
+      
+      // Número pequeño abajo
+      pdf.setFontSize(8);pdf.setTextColor(120,100,180);
+      pdf.text(String(i),W/2,H-8,{align:'center'});
+      
+      i++;
     }
 
     // PÁGINA FINAL — COLOFÓN
@@ -413,13 +447,22 @@ async function descargarPDF(){
     pdf.setFont('helvetica','bold');pdf.setFontSize(20);pdf.setTextColor(247,201,75);pdf.text(nombreFinal||'',W/2,185,{align:'center'});
     pdf.setFont('helvetica','normal');pdf.setFontSize(10);pdf.setTextColor(155,111,216);pdf.text('el '+fechaFinal,W/2,197,{align:'center'});
     pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.4);pdf.line(60,207,150,207);
-    pdf.setFont('helvetica','italic');pdf.setFontSize(11);pdf.setTextColor(210,190,255);
-    pdf.text('Una historia única en el mundo, igual que tú.',W/2,222,{align:'center'});
+    pdf.setFont('helvetica','italic');pdf.setFontSize(11);pdf.setTextColor(210,190,255);pdf.text('Una historia única en el mundo, igual que tú.',W/2,222,{align:'center'});
     pdf.setFont('helvetica','bold');pdf.setFontSize(9);pdf.setTextColor(107,63,168);pdf.text('storyowl.com',W/2,260,{align:'center'});
 
     pdf.save((titulo||'cuento')+'.pdf');
   }catch(e){alert('Error PDF: '+e.message);}
   btn.textContent='📄 Descargar PDF';btn.disabled=false;
+}
+
+async function toBase64(url){
+  const blob=await(await fetch(url)).blob();
+  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob);});
+}
+
+async function toBase64(url){
+  const blob=await(await fetch(url)).blob();
+  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob);});
 }
 
 async function toBase64(url){
