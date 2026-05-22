@@ -3,528 +3,311 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>StoryOwl — Cuentos únicos para tu peque</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<title>StoryOwl — Cuentos infantiles únicos con IA</title>
+<meta name="description" content="Crea cuentos infantiles personalizados con inteligencia artificial. Tu peque como protagonista, ilustraciones únicas, PDF listo para imprimir."/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root {
-  --ink: #0d0820;
-  --ink2: #1a1035;
-  --purple: #3a2070;
-  --purple-l: #6b3fa8;
-  --purple-xl: #9b6fd8;
-  --gold: #f7c94b;
-  --gold-d: #c49a1a;
-  --cream: #fdf9f0;
-  --muted: #8b7aaa;
-  --white: #ffffff;
-  --pink: #e91e8c;
-  --teal: #0891b2;
+:root{
+  --purple:#3a2070;--purple-l:#6b3fa8;--gold:#f7c94b;
+  --cream:#fffdf7;--dark:#1a0f30;--muted:#7a6a9a;
+  --teal:#0ea5a0;--pink:#e91e8c;--pink-l:#ff6eb4;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
-body{font-family:'Nunito',sans-serif;background:var(--ink);color:var(--white);overflow-x:hidden;}
-
-/* ── CURSOR ── */
-
-
-
+body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--dark);overflow-x:hidden;}
 
 /* ── NAV ── */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 48px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(13,8,32,.95),transparent);}
-.nav-logo{font-family:'Fraunces',serif;font-size:24px;font-weight:900;color:var(--white);letter-spacing:-0.5px;display:flex;align-items:center;gap:10px;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,5,25,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.07);}
+.nav-logo{font-family:'Fraunces',serif;font-weight:900;font-size:22px;color:white;text-decoration:none;display:flex;align-items:center;gap:8px;}
 .nav-logo span{color:var(--gold);}
-.nav-links{display:flex;align-items:center;gap:32px;}
-.nav-links a{color:rgba(255,255,255,.65);text-decoration:none;font-size:14px;font-weight:700;letter-spacing:.5px;transition:color .2s;}
-.nav-links a:hover{color:var(--white);}
-.nav-cta{background:var(--gold);color:var(--ink);font-family:'Fraunces',serif;font-weight:900;font-size:14px;padding:10px 24px;border-radius:50px;text-decoration:none;transition:all .2s;}
-.nav-cta:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(247,201,75,.4);}
+.nav-links{display:flex;align-items:center;gap:24px;}
+.nav-links a{color:rgba(255,255,255,.6);font-size:14px;font-weight:700;text-decoration:none;transition:color .2s;}
+.nav-links a:hover{color:white;}
+.nav-cta{background:linear-gradient(135deg,var(--pink-l),var(--pink));color:white!important;padding:10px 24px;border-radius:50px;font-size:14px!important;font-weight:800!important;transition:transform .2s,box-shadow .2s!important;}
+.nav-cta:hover{transform:translateY(-2px)!important;box-shadow:0 8px 24px rgba(233,30,140,.4);}
 
 /* ── HERO ── */
-.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 80px;position:relative;overflow:hidden;}
-.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(107,63,168,.35) 0%,transparent 70%),radial-gradient(ellipse 40% 40% at 20% 80%,rgba(233,30,140,.15) 0%,transparent 60%),radial-gradient(ellipse 40% 40% at 80% 20%,rgba(8,145,178,.15) 0%,transparent 60%);pointer-events:none;}
-.stars-canvas{position:absolute;inset:0;pointer-events:none;}
-.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(247,201,75,.1);border:1px solid rgba(247,201,75,.25);color:var(--gold);font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:8px 20px;border-radius:50px;margin-bottom:32px;animation:fadeUp .8s ease both;}
-.hero-title{font-family:'Fraunces',serif;font-size:clamp(52px,9vw,110px);font-weight:900;line-height:.95;letter-spacing:-2px;margin-bottom:24px;animation:fadeUp .8s .1s ease both;}
-.hero-title .line1{display:block;color:var(--white);}
-.hero-title .line2{display:block;color:var(--gold);font-style:italic;}
-.hero-title .line3{display:block;color:var(--white);}
-.hero-sub{font-size:clamp(17px,2vw,21px);color:rgba(255,255,255,.65);max-width:600px;line-height:1.6;margin-bottom:48px;animation:fadeUp .8s .2s ease both;}
-.hero-sub strong{color:var(--white);}
-.hero-btns{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;animation:fadeUp .8s .3s ease both;}
-.btn-hero-primary{background:var(--gold);color:var(--ink);font-family:'Fraunces',serif;font-weight:900;font-size:18px;padding:18px 48px;border-radius:50px;text-decoration:none;box-shadow:0 8px 40px rgba(247,201,75,.35);transition:all .25s;display:inline-flex;align-items:center;gap:10px;}
-.btn-hero-primary:hover{transform:translateY(-3px);box-shadow:0 16px 50px rgba(247,201,75,.5);}
-.btn-hero-secondary{background:rgba(255,255,255,.08);color:var(--white);font-family:'Fraunces',serif;font-weight:700;font-size:18px;padding:18px 40px;border-radius:50px;text-decoration:none;border:1px solid rgba(255,255,255,.15);transition:all .25s;}
-.btn-hero-secondary:hover{background:rgba(255,255,255,.15);transform:translateY(-3px);}
-.hero-scroll{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;opacity:.4;animation:bounce 2s infinite;}
-.hero-scroll span{font-size:11px;letter-spacing:3px;text-transform:uppercase;}
-@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
+.hero{min-height:100vh;background:linear-gradient(160deg,#070a1e 0%,#1a0840 40%,#0a1525 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:100px 24px 80px;text-align:center;position:relative;overflow:hidden;}
+.stars{position:absolute;inset:0;pointer-events:none;}
+.star{position:absolute;background:white;border-radius:50%;animation:twinkle var(--d) var(--dl) infinite alternate;}
+@keyframes twinkle{from{opacity:.05;transform:scale(.6)}to{opacity:.9;transform:scale(1.3)}}
+.hero-badge{display:inline-block;background:rgba(247,201,75,.15);border:1px solid rgba(247,201,75,.35);color:var(--gold);font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:7px 18px;border-radius:20px;margin-bottom:28px;}
+.hero-owl{font-size:88px;animation:float 3.5s ease-in-out infinite;filter:drop-shadow(0 0 30px rgba(107,63,168,.5));margin-bottom:10px;display:block;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.hero h1{font-family:'Fraunces',serif;font-size:clamp(42px,8vw,90px);font-weight:900;color:white;line-height:1;margin-bottom:16px;}
+.hero h1 em{font-style:italic;color:var(--gold);display:block;}
+.hero-sub{font-size:clamp(16px,2vw,20px);color:rgba(255,255,255,.65);max-width:580px;line-height:1.7;margin-bottom:44px;}
+.hero-btns{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;}
+.btn-hero-main{background:linear-gradient(135deg,var(--pink-l),var(--pink));color:white;font-family:'Fraunces',serif;font-weight:900;font-size:20px;padding:18px 48px;border-radius:50px;border:none;cursor:pointer;box-shadow:0 8px 40px rgba(233,30,140,.4);transition:all .25s;text-decoration:none;display:inline-block;}
+.btn-hero-main:hover{transform:translateY(-3px);box-shadow:0 12px 48px rgba(233,30,140,.5);}
+.btn-hero-sec{background:rgba(255,255,255,.08);color:white;font-family:'Nunito',sans-serif;font-weight:700;font-size:17px;padding:17px 40px;border-radius:50px;border:2px solid rgba(255,255,255,.2);cursor:pointer;transition:all .25s;text-decoration:none;display:inline-block;}
+.btn-hero-sec:hover{background:rgba(255,255,255,.14);transform:translateY(-2px);}
+.hero-stats{margin-top:60px;display:flex;gap:48px;flex-wrap:wrap;justify-content:center;}
+.hero-stat{text-align:center;}
+.hero-stat-n{font-family:'Fraunces',serif;font-size:36px;font-weight:900;color:var(--gold);}
+.hero-stat-l{font-size:12px;font-weight:700;color:rgba(255,255,255,.45);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
 
-/* ── STATS ── */
-.stats{padding:60px 48px;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,.06);border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);}
-.stat{padding:32px 24px;text-align:center;background:var(--ink);}
-.stat-num{font-family:'Fraunces',serif;font-size:48px;font-weight:900;color:var(--gold);line-height:1;}
-.stat-label{font-size:13px;color:var(--muted);letter-spacing:1px;margin-top:6px;text-transform:uppercase;}
+/* ── HOW ── */
+.how{padding:100px 24px;background:white;}
+.section-center{text-align:center;max-width:680px;margin:0 auto 60px;}
+.section-eyebrow{font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--teal);margin-bottom:12px;}
+.section-title{font-family:'Fraunces',serif;font-size:clamp(30px,5vw,52px);font-weight:900;color:var(--purple);line-height:1.1;margin-bottom:14px;}
+.section-title em{font-style:italic;color:var(--pink);}
+.section-sub{font-size:17px;color:var(--muted);line-height:1.7;}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px;max-width:1000px;margin:0 auto;}
+.step{text-align:center;padding:36px 24px;}
+.step-num{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--purple-l));color:white;font-family:'Fraunces',serif;font-size:22px;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+.step-icon{font-size:40px;margin-bottom:12px;}
+.step h3{font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--purple);margin-bottom:8px;}
+.step p{font-size:15px;color:var(--muted);line-height:1.6;}
 
-/* ── SECTION TITLES ── */
-.section{padding:100px 48px;}
-.section-eyebrow{font-size:11px;font-weight:800;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:16px;display:block;}
-.section-title{font-family:'Fraunces',serif;font-size:clamp(36px,5vw,64px);font-weight:900;line-height:1;letter-spacing:-1px;margin-bottom:20px;}
-.section-title em{font-style:italic;color:var(--gold);}
-.section-sub{font-size:18px;color:rgba(255,255,255,.55);max-width:560px;line-height:1.6;}
+/* ── COLECCIONES ── */
+.collections{padding:100px 24px;background:var(--cream);}
+.collections-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;max-width:1100px;margin:0 auto;}
+.coll-card{border-radius:28px;overflow:hidden;cursor:pointer;transition:transform .3s,box-shadow .3s;text-decoration:none;display:block;}
+.coll-card:hover{transform:translateY(-6px);}
+.coll-card-inner{padding:40px 32px;height:100%;display:flex;flex-direction:column;}
+.coll-icon{font-size:52px;margin-bottom:16px;display:block;}
+.coll-tag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:10px;margin-bottom:14px;}
+.coll-title{font-family:'Fraunces',serif;font-size:26px;font-weight:900;line-height:1.1;margin-bottom:8px;}
+.coll-desc{font-size:15px;line-height:1.6;margin-bottom:24px;flex:1;}
+.coll-cta{font-weight:800;font-size:14px;display:flex;align-items:center;gap:6px;}
 
-/* ── FEATURES ── */
-.features{background:linear-gradient(180deg,var(--ink) 0%,var(--ink2) 100%);padding:100px 48px;}
-.features-header{text-align:center;max-width:700px;margin:0 auto 80px;}
-.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:1200px;margin:0 auto;}
-.feature-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:24px;padding:40px 32px;position:relative;overflow:hidden;transition:all .3s;}
-.feature-card::before{content:'';position:absolute;inset:0;background:var(--glow);opacity:0;transition:opacity .3s;border-radius:24px;}
-.feature-card:hover{border-color:rgba(255,255,255,.15);transform:translateY(-4px);}
-.feature-card:hover::before{opacity:1;}
-.feature-card.gold{--glow:radial-gradient(ellipse at top,rgba(247,201,75,.08),transparent);}
-.feature-card.purple{--glow:radial-gradient(ellipse at top,rgba(107,63,168,.12),transparent);}
-.feature-card.pink{--glow:radial-gradient(ellipse at top,rgba(233,30,140,.08),transparent);}
-.feature-card.teal{--glow:radial-gradient(ellipse at top,rgba(8,145,178,.08),transparent);}
-.feature-card.green{--glow:radial-gradient(ellipse at top,rgba(34,197,94,.08),transparent);}
-.feature-card.blue{--glow:radial-gradient(ellipse at top,rgba(59,130,246,.08),transparent);}
-.feature-icon{font-size:40px;margin-bottom:20px;display:block;}
-.feature-title{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--white);margin-bottom:10px;}
-.feature-desc{font-size:15px;color:rgba(255,255,255,.5);line-height:1.6;}
+/* Colecciones colores */
+.coll-libre{background:linear-gradient(145deg,#1a0840,#2a1060);color:white;}
+.coll-libre .coll-tag{background:rgba(247,201,75,.2);color:var(--gold);}
+.coll-libre .coll-desc{color:rgba(255,255,255,.65);}
+.coll-libre .coll-cta{color:var(--gold);}
 
-/* ── COLLECTIONS ── */
-.collections{padding:100px 48px;background:var(--ink2);}
-.collections-header{text-align:center;max-width:700px;margin:0 auto 80px;}
-.collections-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;max-width:1400px;margin:0 auto;}
-.collection-card{border-radius:28px;overflow:hidden;position:relative;aspect-ratio:3/4;group:true;transition:transform .4s cubic-bezier(.34,1.56,.64,1);}
-.collection-card:hover{transform:translateY(-12px) scale(1.02);}
-.collection-card img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease;}
-.collection-card:hover img{transform:scale(1.05);}
-.collection-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(13,8,32,.97) 0%,rgba(13,8,32,.6) 40%,transparent 70%);transition:opacity .3s;}
-.collection-content{position:absolute;bottom:0;left:0;right:0;padding:32px 28px;}
-.collection-tag{display:inline-block;background:var(--tag-color,var(--gold));color:var(--ink);font-size:10px;font-weight:900;letter-spacing:2px;text-transform:uppercase;padding:5px 14px;border-radius:20px;margin-bottom:12px;}
-.collection-title{font-family:'Fraunces',serif;font-size:26px;font-weight:900;color:var(--white);line-height:1.1;margin-bottom:8px;}
-.collection-desc{font-size:14px;color:rgba(255,255,255,.6);line-height:1.5;margin-bottom:20px;}
-.collection-btn{display:inline-flex;align-items:center;gap:8px;background:var(--white);color:var(--ink);font-family:'Fraunces',serif;font-weight:900;font-size:14px;padding:12px 24px;border-radius:50px;text-decoration:none;transition:all .2s;}
-.collection-btn:hover{background:var(--gold);transform:translateX(4px);}
-.collection-btn svg{transition:transform .2s;}
-.collection-btn:hover svg{transform:translateX(4px);}
-.collection-card.featured{grid-column:span 1;aspect-ratio:3/4;}
+.coll-cumple{background:linear-gradient(145deg,#3a0025,#6b0050);color:white;}
+.coll-cumple .coll-tag{background:rgba(255,110,180,.2);color:var(--pink-l);}
+.coll-cumple .coll-desc{color:rgba(255,255,255,.65);}
+.coll-cumple .coll-cta{color:var(--pink-l);}
 
-/* ── HOW IT WORKS ── */
-.how{padding:100px 48px;background:var(--ink);}
-.how-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
-.how-steps{display:flex;flex-direction:column;gap:40px;}
-.how-step{display:flex;gap:24px;align-items:flex-start;}
-.step-num{width:48px;height:48px;border-radius:50%;background:rgba(247,201,75,.1);border:1px solid rgba(247,201,75,.3);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:18px;font-weight:900;color:var(--gold);flex-shrink:0;}
-.step-content h3{font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--white);margin-bottom:6px;}
-.step-content p{font-size:15px;color:rgba(255,255,255,.5);line-height:1.6;}
-.how-visual{position:relative;}
-.book-stack{display:flex;flex-direction:column;gap:-20px;align-items:center;}
-.book-preview{width:100%;max-width:340px;border-radius:20px;box-shadow:0 40px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08);margin:0 auto;display:block;transform:perspective(800px) rotateY(-8deg);transition:transform .4s;}
-.book-preview:hover{transform:perspective(800px) rotateY(0deg);}
+.coll-diente{background:linear-gradient(145deg,#0a2040,#0d3560);color:white;}
+.coll-diente .coll-tag{background:rgba(45,212,191,.2);color:var(--teal-l, #2dd4bf);}
+.coll-diente .coll-desc{color:rgba(255,255,255,.65);}
+.coll-diente .coll-cta{color:#2dd4bf;}
 
-/* ── STYLES SHOWCASE ── */
-.styles{padding:100px 48px;background:linear-gradient(180deg,var(--ink2) 0%,var(--ink) 100%);}
-.styles-header{text-align:center;max-width:700px;margin:0 auto 60px;}
-.styles-scroll{display:flex;gap:16px;overflow-x:auto;padding:20px 48px;margin:0 -48px;scrollbar-width:none;}
-.styles-scroll::-webkit-scrollbar{display:none;}
-.style-pill{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:50px;padding:12px 28px;white-space:nowrap;font-size:15px;font-weight:700;color:rgba(255,255,255,.7);transition:all .2s;flex-shrink:0;}
-.style-pill:hover,.style-pill.active{background:var(--gold);border-color:var(--gold);color:var(--ink);}
-.styles-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;max-width:1200px;margin:40px auto 0;}
-.style-card-item{border-radius:16px;overflow:hidden;aspect-ratio:3/4;position:relative;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;transition:all .3s;}
-.style-card-item:hover{border-color:rgba(247,201,75,.4);transform:translateY(-4px);}
-.style-emoji{font-size:40px;}
-.style-name-label{font-family:'Fraunces',serif;font-size:16px;font-weight:700;color:var(--white);}
-.style-desc-label{font-size:12px;color:var(--muted);text-align:center;padding:0 12px;}
+.coll-verano{background:linear-gradient(145deg,#3a1a00,#6b3000);color:white;}
+.coll-verano .coll-tag{background:rgba(247,201,75,.2);color:var(--gold);}
+.coll-verano .coll-desc{color:rgba(255,255,255,.65);}
+.coll-verano .coll-cta{color:var(--gold);}
 
-/* ── TESTIMONIALS ── */
-.testimonials{padding:100px 48px;background:var(--ink2);}
-.testimonials-header{text-align:center;max-width:600px;margin:0 auto 60px;}
-.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:1200px;margin:0 auto;}
-.testimonial{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:32px;}
-.testimonial-stars{font-size:18px;margin-bottom:16px;}
-.testimonial-text{font-size:16px;color:rgba(255,255,255,.75);line-height:1.7;margin-bottom:20px;font-style:italic;}
-.testimonial-author{display:flex;align-items:center;gap:12px;}
-.testimonial-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--purple-l),var(--purple));display:flex;align-items:center;justify-content:center;font-size:18px;}
-.testimonial-name{font-weight:800;font-size:14px;color:var(--white);}
-.testimonial-role{font-size:12px;color:var(--muted);}
+/* ── WHY ── */
+.why{padding:100px 24px;background:white;}
+.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:28px;max-width:1000px;margin:0 auto;}
+.why-card{background:var(--cream);border-radius:22px;padding:32px 26px;}
+.why-icon{font-size:36px;margin-bottom:14px;display:block;}
+.why-card h3{font-family:'Fraunces',serif;font-size:19px;font-weight:700;color:var(--purple);margin-bottom:8px;}
+.why-card p{font-size:14px;color:var(--muted);line-height:1.65;}
 
 /* ── CTA FINAL ── */
-.cta-final{padding:120px 48px;text-align:center;position:relative;overflow:hidden;}
-.cta-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(107,63,168,.3) 0%,transparent 70%);pointer-events:none;}
-.cta-title{font-family:'Fraunces',serif;font-size:clamp(40px,6vw,80px);font-weight:900;line-height:1;letter-spacing:-1px;margin-bottom:24px;}
-.cta-title em{font-style:italic;color:var(--gold);}
-.cta-sub{font-size:18px;color:rgba(255,255,255,.55);max-width:500px;margin:0 auto 48px;line-height:1.6;}
+.cta-final{padding:100px 24px;background:linear-gradient(160deg,#070a1e,#1a0840,#070a1e);text-align:center;}
+.cta-final h2{font-family:'Fraunces',serif;font-size:clamp(32px,6vw,64px);font-weight:900;color:white;line-height:1.1;margin-bottom:16px;}
+.cta-final h2 em{font-style:italic;color:var(--gold);}
+.cta-final p{font-size:18px;color:rgba(255,255,255,.6);max-width:500px;margin:0 auto 40px;line-height:1.7;}
 
 /* ── FOOTER ── */
-footer{padding:60px 48px 40px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;}
-.footer-logo{font-family:'Fraunces',serif;font-size:20px;font-weight:900;display:flex;align-items:center;gap:8px;}
-.footer-logo span{color:var(--gold);}
-.footer-copy{font-size:13px;color:var(--muted);}
-.footer-links{display:flex;gap:24px;}
-.footer-links a{font-size:13px;color:var(--muted);text-decoration:none;transition:color .2s;}
-.footer-links a:hover{color:var(--white);}
+footer{background:#07050f;color:rgba(255,255,255,.4);padding:32px 24px;text-align:center;font-size:13px;}
+footer a{color:rgba(255,255,255,.4);text-decoration:none;}
+footer strong{color:rgba(255,255,255,.7);}
 
-/* ── ANIMATIONS ── */
-@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-.reveal{opacity:0;transform:translateY(40px);transition:opacity .7s ease,transform .7s ease;}
-.reveal.visible{opacity:1;transform:translateY(0);}
-
-@media(max-width:900px){
-  nav{padding:16px 24px;}
+@media(max-width:640px){
   .nav-links{display:none;}
-  .stats{grid-template-columns:repeat(2,1fr);}
-  .features-grid{grid-template-columns:1fr;}
-  .collections-grid{grid-template-columns:1fr;}
-  .how-inner{grid-template-columns:1fr;}
-  .styles-grid{grid-template-columns:repeat(2,1fr);}
-  .testimonials-grid{grid-template-columns:1fr;}
-  .section,.features,.collections,.how,.styles,.testimonials,.cta-final{padding:60px 24px;}
-  footer{padding:40px 24px;}
+  .hero-stats{gap:28px;}
+  .hero-stat-n{font-size:28px;}
 }
 </style>
 </head>
 <body>
 
-
-
-
 <!-- NAV -->
 <nav>
-  <div class="nav-logo">🦉 Story<span>Owl</span></div>
+  <a class="nav-logo" href="/index.html">🦉 <span>StoryOwl</span></a>
   <div class="nav-links">
     <a href="#colecciones">Colecciones</a>
     <a href="#como-funciona">Cómo funciona</a>
-    <a href="#estilos">Estilos</a>
-    <a href="/index.html" class="nav-cta">✨ Crear gratis</a>
+    <a href="/generador.html" class="nav-cta">✨ Crear cuento</a>
   </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-bg"></div>
-  <canvas class="stars-canvas" id="starsCanvas"></canvas>
-
-  <div class="hero-badge">✨ Más de 5 estilos de ilustración disponibles</div>
-  <h1 class="hero-title">
-    <span class="line1">Cuentos únicos</span>
-    <span class="line2">para tu peque</span>
-    <span class="line3">con magia real</span>
-  </h1>
-  <p class="hero-sub">Crea en minutos un cuento <strong>completamente personalizado</strong> con el protagonista que tú diseñas — pelo, ojos, piel, gafas — ilustrado con IA en el estilo que elijas.</p>
+  <div class="stars" id="stars"></div>
+  <div class="hero-badge">✦ Powered by IA · Único en el mundo</div>
+  <span class="hero-owl">🦉</span>
+  <h1>El cuento que<em>solo existe</em>para tu peque</h1>
+  <p class="hero-sub">Genera en minutos un cuento ilustrado y personalizado donde tu hijo o hija es el protagonista. Con IA, sin esfuerzo, listo para descargar.</p>
   <div class="hero-btns">
-    <a href="/index.html" class="btn-hero-primary">✨ Crear mi cuento gratis</a>
-    <a href="#colecciones" class="btn-hero-secondary">Ver colecciones →</a>
+    <a href="/generador.html" class="btn-hero-main">🪄 Crear mi cuento ahora</a>
+    <a href="#colecciones" class="btn-hero-sec">Ver colecciones</a>
   </div>
-  <div class="hero-scroll">
-    <span>Descubre más</span>
-    <svg width="16" height="24" viewBox="0 0 16 24" fill="none"><path d="M8 4v16M2 14l6 6 6-6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-n">16</div><div class="hero-stat-l">Páginas ilustradas</div></div>
+    <div class="hero-stat"><div class="hero-stat-n">5</div><div class="hero-stat-l">Estilos artísticos</div></div>
+    <div class="hero-stat"><div class="hero-stat-n">∞</div><div class="hero-stat-l">Historias posibles</div></div>
+    <div class="hero-stat"><div class="hero-stat-n">PDF</div><div class="hero-stat-l">Listo para imprimir</div></div>
   </div>
 </section>
 
-<!-- STATS -->
-<div class="stats reveal">
-  <div class="stat"><div class="stat-num">5</div><div class="stat-label">Estilos de ilustración</div></div>
-  <div class="stat"><div class="stat-num">16</div><div class="stat-label">Páginas ilustradas</div></div>
-  <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Combinaciones únicas</div></div>
-  <div class="stat"><div class="stat-num">PDF</div><div class="stat-label">Listo para imprimir</div></div>
-</div>
-
-<!-- FEATURES -->
-<section class="features" id="features">
-  <div class="features-header reveal">
-    <span class="section-eyebrow">Por qué StoryOwl</span>
-    <h2 class="section-title">No es un cuento genérico.<br><em>Es su cuento.</em></h2>
-    <p class="section-sub">Cada detalle del protagonista es tuyo. Cada historia, única. Cada ilustración, creada en el momento.</p>
+<!-- CÓMO FUNCIONA -->
+<section class="how" id="como-funciona">
+  <div class="section-center">
+    <div class="section-eyebrow">Proceso</div>
+    <h2 class="section-title">En 3 pasos,<em>lista la magia</em></h2>
+    <p class="section-sub">Elige la colección, personaliza al protagonista, y la IA genera el cuento completo con ilustraciones únicas.</p>
   </div>
-  <div class="features-grid">
-    <div class="feature-card gold reveal">
-      <span class="feature-icon">🎨</span>
-      <h3 class="feature-title">5 estilos de ilustración</h3>
-      <p class="feature-desc">Pixar 3D, acuarela, cómic, clásico o manga. Cada estilo genera un libro visualmente único y coherente de principio a fin.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-icon">🎨</div>
+      <h3>Personaliza</h3>
+      <p>Nombre, edad, aspecto físico, tema del cuento y personaje especial. Cada detalle cuenta.</p>
     </div>
-    <div class="feature-card purple reveal">
-      <span class="feature-icon">👤</span>
-      <h3 class="feature-title">Personaje 100% personalizado</h3>
-      <p class="feature-desc">Pelo, ojos, piel, gafas, pecas... El protagonista se parece de verdad a tu peque. No es un avatar genérico.</p>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-icon">⚡</div>
+      <h3>La IA crea</h3>
+      <p>Claude escribe el texto y GPT-Image genera cada ilustración. En minutos tienes 16 páginas únicas.</p>
     </div>
-    <div class="feature-card pink reveal">
-      <span class="feature-icon">📚</span>
-      <h3 class="feature-title">16 páginas ilustradas</h3>
-      <p class="feature-desc">Una historia completa con introducción, aventura y final feliz. No 4 páginas de relleno — un libro de verdad.</p>
-    </div>
-    <div class="feature-card teal reveal">
-      <span class="feature-icon">⚡</span>
-      <h3 class="feature-title">Listo en minutos</h3>
-      <p class="feature-desc">Sin esperas de días. En pocos minutos tienes el cuento completo, las ilustraciones generadas y el PDF descargable.</p>
-    </div>
-    <div class="feature-card green reveal">
-      <span class="feature-icon">📄</span>
-      <h3 class="feature-title">PDF profesional imprimible</h3>
-      <p class="feature-desc">Calidad de imprenta. Formato A4 vertical con imágenes a sangre y tipografía cuidada. Listo para imprimir o regalar digital.</p>
-    </div>
-    <div class="feature-card blue reveal">
-      <span class="feature-icon">🌍</span>
-      <h3 class="feature-title">Colecciones para cada momento</h3>
-      <p class="feature-desc">Cumpleaños, primer diente, Navidad, Día del Padre... Una colección especial para cada momento importante de su infancia.</p>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-icon">📖</div>
+      <h3>Descarga y disfruta</h3>
+      <p>PDF de calidad editorial listo para imprimir, regalar o leer en pantalla esta noche.</p>
     </div>
   </div>
 </section>
 
-<!-- COLLECTIONS -->
+<!-- COLECCIONES -->
 <section class="collections" id="colecciones">
-  <div class="collections-header reveal">
-    <span class="section-eyebrow">Colecciones</span>
-    <h2 class="section-title">Cada momento<br><em>merece su historia</em></h2>
-    <p class="section-sub">Desde el generador libre hasta colecciones especiales diseñadas para los momentos más importantes de su infancia.</p>
+  <div class="section-center">
+    <div class="section-eyebrow">Colecciones</div>
+    <h2 class="section-title">Elige tu<em>aventura</em></h2>
+    <p class="section-sub">Cuatro colecciones especiales, cada una diseñada para un momento especial en la vida de tu peque.</p>
   </div>
   <div class="collections-grid">
 
-    <!-- Generador Libre -->
-    <div class="collection-card reveal">
-      <img src="/portada-libre.png" alt="Tu historia"/>
-      <div class="collection-overlay"></div>
-      <div class="collection-content">
-        <span class="collection-tag" style="--tag-color:#f7c94b">🦉 Generador libre</span>
-        <h3 class="collection-title">Tu historia única</h3>
-        <p class="collection-desc">Tú eliges el personaje, el compañero de aventuras y el tema. La IA crea una historia completamente original.</p>
-        <a href="/index.html" class="collection-btn">Crear ahora
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
+    <a class="coll-card coll-libre" href="/generador.html">
+      <div class="coll-card-inner">
+        <span class="coll-icon">🦉</span>
+        <span class="coll-tag">⭐ Más popular</span>
+        <div class="coll-title">Cuento a medida</div>
+        <div class="coll-desc">Tú decides el tema, el personaje especial y la aventura. Sin límites — cualquier historia que imagines.</div>
+        <div class="coll-cta">Crear cuento libre →</div>
       </div>
-    </div>
+    </a>
 
-    <!-- Cumpleaños -->
-    <div class="collection-card reveal">
-      <img src="/portada-cumple.png" alt="Cumpleaños"/>
-      <div class="collection-overlay"></div>
-      <div class="collection-content">
-        <span class="collection-tag" style="--tag-color:#e91e8c">🎂 Colección especial</span>
-        <h3 class="collection-title">La fiesta sorpresa</h3>
-        <p class="collection-desc">Nadie en el cole le felicita... hasta que llega a casa y descubre la fiesta sorpresa de su vida. 16 páginas de pura emoción.</p>
-        <a href="/cumple.html" class="collection-btn">Crear ahora
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
+    <a class="coll-card coll-cumple" href="/cumple.html">
+      <div class="coll-card-inner">
+        <span class="coll-icon">🎂</span>
+        <span class="coll-tag">🎉 Especial cumpleaños</span>
+        <div class="coll-title">Cuento de Cumpleaños</div>
+        <div class="coll-desc">La historia perfecta del día de su cumpleaños: la sorpresa, la tarta, los amigos y la magia de crecer.</div>
+        <div class="coll-cta">Crear cuento →</div>
       </div>
-    </div>
+    </a>
 
-    <!-- Diente -->
-    <div class="collection-card reveal">
-      <img src="/portada-diente.png" alt="Diente"/>
-      <div class="collection-overlay"></div>
-      <div class="collection-content">
-        <span class="collection-tag" style="--tag-color:#22d3ee">🦷 Colección especial</span>
-        <h3 class="collection-title">El diente mágico</h3>
-        <p class="collection-desc">Elige entre el Ratoncito Pérez o el Hada de los Dientes. Una historia sobre valentía, crecer y la magia que existe de verdad.</p>
-        <a href="/diente.html" class="collection-btn">Crear ahora
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
+    <a class="coll-card coll-diente" href="/diente.html">
+      <div class="coll-card-inner">
+        <span class="coll-icon">🦷</span>
+        <span class="coll-tag">✨ Ratoncito Pérez</span>
+        <div class="coll-title">Se me cayó un diente</div>
+        <div class="coll-desc">El Ratoncito Pérez o el Hada de los Dientes visita a tu peque en una noche mágica que no olvidará.</div>
+        <div class="coll-cta">Crear cuento →</div>
       </div>
-    </div>
+    </a>
 
-
-    <!-- Verano -->
-    <div class="collection-card reveal">
-      <img src="/portada-verano.png" alt="Verano"/>
-      <div class="collection-overlay"></div>
-      <div class="collection-content">
-        <span class="collection-tag" style="--tag-color:#f97316">☀️ Colección especial</span>
-        <h3 class="collection-title">El verano más mágico</h3>
-        <p class="collection-desc">Elige el destino — playa, montaña, pueblo, camping... y vive el mejor verano de su vida en 16 páginas de pura aventura.</p>
-        <a href="/verano.html" class="collection-btn">Crear ahora
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
+    <a class="coll-card coll-verano" href="/verano.html">
+      <div class="coll-card-inner">
+        <span class="coll-icon">☀️</span>
+        <span class="coll-tag">🏖️ Especial verano</span>
+        <div class="coll-title">Aventuras de Verano</div>
+        <div class="coll-desc">6 destinos: playa, montaña, ciudad, campo, lago o parque. Una aventura veraniega de película.</div>
+        <div class="coll-cta">Crear cuento →</div>
       </div>
-    </div>
+    </a>
 
-  </div>
-
-  <!-- Próximamente -->
-  <div style="max-width:1200px;margin:32px auto 0;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
-    <div class="reveal" style="background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.1);border-radius:20px;padding:28px 20px;text-align:center;">
-      <div style="font-size:32px;margin-bottom:12px;">🎃</div>
-      <div style="font-family:'Fraunces',serif;font-size:16px;font-weight:700;color:rgba(255,255,255,.5)">Halloween</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:1px">PRÓXIMAMENTE</div>
-    </div>
-    <div class="reveal" style="background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.1);border-radius:20px;padding:28px 20px;text-align:center;">
-      <div style="font-size:32px;margin-bottom:12px;">🎄</div>
-      <div style="font-family:'Fraunces',serif;font-size:16px;font-weight:700;color:rgba(255,255,255,.5)">Navidad</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:1px">PRÓXIMAMENTE</div>
-    </div>
-    <div class="reveal" style="background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.1);border-radius:20px;padding:28px 20px;text-align:center;">
-      <div style="font-size:32px;margin-bottom:12px;">👨</div>
-      <div style="font-family:'Fraunces',serif;font-size:16px;font-weight:700;color:rgba(255,255,255,.5)">Día del Padre</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:1px">PRÓXIMAMENTE</div>
-    </div>
-    <div class="reveal" style="background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.1);border-radius:20px;padding:28px 20px;text-align:center;">
-      <div style="font-size:32px;margin-bottom:12px;">⭐</div>
-      <div style="font-family:'Fraunces',serif;font-size:16px;font-weight:700;color:rgba(255,255,255,.5)">Esa estrella eres tú</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:1px">PRÓXIMAMENTE</div>
-    </div>
   </div>
 </section>
 
-<!-- HOW IT WORKS -->
-<section class="how" id="como-funciona">
-  <div class="how-inner">
-    <div>
-      <span class="section-eyebrow reveal">Cómo funciona</span>
-      <h2 class="section-title reveal">De idea a libro<br><em>en minutos</em></h2>
-      <div class="how-steps" style="margin-top:48px;">
-        <div class="how-step reveal">
-          <div class="step-num">1</div>
-          <div class="step-content">
-            <h3>Diseña al protagonista</h3>
-            <p>Elige pelo, ojos, tono de piel, gafas, pecas... El personaje se parece de verdad a tu peque.</p>
-          </div>
-        </div>
-        <div class="how-step reveal">
-          <div class="step-num">2</div>
-          <div class="step-content">
-            <h3>Elige el estilo y la historia</h3>
-            <p>Pixar, acuarela, manga... Y el tema que más le guste: amistad, valentía, naturaleza, magia.</p>
-          </div>
-        </div>
-        <div class="how-step reveal">
-          <div class="step-num">3</div>
-          <div class="step-content">
-            <h3>La IA crea tu cuento</h3>
-            <p>Claude escribe la historia y DALL-E ilustra cada página. Todo en minutos, todo único.</p>
-          </div>
-        </div>
-        <div class="how-step reveal">
-          <div class="step-num">4</div>
-          <div class="step-content">
-            <h3>Descarga tu PDF</h3>
-            <p>Imprime en casa, en una copistería o regala el PDF. Calidad profesional lista para usar.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="how-visual reveal">
-      <img src="/portada-diente.png" alt="Ejemplo de cuento" class="book-preview"/>
-    </div>
+<!-- POR QUÉ STORYOWL -->
+<section class="why">
+  <div class="section-center">
+    <div class="section-eyebrow">Por qué StoryOwl</div>
+    <h2 class="section-title">No es un cuento<em>cualquiera</em></h2>
   </div>
-</section>
-
-<!-- STYLES -->
-<section class="styles" id="estilos">
-  <div class="styles-header reveal">
-    <span class="section-eyebrow">Estilos de ilustración</span>
-    <h2 class="section-title">Cinco estilos.<br><em>Infinitas historias.</em></h2>
-    <p class="section-sub">Cada estilo genera un libro visualmente diferente. Elige el que más encaje con tu peque.</p>
-  </div>
-  <div class="styles-grid">
-    <div class="style-card-item reveal">
-      <span class="style-emoji">🎬</span>
-      <span class="style-name-label">Pixar</span>
-      <span class="style-desc-label">3D vivo y colorido como las pelis de animación</span>
+  <div class="why-grid">
+    <div class="why-card">
+      <span class="why-icon">🎨</span>
+      <h3>Ilustraciones únicas</h3>
+      <p>Cada imagen se genera específicamente para tu historia. Nadie más tendrá las mismas ilustraciones.</p>
     </div>
-    <div class="style-card-item reveal">
-      <span class="style-emoji">🎨</span>
-      <span class="style-name-label">Acuarela</span>
-      <span class="style-desc-label">Suave, soñador y lleno de ternura</span>
+    <div class="why-card">
+      <span class="why-icon">👧</span>
+      <h3>Tu peque como protagonista</h3>
+      <p>Nombre, aspecto físico, edad — el personaje principal se parece y se llama como el tuyo.</p>
     </div>
-    <div class="style-card-item reveal">
-      <span class="style-emoji">💥</span>
-      <span class="style-name-label">Cómic</span>
-      <span class="style-desc-label">Dinámico, divertido y lleno de acción</span>
+    <div class="why-card">
+      <span class="why-icon">💌</span>
+      <h3>Dedicatoria personal</h3>
+      <p>Añade tus propias palabras. El cuento empieza con un mensaje directo de tu parte.</p>
     </div>
-    <div class="style-card-item reveal">
-      <span class="style-emoji">📖</span>
-      <span class="style-name-label">Clásico</span>
-      <span class="style-desc-label">Como los grandes cuentos ilustrados de siempre</span>
+    <div class="why-card">
+      <span class="why-icon">📄</span>
+      <h3>PDF de calidad editorial</h3>
+      <p>Formato libro, 16 páginas ilustradas. Imprime en casa o en una copistería y queda precioso.</p>
     </div>
-    <div class="style-card-item reveal">
-      <span class="style-emoji">⛩️</span>
-      <span class="style-name-label">Manga</span>
-      <span class="style-desc-label">Estilo anime japonés con ojos expresivos</span>
+    <div class="why-card">
+      <span class="why-icon">⚡</span>
+      <h3>Listo en minutos</h3>
+      <p>Sin esperas largas. En 3-5 minutos tienes el cuento completo generado y listo para descargar.</p>
     </div>
-  </div>
-</section>
-
-<!-- TESTIMONIALS -->
-<section class="testimonials">
-  <div class="testimonials-header reveal">
-    <span class="section-eyebrow">Lo que dicen las familias</span>
-    <h2 class="section-title">Historias que <em>emocionan</em></h2>
-  </div>
-  <div class="testimonials-grid">
-    <div class="testimonial reveal">
-      <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
-      <p class="testimonial-text">"Mi hija se quedó llorando de emoción cuando vio que la protagonista tenía su mismo pelo rizado y sus pecas. No podía creerlo."</p>
-      <div class="testimonial-author">
-        <div class="testimonial-avatar">👩</div>
-        <div><div class="testimonial-name">Laura M.</div><div class="testimonial-role">Madre de Sofía, 6 años</div></div>
-      </div>
-    </div>
-    <div class="testimonial reveal">
-      <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
-      <p class="testimonial-text">"Lo usé para el cumpleaños de mi hijo. El cuento de la fiesta sorpresa fue el mejor regalo que le hemos dado nunca. Alucinó."</p>
-      <div class="testimonial-author">
-        <div class="testimonial-avatar">👨</div>
-        <div><div class="testimonial-name">Carlos R.</div><div class="testimonial-role">Padre de Lucas, 7 años</div></div>
-      </div>
-    </div>
-    <div class="testimonial reveal">
-      <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
-      <p class="testimonial-text">"El cuento del Ratoncito Pérez fue perfecto. Mi hija guardó el PDF en el móvil y se lo enseña a todo el mundo. Una joya."</p>
-      <div class="testimonial-author">
-        <div class="testimonial-avatar">👩</div>
-        <div><div class="testimonial-name">Ana G.</div><div class="testimonial-role">Madre de Martina, 5 años</div></div>
-      </div>
+    <div class="why-card">
+      <span class="why-icon">🌍</span>
+      <h3>Hecho con amor</h3>
+      <p>Diseñado por papás para papás. Cada detalle pensado para que el momento sea especial.</p>
     </div>
   </div>
 </section>
 
 <!-- CTA FINAL -->
 <section class="cta-final">
-  <div class="cta-bg"></div>
-  <h2 class="cta-title reveal">¿A qué esperas?<br><em>Su historia te espera.</em></h2>
-  <p class="cta-sub reveal">Crea el primer cuento gratis y comprueba la magia tú mismo. En minutos tienes un libro único que tu peque recordará toda la vida.</p>
-  <div class="hero-btns reveal">
-    <a href="/index.html" class="btn-hero-primary">✨ Crear mi cuento gratis</a>
-    <a href="#colecciones" class="btn-hero-secondary">Ver colecciones →</a>
-  </div>
+  <div class="stars" id="stars2"></div>
+  <h2>¿A qué esperas<em>para empezar?</em></h2>
+  <p>El cuento más especial del mundo les está esperando. Solo tienes que escribir su nombre.</p>
+  <a href="/generador.html" class="btn-hero-main" style="font-size:18px;padding:16px 44px;">🦉 Crear mi cuento ahora</a>
 </section>
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-logo">🦉 Story<span>Owl</span></div>
-  <div class="footer-copy">© 2026 StoryOwl. Todos los derechos reservados.</div>
-  <div class="footer-links">
-    <a href="#">Privacidad</a>
-    <a href="#">Términos</a>
-    <a href="#">Contacto</a>
-  </div>
+  <p><strong>🦉 StoryOwl</strong> · Cuentos infantiles únicos generados con IA</p>
+  <p style="margin-top:8px">Hecho con ❤️ en Sevilla · <a href="#">Contacto</a> · <a href="#">Privacidad</a></p>
 </footer>
 
 <script>
-// cursor eliminado
-
-// Stars
-const canvas=document.getElementById('starsCanvas');
-const ctx=canvas.getContext('2d');
-function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
-resizeCanvas();
-window.addEventListener('resize',resizeCanvas);
-const stars=Array.from({length:120},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.5+.3,o:Math.random(),s:Math.random()*.02+.005}));
-function drawStars(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  stars.forEach(s=>{
-    s.o+=s.s; if(s.o>1||s.o<0)s.s*=-1;
-    ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-    ctx.fillStyle=`rgba(255,255,255,${s.o})`;ctx.fill();
-  });
-  requestAnimationFrame(drawStars);
+// Estrellas hero
+function crearEstrellas(containerId, n){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  for(let i=0;i<n;i++){
+    const s=document.createElement('div'); s.className='star';
+    const sz=Math.random()*2.5+.5;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${Math.random()*3+1.5}s;--dl:${Math.random()*4}s;`;
+    el.appendChild(s);
+  }
 }
-drawStars();
+crearEstrellas('stars', 80);
+crearEstrellas('stars2', 40);
 
-// Reveal on scroll
-const reveals=document.querySelectorAll('.reveal');
-const observer=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target);}});
-},{threshold:.1});
-reveals.forEach(el=>observer.observe(el));
+// Smooth scroll para anclas
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click', e=>{
+    const target = document.querySelector(a.getAttribute('href'));
+    if(target){ e.preventDefault(); target.scrollIntoView({behavior:'smooth'}); }
+  });
+});
 </script>
 </body>
 </html>

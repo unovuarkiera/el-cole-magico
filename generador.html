@@ -3,35 +3,41 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>StoryOwl — Cuentos únicos para tu peque</title>
+<title>StoryOwl — Crear cuento personalizado</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--purple:#3a2070;--purple-l:#6b3fa8;--gold:#f7c94b;--gold-d:#e5a800;--cream:#fffdf7;--dark:#1a0f30;--muted:#7a6a9a;}
+:root{
+  --purple:#3a2070;--purple-l:#6b3fa8;--gold:#f7c94b;--gold-d:#e5a800;
+  --cream:#fffdf7;--dark:#1a0f30;--muted:#7a6a9a;--teal:#0ea5a0;--teal-l:#2dd4bf;
+}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--dark);overflow-x:hidden;}
-.hero{min-height:100vh;background:linear-gradient(160deg,#1a0f30 0%,#3a2070 50%,#1a0f30 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;text-align:center;position:relative;overflow:hidden;}
+
+/* HERO */
+.hero{min-height:60vh;background:linear-gradient(150deg,#0d1a40 0%,#2a1060 50%,#0d1a40 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;text-align:center;position:relative;overflow:hidden;}
 .stars{position:absolute;inset:0;pointer-events:none;}
 .star{position:absolute;background:white;border-radius:50%;animation:twinkle var(--d) var(--dl) infinite alternate;}
 @keyframes twinkle{from{opacity:.1;transform:scale(.7)}to{opacity:.9;transform:scale(1.3)}}
-.owl{font-size:72px;animation:float 4s ease-in-out infinite;filter:drop-shadow(0 0 30px rgba(247,201,75,.5));margin-bottom:16px;}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-.hero h1{font-family:'Fraunces',serif;font-size:clamp(48px,8vw,90px);font-weight:900;color:white;line-height:1;margin-bottom:12px;}
+.owl-emoji{font-size:72px;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 0 24px rgba(107,63,168,.6));margin-bottom:12px;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.hero h1{font-family:'Fraunces',serif;font-size:clamp(32px,6vw,64px);font-weight:900;color:white;line-height:1.1;margin-bottom:10px;}
 .hero h1 em{font-style:italic;color:var(--gold);display:block;}
-.hero p{font-size:20px;color:rgba(255,255,255,.7);margin-bottom:40px;max-width:560px;}
-.btn-gold{background:var(--gold);color:var(--dark);font-family:'Fraunces',serif;font-weight:900;font-size:20px;padding:18px 48px;border-radius:50px;border:none;cursor:pointer;box-shadow:0 8px 40px rgba(247,201,75,.4);transition:all .25s;text-decoration:none;display:inline-block;}
-.btn-gold:hover{transform:translateY(-3px);box-shadow:0 14px 50px rgba(247,201,75,.5);}
-.form-section{padding:80px 24px;max-width:760px;margin:0 auto;}
-.form-title{font-family:'Fraunces',serif;font-size:42px;font-weight:900;color:var(--purple);text-align:center;margin-bottom:8px;}
-.form-title em{font-style:italic;color:var(--gold-d);}
-.form-sub{text-align:center;color:var(--muted);font-size:17px;margin-bottom:48px;}
-.form-card{background:white;border-radius:28px;padding:48px;box-shadow:0 8px 40px rgba(58,32,112,.1);}
+.hero p{font-size:17px;color:rgba(255,255,255,.7);max-width:500px;}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,.45);font-size:13px;text-decoration:none;margin-top:20px;transition:color .2s;}
+.back-link:hover{color:white;}
+
+/* FORM */
+.form-section{padding:64px 24px;max-width:780px;margin:0 auto;}
+.form-title{font-family:'Fraunces',serif;font-size:34px;font-weight:900;color:var(--purple);text-align:center;margin-bottom:6px;}
+.form-title em{font-style:italic;color:var(--teal);}
+.form-sub{text-align:center;color:var(--muted);font-size:16px;margin-bottom:44px;}
+.form-card{background:white;border-radius:28px;padding:44px;box-shadow:0 8px 40px rgba(58,32,112,.09);}
 .section-label{font-weight:800;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--purple);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
 .section-label::after{content:'';flex:1;height:1px;background:rgba(58,32,112,.1);}
-.field{margin-bottom:28px;}
+.field{margin-bottom:26px;}
 .label{display:block;font-weight:800;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--purple);margin-bottom:10px;}
-.input{width:100%;padding:14px 18px;border:2px solid rgba(58,32,112,.12);border-radius:14px;font-family:'Nunito',sans-serif;font-size:16px;color:var(--dark);background:var(--cream);outline:none;transition:border-color .2s;}
+.input{width:100%;padding:13px 17px;border:2px solid rgba(58,32,112,.12);border-radius:14px;font-family:'Nunito',sans-serif;font-size:16px;color:var(--dark);background:var(--cream);outline:none;transition:border-color .2s;}
 .input:focus{border-color:var(--purple-l);}
 .input::placeholder{color:rgba(26,15,48,.3);}
 .btn-group{display:flex;flex-wrap:wrap;gap:10px;}
@@ -42,78 +48,86 @@ body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--dark);o
 .color-btn{width:40px;height:40px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:all .2s;position:relative;}
 .color-btn:hover{transform:scale(1.1);}
 .color-btn.active{border-color:var(--purple);box-shadow:0 0 0 3px rgba(58,32,112,.2);transform:scale(1.15);}
-.color-btn .check{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;opacity:0;}
+.color-btn .check{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;opacity:0;}
 .color-btn.active .check{opacity:1;}
-.edad-display{font-family:'Fraunces',serif;font-size:48px;font-weight:900;color:var(--purple);text-align:center;margin-bottom:8px;}
-.edad-sub{text-align:center;color:var(--muted);font-size:14px;margin-bottom:16px;}
-input[type=range]{width:100%;accent-color:var(--purple);height:6px;border-radius:3px;}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
 .style-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;}
 .style-card{border:2px solid rgba(58,32,112,.12);border-radius:16px;padding:16px 12px;text-align:center;cursor:pointer;transition:all .2s;background:white;}
 .style-card:hover{border-color:var(--purple-l);}
-.style-card.active{border-color:var(--purple);background:rgba(58,32,112,.04);}
-.style-card .style-icon{font-size:32px;margin-bottom:8px;}
-.style-card .style-name{font-weight:800;font-size:13px;color:var(--dark);}
-.style-card .style-desc{font-size:11px;color:var(--muted);margin-top:3px;}
-.themes{display:flex;flex-wrap:wrap;gap:10px;}
-.theme-btn{padding:9px 18px;border-radius:20px;border:2px solid rgba(58,32,112,.15);background:white;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s;}
-.theme-btn:hover{border-color:var(--purple-l);color:var(--purple);}
-.theme-btn.active{background:var(--purple);border-color:var(--purple);color:white;}
-.btn-generate{width:100%;padding:20px;background:linear-gradient(135deg,var(--purple-l),var(--purple));color:white;font-family:'Fraunces',serif;font-size:22px;font-weight:900;border:none;border-radius:16px;cursor:pointer;margin-top:8px;box-shadow:0 8px 30px rgba(58,32,112,.3);transition:all .3s;}
-.btn-generate:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 14px 40px rgba(58,32,112,.4);}
+.style-card.active{border-color:var(--teal);background:rgba(14,165,160,.05);}
+.style-icon{font-size:30px;margin-bottom:6px;}
+.style-name{font-weight:800;font-size:13px;color:var(--dark);}
+.style-desc{font-size:11px;color:var(--muted);margin-top:3px;}
+.edad-display{font-family:'Fraunces',serif;font-size:64px;font-weight:900;color:var(--teal);text-align:center;margin-bottom:2px;line-height:1;}
+.edad-sub{text-align:center;color:var(--muted);font-size:13px;margin-bottom:14px;}
+input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3px;}
+.btn-generate{width:100%;padding:20px;background:linear-gradient(135deg,var(--teal-l),var(--teal));color:white;font-family:'Fraunces',serif;font-size:22px;font-weight:900;border:none;border-radius:16px;cursor:pointer;margin-top:8px;box-shadow:0 8px 30px rgba(14,165,160,.3);transition:all .3s;}
+.btn-generate:hover:not(:disabled){transform:translateY(-2px);}
 .btn-generate:disabled{opacity:.5;cursor:not-allowed;}
+
+/* BOOK */
 .book-section{display:none;padding:60px 24px;max-width:700px;margin:0 auto;}
-.book-header{text-align:center;margin-bottom:48px;}
-.book-title{font-family:'Fraunces',serif;font-size:clamp(32px,5vw,56px);font-weight:900;color:var(--purple);line-height:1.1;margin-bottom:10px;}
-.book-ded{font-family:'Fraunces',serif;font-style:italic;font-size:18px;color:var(--muted);}
-.cover-img{width:100%;max-width:360px;border-radius:20px;box-shadow:0 20px 60px rgba(58,32,112,.25);display:block;margin:0 auto 48px;}
-.page{background:white;border-radius:24px;overflow:hidden;margin-bottom:32px;box-shadow:0 4px 24px rgba(58,32,112,.08);opacity:0;transform:translateY(20px);transition:all .5s;}
+.book-header{text-align:center;margin-bottom:44px;}
+.book-title{font-family:'Fraunces',serif;font-size:clamp(26px,5vw,48px);font-weight:900;color:var(--purple);line-height:1.1;margin-bottom:8px;}
+.book-ded{font-family:'Fraunces',serif;font-style:italic;font-size:17px;color:var(--muted);}
+.cover-img{width:100%;max-width:340px;border-radius:20px;box-shadow:0 20px 60px rgba(107,63,168,.22);display:block;margin:0 auto 44px;}
+.page{background:white;border-radius:22px;overflow:hidden;margin-bottom:28px;box-shadow:0 4px 24px rgba(58,32,112,.08);opacity:0;transform:translateY(20px);transition:all .5s;}
 .page.visible{opacity:1;transform:translateY(0);}
 .page-img{width:100%;aspect-ratio:2/3;object-fit:cover;}
-.page-body{padding:24px 28px 28px;background:linear-gradient(135deg,#faf7ff,#fff8f0);}
-.page-num{font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--gold-d);margin-bottom:4px;}
-.page-title{font-family:'Fraunces',serif;font-size:20px;font-style:italic;color:var(--purple);margin-bottom:10px;}
-.page-text{font-size:16px;line-height:1.8;color:#3a3050;}
+.page-body{padding:22px 26px 26px;background:linear-gradient(135deg,#f0fbfa,#f5f0ff);}
+.page-num{font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--teal);margin-bottom:4px;}
+.page-title{font-family:'Fraunces',serif;font-size:19px;font-style:italic;color:var(--purple);margin-bottom:8px;}
+.page-text{font-size:15px;line-height:1.8;color:#3a3050;}
 .end-section{text-align:center;padding:40px 0 80px;}
-.end-icon{font-size:48px;margin-bottom:16px;display:block;}
-.end-title{font-family:'Fraunces',serif;font-size:28px;color:var(--purple);margin-bottom:24px;}
-.btn-nuevo{background:var(--purple);color:white;font-family:'Fraunces',serif;font-weight:700;font-size:18px;padding:16px 40px;border-radius:50px;border:none;cursor:pointer;transition:all .25s;}
+.end-icon{font-size:48px;margin-bottom:14px;display:block;}
+.end-title{font-family:'Fraunces',serif;font-size:26px;color:var(--purple);margin-bottom:22px;}
+.btn-dl{background:linear-gradient(135deg,var(--teal-l),var(--teal));color:white;font-family:'Fraunces',serif;font-weight:900;font-size:18px;padding:16px 40px;border-radius:50px;border:none;cursor:pointer;transition:all .25s;box-shadow:0 6px 24px rgba(14,165,160,.3);}
+.btn-dl:hover{transform:translateY(-2px);}
+.btn-dl:disabled{opacity:.5;cursor:not-allowed;}
+.btn-nuevo{background:var(--purple);color:white;font-family:'Fraunces',serif;font-weight:700;font-size:17px;padding:15px 36px;border-radius:50px;border:none;cursor:pointer;transition:all .25s;}
 .btn-nuevo:hover{background:var(--purple-l);transform:translateY(-2px);}
-.btn-nuevo:disabled{opacity:.5;cursor:not-allowed;}
-.overlay{display:none!important;}
-@keyframes pageSlideIn{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
-.page-live{animation:pageSlideIn 0.6s ease both;}
-.generating-indicator{display:flex;align-items:center;gap:10px;padding:16px 20px;background:rgba(58,32,112,.06);border-radius:12px;margin-bottom:16px;font-size:14px;color:#7a6a9a;border:1px solid rgba(58,32,112,.1);}
-.generating-dot{width:8px;height:8px;border-radius:50%;background:#6b3fa8;animation:pulse 1s infinite;flex-shrink:0;}
+
+/* Status */
+.generating-indicator{display:flex;align-items:center;gap:10px;padding:14px 18px;background:rgba(14,165,160,.06);border-radius:12px;margin-bottom:14px;font-size:14px;color:var(--muted);border:1px solid rgba(14,165,160,.12);}
+.generating-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);animation:pulse 1s infinite;flex-shrink:0;}
 @keyframes pulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
-#progress-bar{position:fixed;top:0;left:0;height:4px;width:0%;background:linear-gradient(90deg,#f7c94b,#6b3fa8,#f7c94b);background-size:200% 100%;animation:shimmer 2s infinite;z-index:9999;transition:width 0.5s ease;border-radius:0 2px 2px 0;}
+#progress-bar{position:fixed;top:0;left:0;height:4px;width:0%;background:linear-gradient(90deg,var(--teal),var(--teal-l),var(--teal));background-size:200% 100%;animation:shimmer 2s infinite;z-index:9999;transition:width 0.5s ease;}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-#status-bar{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(26,15,48,.92);backdrop-filter:blur(12px);color:white;padding:12px 24px;border-radius:50px;font-size:14px;font-weight:700;z-index:9998;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);transition:all .3s;white-space:nowrap;}
-#status-bar .status-dot{width:8px;height:8px;border-radius:50%;background:#f7c94b;animation:pulse 1s infinite;flex-shrink:0;}
-@media(max-width:600px){.row2{grid-template-columns:1fr}.form-card{padding:28px 20px}.style-grid{grid-template-columns:repeat(2,1fr)}}
+#status-bar{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(13,26,64,.92);backdrop-filter:blur(12px);color:white;padding:12px 24px;border-radius:50px;font-size:14px;font-weight:700;z-index:9998;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);white-space:nowrap;}
+#status-bar .status-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);animation:pulse 1s infinite;flex-shrink:0;}
+
+@media(max-width:600px){.row2{grid-template-columns:1fr}.form-card{padding:26px 18px}.style-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
-<section class="hero" id="hero">
+
+<section class="hero">
   <div class="stars" id="stars"></div>
-  <div class="owl">🦉</div>
-  <h1>El Cole<em>Mágico</em></h1>
-  <p>Cuentos únicos con ilustraciones personalizadas para tu peque — generados con magia e inteligencia artificial</p>
-  <a href="#crear" class="btn-gold" onclick="scrollToForm()">✨ Crear mi cuento ahora</a>
+  <div class="owl-emoji">🦉</div>
+  <h1>Cuento<em>a tu medida</em></h1>
+  <p>Tú eliges el protagonista, el tema y el personaje especial. La IA hace el resto.</p>
+  <a href="/index.html" class="back-link">← Volver al inicio</a>
 </section>
 
 <section class="form-section" id="crear">
-  <h2 class="form-title">Crea el cuento de <em>tu peque</em></h2>
-  <p class="form-sub">Diseña el protagonista y nuestro búho creará una historia única</p>
+  <h2 class="form-title">Diseña tu <em>aventura</em></h2>
+  <p class="form-sub">Personaliza cada detalle — el cuento tardará unos minutos en generarse</p>
+
   <div class="form-card">
-    <div class="section-label">✨ El protagonista</div>
-    <div class="field"><label class="label">Nombre</label><input class="input" id="nombre" placeholder="Ej: Sofía, Lucas, Martina..."/></div>
+    <div class="section-label">🦸 El protagonista</div>
+
     <div class="field">
-      <label class="label">Edad</label>
-      <div class="edad-display" id="edadDisplay">6</div>
-      <div class="edad-sub" id="edadSub">Primaria — aventuras y amistad</div>
-      <input type="range" id="edad" min="3" max="15" value="6" oninput="updateEdad(this.value)"/>
+      <label class="label">¿Cómo se llama?</label>
+      <input class="input" id="nombre" placeholder="Ej: Lucas, Sofía, Martina..."/>
     </div>
+
+    <div class="field">
+      <label class="label">¿Cuántos años tiene?</label>
+      <div class="edad-display" id="edadDisplay">6</div>
+      <div class="edad-sub">El tono del cuento se adapta a esta edad</div>
+      <input type="range" id="edad" min="1" max="15" value="6" oninput="document.getElementById('edadDisplay').textContent=this.value"/>
+    </div>
+
     <div class="field">
       <label class="label">Es un...</label>
       <div class="btn-group">
@@ -122,6 +136,7 @@ input[type=range]{width:100%;accent-color:var(--purple);height:6px;border-radius
         <button class="opt-btn" onclick="setOpt(this,'genero','protagonista')">🌟 Sorpresa</button>
       </div>
     </div>
+
     <div class="field">
       <label class="label">Tono de piel</label>
       <div class="color-group">
@@ -132,6 +147,7 @@ input[type=range]{width:100%;accent-color:var(--purple);height:6px;border-radius
         <div class="color-btn" style="background:#4A2912" onclick="setColor(this,'piel','deep dark skin')"><span class="check">✓</span></div>
       </div>
     </div>
+
     <div class="field">
       <label class="label">Color de pelo</label>
       <div class="color-group">
@@ -141,9 +157,9 @@ input[type=range]{width:100%;accent-color:var(--purple);height:6px;border-radius
         <div class="color-btn" style="background:#6B3A2A" onclick="setColor(this,'pelo','dark brown')"><span class="check">✓</span></div>
         <div class="color-btn" style="background:#1C1C1C" onclick="setColor(this,'pelo','black')"><span class="check">✓</span></div>
         <div class="color-btn" style="background:#C0392B" onclick="setColor(this,'pelo','red')"><span class="check">✓</span></div>
-        <div class="color-btn" style="background:#E8E8E8;border:1px solid #ccc" onclick="setColor(this,'pelo','white or silver')"><span class="check" style="color:#333">✓</span></div>
       </div>
     </div>
+
     <div class="field">
       <label class="label">Tipo de pelo</label>
       <div class="btn-group">
@@ -154,6 +170,7 @@ input[type=range]{width:100%;accent-color:var(--purple);height:6px;border-radius
         <button class="opt-btn" onclick="setOpt(this,'tipopelo','long braided')">💈 Trenzas</button>
       </div>
     </div>
+
     <div class="field">
       <label class="label">Color de ojos</label>
       <div class="color-group">
@@ -164,13 +181,13 @@ input[type=range]{width:100%;accent-color:var(--purple);height:6px;border-radius
         <div class="color-btn" style="background:#1C1C1C" onclick="setColor(this,'ojos','dark black')"><span class="check">✓</span></div>
       </div>
     </div>
+
     <div class="row2">
       <div class="field">
         <label class="label">¿Lleva gafas?</label>
         <div class="btn-group">
           <button class="opt-btn active" onclick="setOpt(this,'gafas','without glasses')">😊 No</button>
-          <button class="opt-btn" onclick="setOpt(this,'gafas','wearing round glasses')">🤓 Redondas</button>
-          <button class="opt-btn" onclick="setOpt(this,'gafas','wearing square glasses')">😎 Cuadradas</button>
+          <button class="opt-btn" onclick="setOpt(this,'gafas','wearing round glasses')">🤓 Sí</button>
         </div>
       </div>
       <div class="field">
@@ -181,21 +198,19 @@ input[type=range]{width:100%;accent-color:var(--purple);height:6px;border-radius
         </div>
       </div>
     </div>
-    <div class="section-label" style="margin-top:8px">🐾 Personaje especial</div>
-    <div class="field"><label class="label">¿Quién le acompaña?</label><input class="input" id="personaje" placeholder="Ej: su perro Toby, un dragón azul, su gato Michi..."/></div>
-    <div class="section-label">💫 La historia</div>
+
+    <div class="section-label">✨ El cuento</div>
+
     <div class="field">
-      <label class="label">Tema del cuento</label>
-      <div class="themes">
-        <button class="theme-btn active" onclick="setTema(this,'la amistad')">Amistad</button>
-        <button class="theme-btn" onclick="setTema(this,'la valentía')">Valentía</button>
-        <button class="theme-btn" onclick="setTema(this,'el cuidado de la naturaleza')">Naturaleza</button>
-        <button class="theme-btn" onclick="setTema(this,'la familia')">Familia</button>
-        <button class="theme-btn" onclick="setTema(this,'la curiosidad y el aprendizaje')">Curiosidad</button>
-        <button class="theme-btn" onclick="setTema(this,'la generosidad')">Generosidad</button>
-        <button class="theme-btn" onclick="setTema(this,'la magia y los sueños')">Magia</button>
-      </div>
+      <label class="label">¿De qué trata la aventura?</label>
+      <input class="input" id="tema" placeholder="Ej: encontrar un dragón perdido, salvar el bosque mágico, un viaje al espacio..."/>
     </div>
+
+    <div class="field">
+      <label class="label">¿Quién le acompaña? (personaje especial)</label>
+      <input class="input" id="personaje" placeholder="Ej: su perro Toby, una hada traviesa, un robot amigo..."/>
+    </div>
+
     <div class="section-label">🎨 Estilo de ilustración</div>
     <div class="field">
       <div class="style-grid">
@@ -216,59 +231,77 @@ input[type=range]{width:100%;accent-color:var(--purple);height:6px;border-radius
         </div>
       </div>
     </div>
+
     <div class="section-label" style="margin-top:8px">💌 Dedicatoria personal</div>
     <div class="field">
-      <label class="label">Escribe unas palabras para tu peque <span style="color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none;font-size:11px">(opcional — si lo dejas en blanco quedará un espacio para escribir a mano)</span></label>
+      <label class="label">Palabras para tu peque <span style="color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none;font-size:11px">(opcional)</span></label>
       <textarea class="input" id="dedicatoriaPersonal" rows="3" placeholder="Ej: Para mi niña Sofía, que llena nuestra vida de magia. Con todo nuestro amor, mamá y papá" style="resize:vertical;font-family:inherit;"></textarea>
     </div>
-    <button class="btn-generate" id="btnGenerar" onclick="generar()">🦉 Crear mi cuento mágico</button>
+
+    <button class="btn-generate" id="btnGenerar" onclick="generar()">🦉 ¡Crear el cuento!</button>
   </div>
+
+  <!-- Datos ocultos para el PDF -->
   <div id="dedicatoriaPersonalTexto" style="display:none"></div>
   <div id="nombreFinalTexto" style="display:none"></div>
   <div id="fechaFinalTexto" style="display:none"></div>
 </section>
 
-<div class="overlay" id="overlay"></div>
-
 <section class="book-section" id="bookSection">
   <div class="book-header">
-    <div style="font-size:56px;margin-bottom:16px">📖</div>
+    <div style="font-size:52px;margin-bottom:14px">🦉</div>
     <h2 class="book-title" id="bookTitle"></h2>
     <p class="book-ded" id="bookDed"></p>
   </div>
   <img class="cover-img" id="coverImg" style="display:none"/>
   <div id="pagesContainer"></div>
   <div class="end-section" id="endSection" style="display:none">
-    <span class="end-icon">🌙</span>
+    <span class="end-icon">✨</span>
     <h3 class="end-title">¡El cuento está listo!</h3>
     <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
-      <button class="btn-nuevo" id="btnPdf" onclick="descargarPDF()" >📄 Descargar PDF</button>
-      <button class="btn-nuevo" onclick="location.reload()" style="background:var(--purple-l)">✨ Crear otro cuento</button>
+      <button class="btn-dl" id="btnPdf" onclick="descargarPDF()">📄 Descargar PDF</button>
+      <button class="btn-nuevo" onclick="location.reload()">✨ Crear otro cuento</button>
     </div>
   </div>
 </section>
 
 <script>
-let tema='la amistad';
-let estilo='Pixar CGI quality, 3D animation style, vibrant and detailed';
-let opciones={genero:'niña',tipopelo:'straight',gafas:'without glasses',pecas:'',piel:'light, fair skin',pelo:'bright blonde',ojos:'brown'};
+// ── Estado ─────────────────────────────────────────────
+let estilo = 'Pixar CGI quality, 3D animation style, vibrant and detailed';
+let opciones = {
+  genero: 'niña', tipopelo: 'straight', gafas: 'without glasses',
+  pecas: '', piel: 'light, fair skin', pelo: 'bright blonde', ojos: 'brown'
+};
 
-const starsEl=document.getElementById('stars');
-for(let i=0;i<60;i++){const s=document.createElement('div');s.className='star';const sz=Math.random()*2.5+.5;s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${Math.random()*3+1.5}s;--dl:${Math.random()*3}s;`;starsEl.appendChild(s);}
+// ── Estrellas hero ──────────────────────────────────────
+const starsEl = document.getElementById('stars');
+for(let i=0;i<50;i++){
+  const s=document.createElement('div'); s.className='star';
+  const sz=Math.random()*2.5+.5;
+  s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${Math.random()*3+1.5}s;--dl:${Math.random()*3}s;`;
+  starsEl.appendChild(s);
+}
 
-function scrollToForm(){document.getElementById('crear').scrollIntoView({behavior:'smooth'});}
-function updateEdad(v){document.getElementById('edadDisplay').textContent=v;const subs={3:'Infantil — cuentos cortos y mágicos',4:'Infantil — cuentos cortos y mágicos',5:'Infantil — aventuras sencillas',6:'Primaria — aventuras y amistad',7:'Primaria — aventuras y amistad',8:'Primaria — misterio y humor',9:'Primaria — misterio y humor',10:'Primaria — historias con emoción',11:'Primaria — historias con emoción',12:'Secundaria — aventuras épicas',13:'Secundaria — aventuras épicas',14:'Secundaria — historias maduras',15:'Secundaria — historias maduras'};document.getElementById('edadSub').textContent=subs[v]||'';}
-function setOpt(btn,key,val){btn.closest('.btn-group').querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');opciones[key]=val;}
-function setColor(el,key,val){el.closest('.color-group').querySelectorAll('.color-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');opciones[key]=val;}
-function setTema(btn,t){document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');tema=t;}
-function setEstilo(card,e){document.querySelectorAll('.style-card').forEach(c=>c.classList.remove('active'));card.classList.add('active');estilo=e;}
+// ── Helpers UI ──────────────────────────────────────────
+function setOpt(btn, key, val){
+  btn.closest('.btn-group').querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); opciones[key]=val;
+}
+function setColor(el, key, val){
+  el.closest('.color-group').querySelectorAll('.color-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active'); opciones[key]=val;
+}
+function setEstilo(card, e){
+  document.querySelectorAll('.style-card').forEach(c=>c.classList.remove('active'));
+  card.classList.add('active'); estilo=e;
+}
 
-// Barra de progreso
+// ── Progress ────────────────────────────────────────────
 function crearProgreso(){
   let b=document.getElementById('progress-bar');
   if(!b){b=document.createElement('div');b.id='progress-bar';document.body.appendChild(b);}
   let s=document.getElementById('status-bar');
-  if(!s){s=document.createElement('div');s.id='status-bar';s.innerHTML='<div class="status-dot"></div><span id="status-text">🦉 Preparando tu cuento...</span>';document.body.appendChild(s);}
+  if(!s){s=document.createElement('div');s.id='status-bar';s.innerHTML='<div class="status-dot"></div><span id="status-text">🦉 Preparando la magia...</span>';document.body.appendChild(s);}
 }
 function actualizarProgreso(n,total){const b=document.getElementById('progress-bar');if(b)b.style.width=Math.round((n/(total+2))*100)+'%';}
 function actualizarStatus(msg){const t=document.getElementById('status-text');if(t)t.textContent=msg;}
@@ -276,300 +309,363 @@ function mostrarIndicador(n,total){
   const c=document.getElementById('pagesContainer');if(!c)return;
   const old=document.getElementById('gen-ind');if(old)old.remove();
   const d=document.createElement('div');d.id='gen-ind';d.className='generating-indicator';
-  d.innerHTML=`<div class="generating-dot"></div><span>✨ Creando ilustración ${n} de ${total}...</span>`;
+  d.innerHTML=`<div class="generating-dot"></div><span>🎨 Creando ilustración ${n} de ${total}...</span>`;
   c.appendChild(d);d.scrollIntoView({behavior:'smooth',block:'end'});
 }
 function quitarIndicador(){const d=document.getElementById('gen-ind');if(d)d.remove();}
 
+// ── GENERAR — Bug corregido: campos exactos que espera /generar-cuento ──
 async function generar(){
-  const nombre=document.getElementById('nombre').value.trim();
-  const personaje=document.getElementById('personaje').value.trim();
-  if(!nombre||!personaje){alert('Pon el nombre y el personaje especial');return;}
-  
-  document.getElementById('btnGenerar').disabled=true;
-  document.getElementById('bookSection').style.display='none';
-  document.getElementById('pagesContainer').innerHTML='';
-  document.getElementById('endSection').style.display='none';
-  const coverImg=document.getElementById('coverImg');
-  coverImg.src='';coverImg.style.display='none';
-  
+  const nombre = document.getElementById('nombre').value.trim();
+  const tema   = document.getElementById('tema').value.trim();
+  const personaje = document.getElementById('personaje').value.trim();
+
+  // Validación con mensajes claros
+  if(!nombre)   { alert('Escribe el nombre del protagonista'); document.getElementById('nombre').focus(); return; }
+  if(!tema)     { alert('Escribe el tema de la aventura');     document.getElementById('tema').focus();   return; }
+  if(!personaje){ alert('Escribe el personaje especial');      document.getElementById('personaje').focus(); return; }
+
+  const edad = parseInt(document.getElementById('edad').value);
+  const dedicatoriaPersonal = document.getElementById('dedicatoriaPersonal')?.value || '';
+
+  // Payload exacto que espera el backend (/generar-cuento)
+  const payload = {
+    nombre,
+    edad,
+    tema,
+    personaje,
+    opciones,   // { genero, tipopelo, gafas, pecas, piel, pelo, ojos }
+    estilo,
+    dedicatoriaPersonal
+  };
+
+  console.log('[StoryOwl] Enviando payload:', JSON.stringify(payload, null, 2));
+
+  document.getElementById('btnGenerar').disabled = true;
+  document.getElementById('bookSection').style.display = 'none';
+  document.getElementById('pagesContainer').innerHTML = '';
+  document.getElementById('endSection').style.display = 'none';
+  const coverImg = document.getElementById('coverImg');
+  coverImg.src = ''; coverImg.style.display = 'none';
   crearProgreso();
-  
-  const edad=document.getElementById('edad').value;
-  const datos={nombre,edad,tema,personaje,opciones,estilo};
-  
-  try{
-    const resp=await fetch('/generar-cuento',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(datos)});
-    const reader=resp.body.getReader();
-    const decoder=new TextDecoder();
+
+  try {
+    const resp = await fetch('/generar-cuento', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if(!resp.ok) {
+      const err = await resp.text();
+      throw new Error(`Error ${resp.status}: ${err}`);
+    }
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
     while(true){
-      const{done,value}=await reader.read();
-      if(done)break;
-      for(const line of decoder.decode(value).split('\n')){
-        if(!line.startsWith('data:'))continue;
-        try{procesarEvento(JSON.parse(line.slice(5)));}catch(e){}
+      const { done, value } = await reader.read();
+      if(done) break;
+      const chunk = decoder.decode(value);
+      for(const line of chunk.split('\n')){
+        if(!line.startsWith('data:')) continue;
+        try { procesarEvento(JSON.parse(line.slice(5))); } catch(e){ console.warn('Parse error:', e); }
       }
     }
-  }catch(e){
-    const sb=document.getElementById('status-bar');if(sb)sb.remove();
-    const pb=document.getElementById('progress-bar');if(pb)pb.remove();
-    document.getElementById('btnGenerar').disabled=false;
-    alert('Error: '+e.message);
+  } catch(e) {
+    console.error('[StoryOwl] Error en generación:', e);
+    const sb=document.getElementById('status-bar'); if(sb)sb.remove();
+    const pb=document.getElementById('progress-bar'); if(pb)pb.remove();
+    document.getElementById('btnGenerar').disabled = false;
+    alert('Error al generar el cuento: ' + e.message);
   }
 }
 
-const TOTAL=16;
+// ── Procesar eventos SSE ────────────────────────────────
+const TOTAL = 16;
 function procesarEvento(data){
-  if(data.tipo==='estado'){
+  console.log('[StoryOwl] Evento:', data.tipo, data);
+
+  if(data.tipo === 'estado'){
     actualizarStatus(data.mensaje);
-    document.getElementById('bookSection').style.display='block';
-  } else if(data.tipo==='cuento'){
-    document.getElementById('bookTitle').textContent=data.titulo;
-    document.getElementById('bookDed').textContent=data.dedicatoria;
-    document.getElementById('bookSection').style.display='block';
+    document.getElementById('bookSection').style.display = 'block';
+
+  } else if(data.tipo === 'cuento'){
+    document.getElementById('bookTitle').textContent = data.titulo;
+    document.getElementById('bookDed').textContent = data.dedicatoria;
+    document.getElementById('bookSection').style.display = 'block';
     document.getElementById('bookSection').scrollIntoView({behavior:'smooth'});
-    actualizarProgreso(1,TOTAL);
-    mostrarIndicador(1,TOTAL);
-  } else if(data.tipo==='imagen'){
-    const img=document.getElementById('coverImg');
-    img.src=data.url;img.style.display='block';
-    actualizarProgreso(2,TOTAL);
-  } else if(data.tipo==='pagina'){
+    actualizarProgreso(1, TOTAL); mostrarIndicador(1, TOTAL);
+
+  } else if(data.tipo === 'imagen'){
+    const img = document.getElementById('coverImg');
+    img.src = data.url; img.style.display = 'block';
+    actualizarProgreso(2, TOTAL);
+
+  } else if(data.tipo === 'pagina'){
     quitarIndicador();
-    const container=document.getElementById('pagesContainer');
-    const page=document.createElement('div');
-    page.className='page page-live';
-    page.innerHTML=`<img class="page-img" src="${data.url}" alt="Página ${data.numero}" loading="lazy"/>
+    const container = document.getElementById('pagesContainer');
+    const page = document.createElement('div'); page.className = 'page';
+    page.innerHTML = `
+      <img class="page-img" src="${data.url}" alt="Página ${data.numero}" loading="lazy"/>
       <div class="page-body">
         <div class="page-num">Página ${data.numero}</div>
         <div class="page-title">${data.titulo}</div>
         <p class="page-text">${data.texto}</p>
       </div>`;
     container.appendChild(page);
-    setTimeout(()=>page.classList.add('visible'),50);
-    actualizarProgreso(data.numero+2,TOTAL);
-    if(data.numero<TOTAL)mostrarIndicador(data.numero+1,TOTAL);
-    page.scrollIntoView({behavior:'smooth',block:'end'});
-  } else if(data.tipo==='completado'){
+    setTimeout(()=>page.classList.add('visible'), 50);
+    actualizarProgreso(data.numero+2, TOTAL);
+    if(data.numero < TOTAL) mostrarIndicador(data.numero+1, TOTAL);
+    page.scrollIntoView({behavior:'smooth', block:'end'});
+
+  } else if(data.tipo === 'completado'){
     quitarIndicador();
-    if(data.dedicatoriaPersonal!==undefined){
-      const dt=document.getElementById('dedicatoriaPersonalTexto');
-      const nt=document.getElementById('nombreFinalTexto');
-      const ft=document.getElementById('fechaFinalTexto');
-      if(dt)dt.textContent=data.dedicatoriaPersonal||'';
-      if(nt)nt.textContent=data.nombre||'';
-      if(ft)ft.textContent=data.fecha||'';
-    }
+    document.getElementById('dedicatoriaPersonalTexto').textContent = data.dedicatoriaPersonal || '';
+    document.getElementById('nombreFinalTexto').textContent = data.nombre || '';
+    document.getElementById('fechaFinalTexto').textContent = data.fecha || '';
     const pb=document.getElementById('progress-bar');
-    if(pb){pb.style.width='100%';setTimeout(()=>{pb.style.opacity='0';},1000);}
+    if(pb){ pb.style.width='100%'; setTimeout(()=>pb.style.opacity='0',1000); }
     const sb=document.getElementById('status-bar');
-    if(sb){sb.style.opacity='0';setTimeout(()=>sb.remove(),500);}
-    document.getElementById('endSection').style.display='block';
+    if(sb){ sb.style.opacity='0'; setTimeout(()=>sb.remove(),500); }
+    document.getElementById('endSection').style.display = 'block';
     document.getElementById('endSection').scrollIntoView({behavior:'smooth'});
-    document.getElementById('btnGenerar').disabled=false;
-  } else if(data.tipo==='error'){
+    document.getElementById('btnGenerar').disabled = false;
+
+  } else if(data.tipo === 'error'){
     quitarIndicador();
-    const sb=document.getElementById('status-bar');if(sb)sb.remove();
-    const pb=document.getElementById('progress-bar');if(pb)pb.remove();
-    document.getElementById('btnGenerar').disabled=false;
-    alert('Error: '+data.mensaje);
+    console.error('[StoryOwl] Error del servidor:', data.mensaje);
+    const sb=document.getElementById('status-bar'); if(sb)sb.remove();
+    const pb=document.getElementById('progress-bar'); if(pb)pb.remove();
+    document.getElementById('btnGenerar').disabled = false;
+    alert('Error: ' + data.mensaje);
   }
 }
 
+// ── PDF Premium ─────────────────────────────────────────
 async function descargarPDF(){
-  const btn=document.getElementById('btnPdf');
-  btn.textContent='⏳ Generando PDF...';btn.disabled=true;
-  try{
-    const{jsPDF}=window.jspdf;
-    const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-    const W=210,H=297;
-    const titulo=document.getElementById('bookTitle').textContent;
-    const ded=document.getElementById('bookDed').textContent;
-    const dedPersonal=document.getElementById('dedicatoriaPersonalTexto')?.textContent||'';
-    const nombreFinal=document.getElementById('nombreFinalTexto')?.textContent||'';
-    const fechaFinal=document.getElementById('fechaFinalTexto')?.textContent||'';
-    const coverImg=document.getElementById('coverImg');
+  const btn = document.getElementById('btnPdf');
+  btn.textContent = '⏳ Generando PDF...'; btn.disabled = true;
 
-    // === PÁGINA 1 — DEDICATORIA ===
-    // Fondo oscuro elegante
-    pdf.setFillColor(13,8,32);pdf.rect(0,0,W,H,'F');
-    // Estrellas
-    [[20,25],[190,20],[15,140],[195,180],[105,15],[45,260],[165,255],[80,80],[140,200]].forEach(([x,y])=>{
-      pdf.setFillColor(247,201,75);pdf.circle(x,y,0.7,'F');
-    });
-    // Si hay portada, ponerla arriba difuminada
-    if(coverImg&&coverImg.src&&coverImg.style.display!=='none'){
-      try{
-        const d=await toBase64(coverImg.src);
-        pdf.addImage(d,'JPEG',0,0,W,H*0.5);
-        // Degradado sobre la imagen
-        pdf.setFillColor(13,8,32);
-        for(let i=0;i<20;i++){
-          pdf.setGState(new pdf.GState({opacity:i/20}));
-          pdf.rect(0,H*0.5-20+(i*1),W,1,'F');
-        }
-        pdf.setGState(new pdf.GState({opacity:1}));
-      }catch(e){}
-    }
-    // "Para"
-    pdf.setFont('helvetica','italic');pdf.setFontSize(18);pdf.setTextColor(180,150,255);
-    pdf.text('Para',W/2,155,{align:'center'});
-    // NOMBRE grande dorado
-    pdf.setFont('helvetica','bold');pdf.setFontSize(48);
-    pdf.setTextColor(0,0,0);pdf.text(nombreFinal||'',W/2+1,181,{align:'center'});
-    pdf.setTextColor(247,201,75);pdf.text(nombreFinal||'',W/2,180,{align:'center'});
-    // Línea
-    pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.5);pdf.line(45,188,165,188);
-    // Dedicatoria
-    if(dedPersonal&&dedPersonal.trim()){
-      pdf.setFont('helvetica','italic');pdf.setFontSize(13);
-      const lineas=pdf.splitTextToSize(dedPersonal,160);
-      let y=202;
-      lineas.forEach(l=>{
-        pdf.setTextColor(0,0,0);pdf.text(l,W/2+0.4,y+0.4,{align:'center'});
-        pdf.setTextColor(235,225,255);pdf.text(l,W/2,y,{align:'center'});
-        y+=9;
+  try {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({orientation:'portrait', unit:'mm', format:'a4'});
+    const W=210, H=297;
+
+    const titulo    = document.getElementById('bookTitle').textContent;
+    const ded       = document.getElementById('bookDed').textContent;
+    const dedPersonal = document.getElementById('dedicatoriaPersonalTexto')?.textContent || '';
+    const nombreFinal = document.getElementById('nombreFinalTexto')?.textContent || '';
+    const fechaFinal  = document.getElementById('fechaFinalTexto')?.textContent || '';
+    const coverImg    = document.getElementById('coverImg');
+
+    // ══════════════════════════════════════════
+    // PÁG 1 — DEDICATORIA PREMIUM
+    // ══════════════════════════════════════════
+    const DEDICATORIA_IMG_URL = '/imagenes/dedicatoria.png';
+    try {
+      const dedImg = await toBase64(DEDICATORIA_IMG_URL);
+      pdf.addImage(dedImg, 'PNG', 0, 0, W, H);
+    } catch(e) {
+      // Fallback elegante si no hay imagen
+      pdf.setFillColor(255, 250, 240); pdf.rect(0,0,W,H,'F');
+      // Marco decorativo
+      pdf.setDrawColor(200,180,240); pdf.setLineWidth(0.3);
+      pdf.rect(8,8,W-16,H-16,'S');
+      pdf.rect(11,11,W-22,H-22,'S');
+      // Estrellas pequeñas decorativas
+      const starsPos=[[25,30],[185,25],[20,150],[190,170],[105,22],[50,265],[160,258]];
+      starsPos.forEach(([x,y])=>{
+        pdf.setFontSize(8); pdf.setTextColor(220,180,255); pdf.text('✦',x,y,{align:'center'});
       });
+    }
+
+    // Franja blanca suave para el texto (38% inferior)
+    const dedY = H * 0.60;
+    pdf.setFillColor(255,252,248); pdf.rect(0, dedY, W, H - dedY, 'F');
+
+    // Línea decorativa dorada
+    pdf.setDrawColor(247,201,75); pdf.setLineWidth(0.5); pdf.line(40, dedY+2, W-40, dedY+2);
+
+    // "Para" — pequeño, elegante
+    pdf.setFont('helvetica','italic'); pdf.setFontSize(13);
+    pdf.setTextColor(160,120,220); pdf.text('Para', W/2, dedY+14, {align:'center'});
+
+    // NOMBRE — grande, impactante
+    pdf.setFont('helvetica','bold'); pdf.setFontSize(34);
+    pdf.setTextColor(58,32,112);
+    pdf.text(nombreFinal||'', W/2, dedY+32, {align:'center'});
+
+    // Separador
+    pdf.setDrawColor(220,200,255); pdf.setLineWidth(0.2);
+    pdf.line(50, dedY+37, W-50, dedY+37);
+
+    // Texto dedicatoria o líneas para escribir a mano
+    let cy = dedY + 50;
+    if(dedPersonal && dedPersonal.trim()){
+      pdf.setFont('helvetica','italic'); pdf.setFontSize(12);
+      pdf.setTextColor(80,55,130);
+      const lineas = pdf.splitTextToSize(dedPersonal, 160);
+      lineas.forEach(l => { pdf.text(l, W/2, cy, {align:'center'}); cy += 8; });
     } else {
-      pdf.setDrawColor(100,80,160);pdf.setLineWidth(0.15);
-      [205,218,231,244].forEach(y=>pdf.line(38,y,172,y));
-      pdf.setFont('helvetica','italic');pdf.setFontSize(9);pdf.setTextColor(120,100,180);
-      pdf.text('escribe aquí tu dedicatoria',W/2,255,{align:'center'});
+      pdf.setDrawColor(210,190,240); pdf.setLineWidth(0.2);
+      [cy, cy+14, cy+28, cy+42].forEach(y => pdf.line(38,y,172,y));
+      pdf.setFont('helvetica','italic'); pdf.setFontSize(8.5);
+      pdf.setTextColor(190,170,220);
+      pdf.text('escribe aquí tu dedicatoria', W/2, cy+56, {align:'center'});
+      cy += 70;
     }
-    // Corazón y logo
-    pdf.setFont('helvetica','normal');pdf.setFontSize(16);
-    pdf.setTextColor(220,30,120);pdf.text('♥',W/2,272,{align:'center'});
-    pdf.setFont('helvetica','bold');pdf.setFontSize(8);pdf.setTextColor(247,201,75);
-    pdf.text('StoryOwl',W/2,283,{align:'center'});
 
-    // === PORTADA ===
+    // ♥ y logo pequeño
+    cy = Math.max(cy, dedY + 90);
+    pdf.setFont('helvetica','normal'); pdf.setFontSize(12);
+    pdf.setTextColor(220,30,120); pdf.text('♥', W/2, cy+8, {align:'center'});
+    pdf.setFont('helvetica','bold'); pdf.setFontSize(7.5);
+    pdf.setTextColor(180,150,220); pdf.text('StoryOwl · cuentos únicos para tu peque', W/2, cy+18, {align:'center'});
+
+    // ══════════════════════════════════════════
+    // PÁG 2 — PORTADA
+    // ══════════════════════════════════════════
     pdf.addPage();
-    if(coverImg&&coverImg.src&&coverImg.style.display!=='none'){
-      try{
-        const d=await toBase64(coverImg.src);
-        // Imagen ocupa los 2/3 superiores
-        pdf.addImage(d,'JPEG',0,0,W,198);
-        // Franja blanca abajo
-        pdf.setFillColor(255,255,255);pdf.rect(0,198,W,99,'F');
-        // Línea separadora dorada
-        pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.8);pdf.line(0,198,W,198);
-        // Título en negro
-        pdf.setFont('helvetica','bold');pdf.setFontSize(18);pdf.setTextColor(30,15,60);
-        pdf.text(titulo,W/2,218,{align:'center',maxWidth:185});
-        // Dedicatoria en gris
+    if(coverImg && coverImg.src && coverImg.style.display !== 'none'){
+      try {
+        const d = await toBase64(coverImg.src);
+        // Calcular overlay para portada (título + dedicatoria)
+        pdf.setFont('helvetica','bold'); pdf.setFontSize(20);
+        const titLines = pdf.splitTextToSize(titulo, 185).length;
+        pdf.setFont('helvetica','italic'); pdf.setFontSize(10);
+        const dedLines = ded ? pdf.splitTextToSize(ded, 175).length : 0;
+        const portadaBlockH = 12 + titLines*10 + (dedLines > 0 ? 4+dedLines*7 : 0) + 16 + 10;
+        const portadaImgH = H - portadaBlockH;
+
+        pdf.addImage(d,'JPEG',0,0,W,portadaImgH);
+        pdf.setFillColor(255,253,248); pdf.rect(0,portadaImgH,W,portadaBlockH,'F');
+        pdf.setDrawColor(247,201,75); pdf.setLineWidth(0.8); pdf.line(0,portadaImgH,W,portadaImgH);
+
+        let pY = portadaImgH + 12;
+        pdf.setFont('helvetica','bold'); pdf.setFontSize(20); pdf.setTextColor(30,15,60);
+        const tlines = pdf.splitTextToSize(titulo, 185);
+        tlines.forEach(l=>{ pdf.text(l,W/2,pY,{align:'center'}); pY+=10; });
+
         if(ded){
-          pdf.setFont('helvetica','italic');pdf.setFontSize(10);pdf.setTextColor(100,80,140);
-          pdf.text(pdf.splitTextToSize(ded,175),W/2,235,{align:'center'});
+          pY += 4;
+          pdf.setFont('helvetica','italic'); pdf.setFontSize(10); pdf.setTextColor(100,80,140);
+          pdf.splitTextToSize(ded,175).forEach(l=>{ pdf.text(l,W/2,pY,{align:'center'}); pY+=7; });
         }
-        // Logo pequeño
-        pdf.setFont('helvetica','bold');pdf.setFontSize(8);pdf.setTextColor(180,160,220);
-        pdf.text('🦉 StoryOwl',W/2,285,{align:'center'});
-      }catch(e){}
+        pdf.setFont('helvetica','bold'); pdf.setFontSize(8); pdf.setTextColor(180,160,220);
+        pdf.text('🦉 StoryOwl', W/2, H-8, {align:'center'});
+      } catch(e){ console.warn('Error portada PDF:', e); }
     }
 
-    // === PÁGINAS INTERIORES — exactamente como la web ===
-    const pages=document.querySelectorAll('.page');
-    let i=1;
+    // ══════════════════════════════════════════
+    // PÁGINAS INTERIORES — overlay DINÁMICO
+    // ══════════════════════════════════════════
+    const pages = document.querySelectorAll('.page');
+    let i = 1;
     for(const page of pages){
-      btn.textContent=`⏳ Página ${i} de ${pages.length}...`;
+      btn.textContent = `⏳ Página ${i} de ${pages.length}...`;
       pdf.addPage();
-      const img=page.querySelector('.page-img');
-      const num=page.querySelector('.page-num')?.textContent||'';
-      const tit=page.querySelector('.page-title')?.textContent||'';
-      const txt=page.querySelector('.page-text')?.textContent||'';
 
-      // Imagen ocupa los 2/3 superiores (exactamente como la web)
-      try{
-        const d=await toBase64(img.src);
-        pdf.addImage(d,'JPEG',0,0,W,196);
-      }catch(e){
-        pdf.setFillColor(240,235,255);pdf.rect(0,0,W,196,'F');
+      const img    = page.querySelector('.page-img');
+      const numTxt = page.querySelector('.page-num')?.textContent || '';
+      const titTxt = page.querySelector('.page-title')?.textContent || '';
+      const bodyTxt= page.querySelector('.page-text')?.textContent || '';
+
+      // Medir altura real del bloque de texto
+      pdf.setFont('helvetica','bold');   pdf.setFontSize(8);
+      pdf.setFont('helvetica','italic'); pdf.setFontSize(15);
+      const titArr = pdf.splitTextToSize(titTxt, W-32);
+      pdf.setFont('helvetica','normal'); pdf.setFontSize(11);
+      const txtArr = pdf.splitTextToSize(bodyTxt, W-32);
+
+      const PAD = 10;   // padding top+bottom de la franja
+      const H_NUM = 7;  // "Página X"
+      const H_TIT = titArr.length * 8 + 4;
+      const H_TXT = txtArr.length * 6.5 + 6;
+      const H_PIE = 7;  // número de página pie
+      const blockH = PAD*2 + H_NUM + H_TIT + H_TXT + H_PIE;
+      const imgH   = H - blockH;
+
+      // Imagen
+      try {
+        const d = await toBase64(img.src);
+        pdf.addImage(d,'JPEG',0,0,W,imgH);
+      } catch(e){
+        pdf.setFillColor(240,235,255); pdf.rect(0,0,W,imgH,'F');
       }
 
-      // Franja blanca inferior (como la web)
-      pdf.setFillColor(250,247,255);pdf.rect(0,196,W,101,'F');
+      // Franja dinámica
+      pdf.setFillColor(250,247,255); pdf.rect(0, imgH, W, blockH, 'F');
+      pdf.setDrawColor(247,201,75); pdf.setLineWidth(0.7); pdf.line(0, imgH, W, imgH);
 
-      // Línea separadora dorada (como la web)
-      pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.8);pdf.line(0,196,W,196);
+      let cy = imgH + PAD;
 
-      // Número de página en naranja/dorado pequeño
-      pdf.setFont('helvetica','bold');pdf.setFontSize(8);
-      pdf.setTextColor(180,130,0);pdf.text(num.toUpperCase(),14,207);
+      // Número página
+      pdf.setFont('helvetica','bold'); pdf.setFontSize(8);
+      pdf.setTextColor(180,130,0); pdf.text(numTxt.toUpperCase(), 14, cy);
+      cy += H_NUM;
 
-      // Título en lila cursiva (igual que la web)
-      pdf.setFont('helvetica','italic');pdf.setFontSize(16);
-      pdf.setTextColor(80,40,160);pdf.text(tit,14,220,{maxWidth:W-28});
+      // Título
+      pdf.setFont('helvetica','italic'); pdf.setFontSize(15);
+      pdf.setTextColor(80,40,160);
+      titArr.forEach(l=>{ pdf.text(l,14,cy); cy+=8; }); cy+=4;
 
-      // Texto en gris oscuro limpio (igual que la web)
-      pdf.setFont('helvetica','normal');pdf.setFontSize(11);
+      // Texto
+      pdf.setFont('helvetica','normal'); pdf.setFontSize(11);
       pdf.setTextColor(58,48,80);
-      const lineas=pdf.splitTextToSize(txt,W-28);
-      pdf.text(lineas.slice(0,5),14,233);
+      txtArr.forEach(l=>{ pdf.text(l,14,cy); cy+=6.5; }); cy+=6;
 
-      // Número pequeño abajo centrado
-      pdf.setFontSize(8);pdf.setTextColor(180,160,210);
-      pdf.text(String(i),W/2,291,{align:'center'});
+      // Pie
+      pdf.setFontSize(8); pdf.setTextColor(200,180,230);
+      pdf.text(String(i), W/2, cy, {align:'center'});
       i++;
     }
 
-    // === COLOFÓN ===
+    // ══════════════════════════════════════════
+    // ÚLTIMA PÁG — COLOFÓN
+    // ══════════════════════════════════════════
     pdf.addPage();
-    pdf.setFillColor(13,8,32);pdf.rect(0,0,W,H,'F');
-    [[25,35],[185,28],[12,155],[198,195],[105,18],[48,268],[162,258],[82,115],[142,185]].forEach(([x,y])=>{
-      pdf.setFillColor(247,201,75);pdf.circle(x,y,0.6,'F');
-    });
-    pdf.setFont('helvetica','bold');pdf.setFontSize(22);
-    pdf.setTextColor(0,0,0);pdf.text('StoryOwl',W/2+0.5,116.5,{align:'center'});
-    pdf.setTextColor(247,201,75);pdf.text('StoryOwl',W/2,116,{align:'center'});
-    pdf.setDrawColor(107,63,168);pdf.setLineWidth(0.4);pdf.line(72,124,138,124);
-    pdf.setFont('helvetica','italic');pdf.setFontSize(11);
-    pdf.setTextColor(155,111,216);pdf.text('Cuentos únicos para tu peque',W/2,136,{align:'center'});
-    pdf.setFont('helvetica','normal');pdf.setFontSize(11);
-    pdf.setTextColor(200,180,255);pdf.text('Este cuento fue creado especialmente para',W/2,170,{align:'center'});
-    pdf.setFont('helvetica','bold');pdf.setFontSize(22);
-    pdf.setTextColor(0,0,0);pdf.text(nombreFinal||'',W/2+0.5,188.5,{align:'center'});
-    pdf.setTextColor(247,201,75);pdf.text(nombreFinal||'',W/2,188,{align:'center'});
-    pdf.setFont('helvetica','normal');pdf.setFontSize(10);
-    pdf.setTextColor(155,111,216);pdf.text('el '+fechaFinal,W/2,200,{align:'center'});
-    pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.4);pdf.line(62,210,148,210);
-    pdf.setFont('helvetica','italic');pdf.setFontSize(11);
-    pdf.setTextColor(210,190,255);pdf.text('Una historia única en el mundo, igual que tú.',W/2,224,{align:'center'});
-    pdf.setFont('helvetica','bold');pdf.setFontSize(9);
-    pdf.setTextColor(107,63,168);pdf.text('storyowl.com',W/2,262,{align:'center'});
+    const COLOFONIMG_URL = '/imagenes/colofonowl.png';
+    try {
+      const colImg = await toBase64(COLOFONIMG_URL);
+      pdf.addImage(colImg,'PNG',0,0,W,H);
+    } catch(e){
+      pdf.setFillColor(255,250,240); pdf.rect(0,0,W,H,'F');
+    }
 
-    pdf.save((titulo||'cuento')+'.pdf');
-  }catch(e){alert('Error PDF: '+e.message);}
-  btn.textContent='📄 Descargar PDF';btn.disabled=false;
+    // Franja texto inferior
+    const colY = H * 0.58;
+    pdf.setFillColor(255,252,248); pdf.rect(0, colY, W, H-colY, 'F');
+    pdf.setDrawColor(247,201,75); pdf.setLineWidth(0.5); pdf.line(40,colY+2,W-40,colY+2);
+
+    pdf.setFont('helvetica','normal'); pdf.setFontSize(10); pdf.setTextColor(107,63,168);
+    pdf.text('Este cuento fue creado especialmente para', W/2, colY+14, {align:'center'});
+    pdf.setFont('helvetica','bold'); pdf.setFontSize(26); pdf.setTextColor(58,32,112);
+    pdf.text(nombreFinal||'', W/2, colY+32, {align:'center'});
+    pdf.setFont('helvetica','normal'); pdf.setFontSize(9); pdf.setTextColor(155,111,216);
+    pdf.text('el '+fechaFinal, W/2, colY+42, {align:'center'});
+    pdf.setDrawColor(247,201,75); pdf.setLineWidth(0.4); pdf.line(55,colY+48,W-55,colY+48);
+    pdf.setFont('helvetica','italic'); pdf.setFontSize(10); pdf.setTextColor(80,55,130);
+    pdf.text('Una historia única en el mundo, igual que tú.', W/2, colY+60, {align:'center'});
+    pdf.setFont('helvetica','bold'); pdf.setFontSize(8); pdf.setTextColor(180,150,220);
+    pdf.text('storyowl.com', W/2, colY+80, {align:'center'});
+
+    pdf.save((titulo||'mi-cuento')+'.pdf');
+
+  } catch(e){
+    console.error('[StoryOwl] Error PDF:', e);
+    alert('Error al generar el PDF: ' + e.message);
+  }
+
+  btn.textContent='📄 Descargar PDF'; btn.disabled=false;
 }
 
+// ── Utilidad ────────────────────────────────────────────
 async function toBase64(url){
-  const blob=await(await fetch(url)).blob();
-  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob);});
-}
-
-async function toBase64(url){
-  const blob=await(await fetch(url)).blob();
-  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob);});
-}
-
-async function toBase64(url){
-  const blob=await(await fetch(url)).blob();
-  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob);});
-}
-
-async function toBase64(url){
-  const blob=await(await fetch(url)).blob();
-  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob);});
-}
-
-async function toBase64(url){
-  const blob=await(await fetch(url)).blob();
-  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob);});
-}
-
-async function toBase64(url){
-  const blob=await(await fetch(url)).blob();
-  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob);});
+  const blob = await (await fetch(url)).blob();
+  return new Promise((res,rej)=>{
+    const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(blob);
+  });
 }
 </script>
 </body>

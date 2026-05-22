@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>El Cole Mágico — Cuentos únicos para tu peque</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --purple: #3a2070;
+  --purple-l: #6b3fa8;
+  --gold: #f7c94b;
+  --gold-d: #e5a800;
+  --cream: #fffdf7;
+  --dark: #1a0f30;
+  --muted: #7a6a9a;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--dark); overflow-x:hidden; }
+
+/* HERO */
+.hero { min-height:100vh; background:linear-gradient(160deg,#1a0f30 0%,#3a2070 50%,#1a0f30 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px 24px; text-align:center; position:relative; overflow:hidden; }
+.stars { position:absolute; inset:0; pointer-events:none; }
+.star { position:absolute; background:white; border-radius:50%; animation:twinkle var(--d) var(--dl) infinite alternate; }
+@keyframes twinkle { from{opacity:.1;transform:scale(.7)} to{opacity:.9;transform:scale(1.3)} }
+.owl { font-size:72px; animation:float 4s ease-in-out infinite; filter:drop-shadow(0 0 30px rgba(247,201,75,.5)); margin-bottom:16px; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+.hero h1 { font-family:'Fraunces',serif; font-size:clamp(48px,8vw,90px); font-weight:900; color:white; line-height:1; margin-bottom:12px; }
+.hero h1 em { font-style:italic; color:var(--gold); display:block; }
+.hero p { font-size:20px; color:rgba(255,255,255,.7); margin-bottom:40px; max-width:560px; }
+.btn-gold { background:var(--gold); color:var(--dark); font-family:'Fraunces',serif; font-weight:900; font-size:20px; padding:18px 48px; border-radius:50px; border:none; cursor:pointer; box-shadow:0 8px 40px rgba(247,201,75,.4); transition:all .25s; text-decoration:none; display:inline-block; }
+.btn-gold:hover { transform:translateY(-3px); box-shadow:0 14px 50px rgba(247,201,75,.5); }
+
+/* FORM */
+.form-section { padding:80px 24px; max-width:700px; margin:0 auto; }
+.form-title { font-family:'Fraunces',serif; font-size:42px; font-weight:900; color:var(--purple); text-align:center; margin-bottom:8px; }
+.form-title em { font-style:italic; color:var(--gold-d); }
+.form-sub { text-align:center; color:var(--muted); font-size:17px; margin-bottom:48px; }
+.form-card { background:white; border-radius:28px; padding:48px; box-shadow:0 8px 40px rgba(58,32,112,.1); }
+.row { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.field { margin-bottom:24px; }
+.label { display:block; font-weight:800; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--purple); margin-bottom:8px; }
+.input, .select { width:100%; padding:14px 18px; border:2px solid rgba(58,32,112,.12); border-radius:14px; font-family:'Nunito',sans-serif; font-size:16px; color:var(--dark); background:var(--cream); outline:none; transition:border-color .2s; }
+.input:focus, .select:focus { border-color:var(--purple-l); }
+.input::placeholder { color:rgba(26,15,48,.3); }
+.themes { display:flex; flex-wrap:wrap; gap:10px; }
+.theme-btn { padding:9px 18px; border-radius:20px; border:2px solid rgba(58,32,112,.15); background:white; font-family:'Nunito',sans-serif; font-size:14px; font-weight:700; color:var(--muted); cursor:pointer; transition:all .2s; }
+.theme-btn:hover { border-color:var(--purple-l); color:var(--purple); }
+.theme-btn.active { background:var(--purple); border-color:var(--purple); color:white; }
+.btn-generate { width:100%; padding:20px; background:linear-gradient(135deg,var(--purple-l),var(--purple)); color:white; font-family:'Fraunces',serif; font-size:22px; font-weight:900; border:none; border-radius:16px; cursor:pointer; margin-top:8px; box-shadow:0 8px 30px rgba(58,32,112,.3); transition:all .3s; }
+.btn-generate:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 14px 40px rgba(58,32,112,.4); }
+.btn-generate:disabled { opacity:.5; cursor:not-allowed; }
+
+/* LOADING */
+.spinner { width:80px; height:80px; margin:0 auto 28px; position:relative; }
+.ring { position:absolute; inset:0; border-radius:50%; border:3px solid transparent; animation:spin var(--d) linear infinite; }
+.ring:nth-child(1) { border-top-color:var(--gold); --d:1.5s; }
+.ring:nth-child(2) { inset:10px; border-right-color:var(--purple-l); --d:2s; animation-direction:reverse; }
+.ring:nth-child(3) { inset:20px; border-bottom-color:rgba(255,255,255,.5); --d:1s; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.loading-msg { font-family:'Fraunces',serif; font-size:24px; color:white; margin-bottom:8px; }
+.loading-sub { color:rgba(255,255,255,.6); font-size:16px; }
+
+/* BOOK */
+.book-section { display:none; padding:60px 24px; max-width:900px; margin:0 auto; }
+.book-header { text-align:center; margin-bottom:48px; }
+.book-title { font-family:'Fraunces',serif; font-size:clamp(32px,5vw,56px); font-weight:900; color:var(--purple); line-height:1.1; margin-bottom:10px; }
+.book-ded { font-family:'Fraunces',serif; font-style:italic; font-size:18px; color:var(--muted); }
+.cover-img { width:100%; max-width:400px; border-radius:20px; box-shadow:0 20px 60px rgba(58,32,112,.25); display:block; margin:0 auto 48px; }
+.page { background:white; border-radius:24px; overflow:hidden; margin-bottom:32px; box-shadow:0 4px 24px rgba(58,32,112,.08); opacity:0; transform:translateY(20px); transition:all .5s; }
+.page.visible { opacity:1; transform:translateY(0); }
+.page-img { width:100%; aspect-ratio:3/2; object-fit:cover; }
+.page-body { padding:28px 32px; }
+.page-num { font-size:11px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--gold-d); margin-bottom:6px; }
+.page-title { font-family:'Fraunces',serif; font-size:22px; font-style:italic; color:var(--purple); margin-bottom:12px; }
+.page-text { font-size:17px; line-height:1.75; color:#3a3050; }
+.end-section { text-align:center; padding:40px 0 80px; }
+.end-icon { font-size:48px; margin-bottom:16px; display:block; }
+.end-title { font-family:'Fraunces',serif; font-size:28px; color:var(--purple); margin-bottom:24px; }
+.btn-nuevo { background:var(--purple); color:white; font-family:'Fraunces',serif; font-weight:700; font-size:18px; padding:16px 40px; border-radius:50px; border:none; cursor:pointer; transition:all .25s; }
+.btn-nuevo:hover { background:var(--purple-l); transform:translateY(-2px); }
+.btn-nuevo:disabled { opacity:.5; cursor:not-allowed; }
+
+/* OVERLAY LOADING */
+.overlay { display:none; position:fixed; inset:0; background:linear-gradient(160deg,#1a0f30,#3a2070); z-index:100; flex-direction:column; align-items:center; justify-content:center; }
+.overlay.show { display:flex; }
+
+@media(max-width:600px) { .row{grid-template-columns:1fr} .form-card{padding:28px 20px} }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="stars" id="stars"></div>
+  <div class="owl">🦉</div>
+  <h1>El Cole<em>Mágico</em></h1>
+  <p>Cuentos únicos con ilustraciones personalizadas para tu peque — generados con magia e inteligencia artificial</p>
+  <a href="#crear" class="btn-gold" onclick="scrollToForm()">✨ Crear mi cuento ahora</a>
+</section>
+
+<!-- FORM -->
+<section class="form-section" id="crear">
+  <h2 class="form-title">Crea el cuento de <em>tu peque</em></h2>
+  <p class="form-sub">Rellena los datos y nuestro búho creará una historia única en minutos</p>
+
+  <div class="form-card">
+    <div class="row">
+      <div class="field">
+        <label class="label">Nombre ✨</label>
+        <input class="input" id="nombre" placeholder="Ej: Sofía" />
+      </div>
+      <div class="field">
+        <label class="label">Edad</label>
+        <select class="select" id="edad">
+          <option>3</option><option>4</option><option selected>5</option>
+          <option>6</option><option>7</option><option>8</option>
+          <option>9</option><option>10</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label class="label">Color de pelo</label>
+        <select class="select" id="pelo">
+          <option>rubio liso</option><option>rubio rizado</option>
+          <option>castaño liso</option><option>castaño rizado</option>
+          <option>moreno liso</option><option>pelirrojo</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="label">Color de ojos</label>
+        <select class="select" id="ojos">
+          <option>marrones</option><option>azules</option>
+          <option>verdes</option><option>negros</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Personaje especial 🐾</label>
+      <input class="input" id="personaje" placeholder="Ej: un lobo bonachón, un dragón azul, su gato Michi..." />
+    </div>
+
+    <div class="field">
+      <label class="label">Tema del cuento</label>
+      <div class="themes">
+        <button class="theme-btn active" onclick="setTema(this,'la amistad')">Amistad</button>
+        <button class="theme-btn" onclick="setTema(this,'la valentía')">Valentía</button>
+        <button class="theme-btn" onclick="setTema(this,'el cuidado de la naturaleza')">Naturaleza</button>
+        <button class="theme-btn" onclick="setTema(this,'la familia')">Familia</button>
+        <button class="theme-btn" onclick="setTema(this,'la curiosidad y el aprendizaje')">Curiosidad</button>
+        <button class="theme-btn" onclick="setTema(this,'la generosidad')">Generosidad</button>
+        <button class="theme-btn" onclick="setTema(this,'la magia y los sueños')">Magia</button>
+      </div>
+    </div>
+
+    <button class="btn-generate" id="btnGenerar" onclick="generar()">
+      🦉 Crear mi cuento mágico
+    </button>
+  </div>
+</section>
+
+<!-- OVERLAY LOADING -->
+<div class="overlay" id="overlay">
+  <div class="spinner">
+    <div class="ring"></div>
+    <div class="ring"></div>
+    <div class="ring"></div>
+  </div>
+  <p class="loading-msg" id="loadingMsg">🦉 El búho está trabajando...</p>
+  <p class="loading-sub" id="loadingSub">Esto puede tardar unos minutos</p>
+</div>
+
+<!-- BOOK -->
+<section class="book-section" id="bookSection">
+  <div class="book-header">
+    <div style="font-size:56px;margin-bottom:16px">📖</div>
+    <h2 class="book-title" id="bookTitle"></h2>
+    <p class="book-ded" id="bookDed"></p>
+  </div>
+  <img class="cover-img" id="coverImg" style="display:none"/>
+  <div id="pagesContainer"></div>
+  <div class="end-section" id="endSection" style="display:none">
+    <span class="end-icon">🌙</span>
+    <h3 class="end-title">¡El cuento está listo!</h3>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <button class="btn-nuevo" id="btnPdf" onclick="descargarPDF()">📄 Descargar PDF</button>
+      <button class="btn-nuevo" onclick="location.reload()" style="background:var(--purple-l)">✨ Crear otro cuento</button>
+    </div>
+  </div>
+</section>
+
+<script>
+let tema = 'la amistad';
+
+// Stars
+const starsEl = document.getElementById('stars');
+for(let i=0;i<60;i++){
+  const s=document.createElement('div');
+  s.className='star';
+  const sz=Math.random()*2.5+.5;
+  s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${Math.random()*3+1.5}s;--dl:${Math.random()*3}s;`;
+  starsEl.appendChild(s);
+}
+
+function scrollToForm(){ document.getElementById('crear').scrollIntoView({behavior:'smooth'}); }
+
+function setTema(btn, t){
+  document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  tema = t;
+}
+
+async function generar(){
+  const nombre = document.getElementById('nombre').value.trim();
+  const personaje = document.getElementById('personaje').value.trim();
+  if(!nombre || !personaje){ alert('Pon el nombre y el personaje especial'); return; }
+
+  document.getElementById('overlay').classList.add('show');
+  document.getElementById('btnGenerar').disabled = true;
+  document.getElementById('bookSection').style.display = 'none';
+  document.getElementById('pagesContainer').innerHTML = '';
+  document.getElementById('endSection').style.display = 'none';
+
+  const datos = {
+    nombre,
+    edad: document.getElementById('edad').value,
+    pelo: document.getElementById('pelo').value,
+    ojos: document.getElementById('ojos').value,
+    piel: 'blanca',
+    personaje,
+    tema
+  };
+
+  try {
+    const resp = await fetch('/generar-cuento', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(datos)
+    });
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+
+    while(true){
+      const {done, value} = await reader.read();
+      if(done) break;
+
+      const chunk = decoder.decode(value);
+      const lines = chunk.split('\n');
+
+      for(const line of lines){
+        if(!line.startsWith('data:')) continue;
+        try {
+          const data = JSON.parse(line.slice(5));
+          procesarEvento(data);
+        } catch(e){}
+      }
+    }
+  } catch(e){
+    alert('Error: ' + e.message);
+    document.getElementById('overlay').classList.remove('show');
+    document.getElementById('btnGenerar').disabled = false;
+  }
+}
+
+function procesarEvento(data){
+  if(data.tipo === 'estado'){
+    document.getElementById('loadingMsg').textContent = data.mensaje;
+  }
+  else if(data.tipo === 'cuento'){
+    document.getElementById('bookTitle').textContent = data.titulo;
+    document.getElementById('bookDed').textContent = data.dedicatoria;
+    document.getElementById('bookSection').style.display = 'block';
+    document.getElementById('bookSection').scrollIntoView({behavior:'smooth'});
+  }
+  else if(data.tipo === 'imagen'){
+    const img = document.getElementById('coverImg');
+    img.src = data.url;
+    img.style.display = 'block';
+  }
+  else if(data.tipo === 'pagina'){
+    const container = document.getElementById('pagesContainer');
+    const page = document.createElement('div');
+    page.className = 'page';
+    page.innerHTML = `
+      <img class="page-img" src="${data.url}" alt="Página ${data.numero}" loading="lazy"/>
+      <div class="page-body">
+        <div class="page-num">Página ${data.numero}</div>
+        <div class="page-title">${data.titulo}</div>
+        <p class="page-text">${data.texto}</p>
+      </div>`;
+    container.appendChild(page);
+    setTimeout(()=>page.classList.add('visible'), 100);
+  }
+  else if(data.tipo === 'completado'){
+    document.getElementById('overlay').classList.remove('show');
+    document.getElementById('endSection').style.display = 'block';
+    document.getElementById('btnGenerar').disabled = false;
+  }
+  else if(data.tipo === 'error'){
+    document.getElementById('overlay').classList.remove('show');
+    document.getElementById('btnGenerar').disabled = false;
+    alert('Error: ' + data.mensaje);
+  }
+}
+
+async function descargarPDF(){
+  const btn = document.getElementById('btnPdf');
+  btn.textContent = '⏳ Generando PDF...';
+  btn.disabled = true;
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+    const pageW = 210, margin = 15;
+    const imgW = pageW - margin * 2;
+
+    const titulo = document.getElementById('bookTitle').textContent;
+    const ded = document.getElementById('bookDed').textContent;
+
+    // Portada con título y dedicatoria
+    pdf.setFont('helvetica','bold');
+    pdf.setFontSize(26);
+    pdf.setTextColor(58, 32, 112);
+    pdf.text(titulo, pageW/2, 40, {align:'center', maxWidth: imgW});
+
+    if(ded){
+      pdf.setFont('helvetica','italic');
+      pdf.setFontSize(13);
+      pdf.setTextColor(122, 106, 154);
+      pdf.text(ded, pageW/2, 56, {align:'center', maxWidth: imgW});
+    }
+
+    // Imagen de portada
+    const coverImg = document.getElementById('coverImg');
+    if(coverImg && coverImg.src && coverImg.style.display !== 'none'){
+      try {
+        const coverData = await toBase64(coverImg.src);
+        const coverH = imgW * 1.2;
+        pdf.addImage(coverData, 'JPEG', margin, 68, imgW, coverH);
+      } catch(e){ console.warn('Portada no cargada', e); }
+    }
+
+    // Páginas
+    const pages = document.querySelectorAll('.page');
+    for(const page of pages){
+      pdf.addPage();
+      const img = page.querySelector('.page-img');
+      const num = page.querySelector('.page-num')?.textContent || '';
+      const tit = page.querySelector('.page-title')?.textContent || '';
+      const txt = page.querySelector('.page-text')?.textContent || '';
+
+      try {
+        const imgData = await toBase64(img.src);
+        const imgH = imgW * (2/3);
+        pdf.addImage(imgData, 'JPEG', margin, margin, imgW, imgH);
+
+        let y = margin + imgH + 10;
+
+        pdf.setFont('helvetica','bold');
+        pdf.setFontSize(9);
+        pdf.setTextColor(229, 168, 0);
+        pdf.text(num.toUpperCase(), margin, y); y += 7;
+
+        pdf.setFont('helvetica','italic');
+        pdf.setFontSize(16);
+        pdf.setTextColor(58, 32, 112);
+        pdf.text(tit, margin, y); y += 9;
+
+        pdf.setFont('helvetica','normal');
+        pdf.setFontSize(13);
+        pdf.setTextColor(58, 48, 80);
+        const lines = pdf.splitTextToSize(txt, imgW);
+        pdf.text(lines, margin, y);
+      } catch(e){ console.warn('Página no cargada', e); }
+    }
+
+    pdf.save(`${titulo || 'cuento'}.pdf`);
+  } catch(e){
+    alert('Error generando PDF: ' + e.message);
+  }
+
+  btn.textContent = '📄 Descargar PDF';
+  btn.disabled = false;
+}
+
+async function toBase64(url){
+  const resp = await fetch(url);
+  const blob = await resp.blob();
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = rej;
+    r.readAsDataURL(blob);
+  });
+}
+</script>
+</body>
+</html>
