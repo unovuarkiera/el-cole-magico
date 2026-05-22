@@ -354,109 +354,84 @@ async function descargarPDF(){
     const fechaFinal=document.getElementById('fechaFinalTexto')?.textContent||'';
     const coverImg=document.getElementById('coverImg');
 
-    // PÁGINA 1 — DEDICATORIA con portada de fondo
-    if(coverImg&&coverImg.src&&coverImg.style.display!=='none'){
-      try{
-        const d=await toBase64(coverImg.src);
-        // Portada como fondo completo
-        pdf.addImage(d,'JPEG',0,0,W,H);
-        // Overlay oscuro semitransparente encima
-        pdf.setFillColor(0,0,0);
-        pdf.rect(0,0,W,H,'F');
-        // Volvemos a poner la imagen con opacidad simulada encima del negro
-        // Truco: imagen + rectangulo negro con opacidad 60%
-        pdf.addImage(d,'JPEG',0,0,W,H);
-        // Overlay oscuro para legibilidad
-        pdf.setFillColor(10,5,25);
-        pdf.setGState(new pdf.GState({opacity:0.55}));
-        pdf.rect(0,0,W,H,'F');
-        pdf.setGState(new pdf.GState({opacity:1}));
-      }catch(e){
-        pdf.setFillColor(10,5,25);pdf.rect(0,0,W,H,'F');
-      }
-    } else {
-      pdf.setFillColor(10,5,25);pdf.rect(0,0,W,H,'F');
-    }
-
-    // Estrellas decorativas
+    // === PÁGINA 1 — DEDICATORIA ===
+    // Fondo oscuro elegante
+    pdf.setFillColor(13,8,32);pdf.rect(0,0,W,H,'F');
+    // Estrellas
     [[20,25],[190,20],[15,140],[195,180],[105,15],[45,260],[165,255],[80,80],[140,200]].forEach(([x,y])=>{
       pdf.setFillColor(247,201,75);pdf.circle(x,y,0.7,'F');
     });
-
-    // "Para" — texto pequeño elegante
-    pdf.setFont('helvetica','italic');
-    pdf.setFontSize(16);
-    pdf.setTextColor(200,180,255);
-    // Sombra simulada
-    pdf.setTextColor(0,0,0);pdf.text('Para',W/2+0.5,75.5,{align:'center'});
-    pdf.setTextColor(200,180,255);pdf.text('Para',W/2,75,{align:'center'});
-
-    // NOMBRE — grande y dorado, fuente bold
-    pdf.setFont('helvetica','bold');
-    pdf.setFontSize(52);
-    // Sombra negra
-    pdf.setTextColor(0,0,0);pdf.text(nombreFinal||'',W/2+1,101,{align:'center'});
-    pdf.setTextColor(0,0,0);pdf.text(nombreFinal||'',W/2-1,101,{align:'center'});
-    pdf.setTextColor(0,0,0);pdf.text(nombreFinal||'',W/2,102,{align:'center'});
-    // Texto dorado encima
-    pdf.setTextColor(247,201,75);pdf.text(nombreFinal||'',W/2,100,{align:'center'});
-
-    // Línea dorada decorativa
-    pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.6);pdf.line(40,110,170,110);
-
-    // Texto dedicatoria
+    // Si hay portada, ponerla arriba difuminada
+    if(coverImg&&coverImg.src&&coverImg.style.display!=='none'){
+      try{
+        const d=await toBase64(coverImg.src);
+        pdf.addImage(d,'JPEG',0,0,W,H*0.5);
+        // Degradado sobre la imagen
+        pdf.setFillColor(13,8,32);
+        for(let i=0;i<20;i++){
+          pdf.setGState(new pdf.GState({opacity:i/20}));
+          pdf.rect(0,H*0.5-20+(i*1),W,1,'F');
+        }
+        pdf.setGState(new pdf.GState({opacity:1}));
+      }catch(e){}
+    }
+    // "Para"
+    pdf.setFont('helvetica','italic');pdf.setFontSize(18);pdf.setTextColor(180,150,255);
+    pdf.text('Para',W/2,155,{align:'center'});
+    // NOMBRE grande dorado
+    pdf.setFont('helvetica','bold');pdf.setFontSize(48);
+    pdf.setTextColor(0,0,0);pdf.text(nombreFinal||'',W/2+1,181,{align:'center'});
+    pdf.setTextColor(247,201,75);pdf.text(nombreFinal||'',W/2,180,{align:'center'});
+    // Línea
+    pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.5);pdf.line(45,188,165,188);
+    // Dedicatoria
     if(dedPersonal&&dedPersonal.trim()){
-      pdf.setFont('helvetica','italic');
-      pdf.setFontSize(15);
-      const lineas=pdf.splitTextToSize(dedPersonal,165);
-      let y=130;
+      pdf.setFont('helvetica','italic');pdf.setFontSize(13);
+      const lineas=pdf.splitTextToSize(dedPersonal,160);
+      let y=202;
       lineas.forEach(l=>{
-        // Sombra
-        pdf.setTextColor(0,0,0);pdf.text(l,W/2+0.5,y+0.5,{align:'center'});
-        pdf.setTextColor(255,255,255);pdf.text(l,W/2,y,{align:'center'});
-        y+=10;
+        pdf.setTextColor(0,0,0);pdf.text(l,W/2+0.4,y+0.4,{align:'center'});
+        pdf.setTextColor(235,225,255);pdf.text(l,W/2,y,{align:'center'});
+        y+=9;
       });
     } else {
-      // Líneas para escribir a mano
-      pdf.setDrawColor(255,255,255);pdf.setLineWidth(0.15);
-      [140,156,172,188].forEach(y=>{pdf.line(35,y,175,y);});
-      pdf.setFont('helvetica','italic');pdf.setFontSize(9);
-      pdf.setTextColor(180,160,220);pdf.text('escribe aquí tu dedicatoria',W/2,202,{align:'center'});
+      pdf.setDrawColor(100,80,160);pdf.setLineWidth(0.15);
+      [205,218,231,244].forEach(y=>pdf.line(38,y,172,y));
+      pdf.setFont('helvetica','italic');pdf.setFontSize(9);pdf.setTextColor(120,100,180);
+      pdf.text('escribe aquí tu dedicatoria',W/2,255,{align:'center'});
     }
+    // Corazón y logo
+    pdf.setFont('helvetica','normal');pdf.setFontSize(16);
+    pdf.setTextColor(220,30,120);pdf.text('♥',W/2,272,{align:'center'});
+    pdf.setFont('helvetica','bold');pdf.setFontSize(8);pdf.setTextColor(247,201,75);
+    pdf.text('StoryOwl',W/2,283,{align:'center'});
 
-    // Corazón
-    pdf.setFont('helvetica','normal');pdf.setFontSize(22);
-    pdf.setTextColor(0,0,0);pdf.text('♥',W/2+0.5,255.5,{align:'center'});
-    pdf.setTextColor(233,30,140);pdf.text('♥',W/2,255,{align:'center'});
-
-    // Línea inferior
-    pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.5);pdf.line(55,265,155,265);
-    pdf.setFont('helvetica','bold');pdf.setFontSize(9);
-    pdf.setTextColor(0,0,0);pdf.text('StoryOwl',W/2+0.3,274.3,{align:'center'});
-    pdf.setTextColor(247,201,75);pdf.text('StoryOwl',W/2,274,{align:'center'});
-
-    // PORTADA
+    // === PORTADA ===
     pdf.addPage();
     if(coverImg&&coverImg.src&&coverImg.style.display!=='none'){
       try{
         const d=await toBase64(coverImg.src);
-        pdf.addImage(d,'JPEG',0,0,W,H);
-        pdf.setFillColor(10,5,25);
-        pdf.setGState(new pdf.GState({opacity:0.55}));
-        pdf.rect(0,H-85,W,85,'F');
-        pdf.setGState(new pdf.GState({opacity:1}));
-        pdf.setFont('helvetica','bold');pdf.setFontSize(19);
-        pdf.setTextColor(0,0,0);pdf.text(titulo,W/2+0.5,H-58.5,{align:'center',maxWidth:182});
-        pdf.setTextColor(247,201,75);pdf.text(titulo,W/2,H-59,{align:'center',maxWidth:182});
+        // Imagen ocupa los 2/3 superiores
+        pdf.addImage(d,'JPEG',0,0,W,198);
+        // Franja blanca abajo
+        pdf.setFillColor(255,255,255);pdf.rect(0,198,W,99,'F');
+        // Línea separadora dorada
+        pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.8);pdf.line(0,198,W,198);
+        // Título en negro
+        pdf.setFont('helvetica','bold');pdf.setFontSize(18);pdf.setTextColor(30,15,60);
+        pdf.text(titulo,W/2,218,{align:'center',maxWidth:185});
+        // Dedicatoria en gris
         if(ded){
-          pdf.setFont('helvetica','italic');pdf.setFontSize(10);
-          pdf.setTextColor(0,0,0);pdf.text(pdf.splitTextToSize(ded,168),W/2+0.3,H-38.7,{align:'center'});
-          pdf.setTextColor(220,200,255);pdf.text(pdf.splitTextToSize(ded,168),W/2,H-39,{align:'center'});
+          pdf.setFont('helvetica','italic');pdf.setFontSize(10);pdf.setTextColor(100,80,140);
+          pdf.text(pdf.splitTextToSize(ded,175),W/2,235,{align:'center'});
         }
+        // Logo pequeño
+        pdf.setFont('helvetica','bold');pdf.setFontSize(8);pdf.setTextColor(180,160,220);
+        pdf.text('🦉 StoryOwl',W/2,285,{align:'center'});
       }catch(e){}
     }
 
-    // PÁGINAS
+    // === PÁGINAS INTERIORES — exactamente como la web ===
     const pages=document.querySelectorAll('.page');
     let i=1;
     for(const page of pages){
@@ -466,46 +441,44 @@ async function descargarPDF(){
       const num=page.querySelector('.page-num')?.textContent||'';
       const tit=page.querySelector('.page-title')?.textContent||'';
       const txt=page.querySelector('.page-text')?.textContent||'';
-      try{const d=await toBase64(img.src);pdf.addImage(d,'JPEG',0,0,W,H);}
-      catch(e){pdf.setFillColor(20,10,40);pdf.rect(0,0,W,H,'F');}
-      // Overlay inferior
-      pdf.setFillColor(10,5,25);
-      pdf.setGState(new pdf.GState({opacity:0.72}));
-      pdf.rect(0,H-108,W,108,'F');
-      pdf.setGState(new pdf.GState({opacity:1}));
-      // Línea dorada
-      pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.7);pdf.line(10,H-106,W-10,H-106);
-      // Número
+
+      // Imagen ocupa los 2/3 superiores (exactamente como la web)
+      try{
+        const d=await toBase64(img.src);
+        pdf.addImage(d,'JPEG',0,0,W,196);
+      }catch(e){
+        pdf.setFillColor(240,235,255);pdf.rect(0,0,W,196,'F');
+      }
+
+      // Franja blanca inferior (como la web)
+      pdf.setFillColor(250,247,255);pdf.rect(0,196,W,101,'F');
+
+      // Línea separadora dorada (como la web)
+      pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.8);pdf.line(0,196,W,196);
+
+      // Número de página en naranja/dorado pequeño
       pdf.setFont('helvetica','bold');pdf.setFontSize(8);
-      pdf.setTextColor(247,201,75);pdf.text(num.toUpperCase(),13,H-97);
-      // Título con sombra
-      pdf.setFont('helvetica','italic');pdf.setFontSize(17);
-      pdf.setTextColor(0,0,0);pdf.text(tit,13,H-83,{maxWidth:W-26});
-      pdf.setTextColor(210,185,255);pdf.text(tit,12,H-84,{maxWidth:W-24});
-      // Texto con sombra
-      pdf.setFont('helvetica','normal');pdf.setFontSize(12);
-      const lineas=pdf.splitTextToSize(txt,W-24);
-      pdf.setTextColor(0,0,0);pdf.text(lineas.slice(0,4),13,H-67);
-      pdf.setTextColor(245,240,255);pdf.text(lineas.slice(0,4),12,H-68);
-      // Número página abajo
-      pdf.setFontSize(8);pdf.setTextColor(120,100,180);pdf.text(String(i),W/2,H-6,{align:'center'});
+      pdf.setTextColor(180,130,0);pdf.text(num.toUpperCase(),14,207);
+
+      // Título en lila cursiva (igual que la web)
+      pdf.setFont('helvetica','italic');pdf.setFontSize(16);
+      pdf.setTextColor(80,40,160);pdf.text(tit,14,220,{maxWidth:W-28});
+
+      // Texto en gris oscuro limpio (igual que la web)
+      pdf.setFont('helvetica','normal');pdf.setFontSize(11);
+      pdf.setTextColor(58,48,80);
+      const lineas=pdf.splitTextToSize(txt,W-28);
+      pdf.text(lineas.slice(0,5),14,233);
+
+      // Número pequeño abajo centrado
+      pdf.setFontSize(8);pdf.setTextColor(180,160,210);
+      pdf.text(String(i),W/2,291,{align:'center'});
       i++;
     }
 
-    // COLOFÓN
+    // === COLOFÓN ===
     pdf.addPage();
-    if(coverImg&&coverImg.src&&coverImg.style.display!=='none'){
-      try{
-        const d=await toBase64(coverImg.src);
-        pdf.addImage(d,'JPEG',0,0,W,H);
-        pdf.setFillColor(10,5,25);
-        pdf.setGState(new pdf.GState({opacity:0.78}));
-        pdf.rect(0,0,W,H,'F');
-        pdf.setGState(new pdf.GState({opacity:1}));
-      }catch(e){pdf.setFillColor(10,5,25);pdf.rect(0,0,W,H,'F');}
-    } else {
-      pdf.setFillColor(10,5,25);pdf.rect(0,0,W,H,'F');
-    }
+    pdf.setFillColor(13,8,32);pdf.rect(0,0,W,H,'F');
     [[25,35],[185,28],[12,155],[198,195],[105,18],[48,268],[162,258],[82,115],[142,185]].forEach(([x,y])=>{
       pdf.setFillColor(247,201,75);pdf.circle(x,y,0.6,'F');
     });
@@ -531,6 +504,11 @@ async function descargarPDF(){
     pdf.save((titulo||'cuento')+'.pdf');
   }catch(e){alert('Error PDF: '+e.message);}
   btn.textContent='📄 Descargar PDF';btn.disabled=false;
+}
+
+async function toBase64(url){
+  const blob=await(await fetch(url)).blob();
+  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob);});
 }
 
 async function toBase64(url){
