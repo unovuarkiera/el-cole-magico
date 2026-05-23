@@ -459,377 +459,258 @@ function cargarImagen(url) {
   });
 }
 
-// Dibuja texto con word-wrap en Canvas, devuelve altura usada
-function dibujarTexto(ctx, texto, x, y, maxW, lineH) {
-  const palabras = texto.split(' ');
-  let linea = '';
-  let totalH = 0;
-  for (const pal of palabras) {
-    const prueba = linea ? linea + ' ' + pal : pal;
-    if (ctx.measureText(prueba).width > maxW && linea) {
-      ctx.fillText(linea, x, y + totalH);
-      linea = pal;
-      totalH += lineH;
-    } else {
-      linea = prueba;
-    }
+// Motor tipográfico: calcula líneas con wrap estricto
+function calcLineas(ctx, texto, maxW) {
+  if (!texto) return [];
+  const words = texto.split(' ');
+  const lines = []; let line = '';
+  for (const w of words) {
+    const test = line ? line + ' ' + w : w;
+    if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = w; }
+    else line = test;
   }
-  if (linea) { ctx.fillText(linea, x, y + totalH); totalH += lineH; }
-  return totalH;
+  if (line) lines.push(line);
+  return lines;
 }
 
-// Redondea rectángulo en Canvas
+// Encuentra fontSize óptimo para que el texto quepa en maxLines
+function fitFontSize(ctx, texto, fontTpl, maxW, maxLines, minSz, maxSz) {
+  for (let sz = maxSz; sz >= minSz; sz--) {
+    ctx.font = fontTpl.replace('SIZE', sz);
+    const lines = calcLineas(ctx, texto, maxW);
+    if (lines.length <= maxLines) return { sz, lines };
+  }
+  ctx.font = fontTpl.replace('SIZE', minSz);
+  return { sz: minSz, lines: calcLineas(ctx, texto, maxW) };
+}
+
+// Object-fit: cover
+function drawCover(ctx, img, x, y, w, h) {
+  const scale = Math.max(w / img.width, h / img.height);
+  const sw = img.width * scale, sh = img.height * scale;
+  ctx.drawImage(img, x + (w - sw) / 2, y + (h - sh) / 2, sw, sh);
+}
+
+// Rectángulo redondeado
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + w - r, y);
-  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-  ctx.lineTo(x + w, y + h - r);
-  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-  ctx.lineTo(x + r, y + h);
-  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-  ctx.lineTo(x, y + r);
-  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
   ctx.closePath();
 }
 
-// Mide líneas de texto con wrap
-function medirLineas(ctx, texto, maxW) {
-  const palabras = texto.split(' ');
-  let linea = '', lineas = [];
-  for (const pal of palabras) {
-    const prueba = linea ? linea + ' ' + pal : pal;
-    if (ctx.measureText(prueba).width > maxW && linea) { lineas.push(linea); linea = pal; }
-    else linea = prueba;
-  }
-  if (linea) lineas.push(linea);
-  return lineas;
-}
+// Constantes A4 @ 150dpi
+const PX=1240, PY=1754, PH=88, PV=52;
 
-// ── Composición de página interior ──────────────────────────
+// PÁGINA INTERIOR
 async function componerPaginaInterior(imgUrl, numero, titulo, texto) {
-  const PX = 1240, PY = 1754; // A4 a 150dpi
-  const cv = document.createElement('canvas');
-  cv.width = PX; cv.height = PY;
-  const ctx = cv.getContext('2d');
+  const cv=document.createElement('canvas'); cv.width=PX; cv.height=PY;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle='#f5f0ff'; ctx.fillRect(0,0,PX,PY);
+  try { const img=await cargarImagen(imgUrl); drawCover(ctx,img,0,0,PX,PY); } catch(e){}
 
-  // 1. Fondo por si falla la imagen
-  ctx.fillStyle = '#f0ebff';
-  ctx.fillRect(0, 0, PX, PY);
+  const pX=60, pW=PX-120, tW=pW-PH*2;
 
-  // 2. Imagen de fondo completa
-  try {
-    const img = await cargarImagen(imgUrl);
-    // Recortar/escalar para cubrir todo el canvas
-    const scale = Math.max(PX / img.width, PY / img.height);
-    const sw = img.width * scale, sh = img.height * scale;
-    const sx = (PX - sw) / 2, sy = (PY - sh) / 2;
-    ctx.drawImage(img, sx, sy, sw, sh);
-  } catch(e) { console.warn('Imagen no cargada:', e); }
+  // Número (fijo)
+  const szNum=28, hNum=szNum+20;
 
-  // 3. Medir texto para calcular panel dinámico
-  const PAD = 52, MARGEN = 72;
-  const maxW = PX - MARGEN * 2 - 80; // más margen interior para evitar cortes
+  // Título: italic bold, máx 2 líneas, 30-52px
+  const {sz:szT,lines:lT}=fitFontSize(ctx,titulo||'','italic bold SIZEpx Georgia,serif',tW,2,28,52);
+  const hT=lT.length*Math.round(szT*1.35)+18;
 
-  ctx.font = `bold 38px Georgia, serif`;
-  const lineasTit = medirLineas(ctx, titulo || '', maxW);
-  ctx.font = `32px Georgia, serif`;
-  const lineasTxt = medirLineas(ctx, texto || '', maxW);
+  // Texto: normal, máx 4 líneas, 26-38px
+  const {sz:szB,lines:lB}=fitFontSize(ctx,texto||'','SIZEpx Georgia,serif',tW,4,24,38);
+  const lhB=Math.round(szB*1.58);
+  const hB=lB.length*lhB;
 
-  const lineHTit = 52, lineHTxt = 48;
-  const altoTit = lineasTit.length * lineHTit;
-  const altoTxt = lineasTxt.length * lineHTxt;
-  const altoNum = 40;
-  const panelH = PAD * 2 + altoNum + altoTit + 24 + altoTxt + 20;
-  const panelY = PY - panelH;
+  const panH=PV+hNum+hT+hB+PV+10;
+  const panY=PY-panH;
 
-  // 4. Degradado oscuro sobre la imagen (parte inferior)
-  const grad = ctx.createLinearGradient(0, panelY - 120, 0, PY);
-  grad.addColorStop(0, 'rgba(15,8,35,0)');
-  grad.addColorStop(0.3, 'rgba(15,8,35,0.55)');
-  grad.addColorStop(1, 'rgba(15,8,35,0.92)');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, panelY - 120, PX, PY - (panelY - 120));
+  // Degradado suave
+  const g=ctx.createLinearGradient(0,panY-60,0,panY+20);
+  g.addColorStop(0,'rgba(8,3,18,0)'); g.addColorStop(1,'rgba(8,3,18,0.45)');
+  ctx.fillStyle=g; ctx.fillRect(0,panY-60,PX,80);
 
-  // 5. Panel redondeado semitransparente
-  const panelX = 48, panelW = PX - 96;
+  // Panel blanco redondeado
   ctx.save();
-  roundRect(ctx, panelX, panelY, panelW, panelH - 10, 32);
-  ctx.fillStyle = 'rgba(255,252,248,0.93)';
-  ctx.shadowColor = 'rgba(58,32,112,0.18)';
-  ctx.shadowBlur = 40;
-  ctx.fill();
-  ctx.restore();
-
-  // 6. Línea dorada superior del panel
-  ctx.strokeStyle = '#f7c94b';
-  ctx.lineWidth = 4;
-  ctx.beginPath();
-  ctx.moveTo(panelX + 40, panelY + 2);
-  ctx.lineTo(panelX + panelW - 40, panelY + 2);
-  ctx.stroke();
-
-  let cy = panelY + PAD;
-
-  // 7. Número de página
-  ctx.font = `bold 26px Arial, sans-serif`;
-  ctx.fillStyle = '#b88000';
-  ctx.letterSpacing = '3px';
-  ctx.fillText(`PÁGINA ${numero}`, panelX + 40, cy);
-  cy += altoNum;
-
-  // 8. Título en serif itálica
-  ctx.font = `italic bold 38px Georgia, serif`;
-  ctx.fillStyle = '#3a1070';
-  for (const l of lineasTit) {
-    ctx.fillText(l, panelX + 40, cy);
-    cy += lineHTit;
-  }
-  cy += 24;
-
-  // 9. Texto del cuento
-  ctx.font = `32px Georgia, serif`;
-  ctx.fillStyle = '#2a1a40';
-  for (const l of lineasTxt) {
-    ctx.fillText(l, panelX + 40, cy);
-    cy += lineHTxt;
-  }
-
-  // 10. Logo StoryOwl pequeño abajo a la derecha
-  ctx.font = `bold 22px Arial, sans-serif`;
-  ctx.fillStyle = 'rgba(107,63,168,0.5)';
-  ctx.textAlign = 'right';
-  ctx.fillText('🦉 StoryOwl', panelX + panelW - 30, panelY + panelH - 22);
-  ctx.textAlign = 'left';
-
-  return cv.toDataURL('image/jpeg', 0.92);
-}
-
-// ── Composición dedicatoria ───────────────────────────────
-async function componerDedicatoria(nombre, dedPersonal) {
-  const PX = 1240, PY = 1754;
-  const cv = document.createElement('canvas');
-  cv.width = PX; cv.height = PY;
-  const ctx = cv.getContext('2d');
-
-  // Fondo cálido
-  const grad = ctx.createLinearGradient(0, 0, PX, PY);
-  grad.addColorStop(0, '#fff8ee');
-  grad.addColorStop(0.5, '#fdf0ff');
-  grad.addColorStop(1, '#eef4ff');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, PX, PY);
-
-  // Imagen de dedicatoria de fondo si existe
-  try {
-    const img = await cargarImagen('/imagenes/dedicatoria.png');
-    ctx.drawImage(img, 0, 0, PX, PY);
-  } catch(e) {
-    // Fallback: estrellas decorativas
-    const colores = ['#f7c94b','#c084fc','#60a5fa','#f472b6'];
-    for (let i = 0; i < 30; i++) {
-      ctx.font = `${20 + Math.random()*30}px serif`;
-      ctx.fillStyle = colores[i % colores.length];
-      ctx.globalAlpha = 0.15 + Math.random() * 0.2;
-      ctx.fillText('✦', Math.random() * PX, Math.random() * PY * 0.6);
-    }
-    ctx.globalAlpha = 1;
-  }
-
-  // Panel inferior
-  const panelH = 580, panelY = PY - panelH;
-  const grad2 = ctx.createLinearGradient(0, panelY - 80, 0, PY);
-  grad2.addColorStop(0, 'rgba(255,252,248,0)');
-  grad2.addColorStop(0.25, 'rgba(255,252,248,0.97)');
-  grad2.addColorStop(1, 'rgba(255,252,248,1)');
-  ctx.fillStyle = grad2;
-  ctx.fillRect(0, panelY - 80, PX, PY - (panelY - 80));
+  roundRect(ctx,pX,panY,pW,panH,32);
+  ctx.fillStyle='rgba(255,253,250,0.97)';
+  ctx.shadowColor='rgba(50,20,100,0.13)'; ctx.shadowBlur=28; ctx.shadowOffsetY=-3;
+  ctx.fill(); ctx.restore();
 
   // Línea dorada
-  ctx.strokeStyle = '#f7c94b';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(200, panelY + 10);
-  ctx.lineTo(PX - 200, panelY + 10);
-  ctx.stroke();
+  ctx.strokeStyle='#f7c94b'; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.moveTo(pX+50,panY+3); ctx.lineTo(pX+pW-50,panY+3); ctx.stroke();
 
-  // "Para"
-  ctx.font = `italic 44px Georgia, serif`;
-  ctx.fillStyle = '#9b6fd8';
-  ctx.textAlign = 'center';
-  ctx.fillText('Para', PX / 2, panelY + 80);
+  let cy=panY+PV;
 
-  // Nombre
-  ctx.font = `bold 88px Georgia, serif`;
-  ctx.fillStyle = '#3a2070';
-  ctx.fillText(nombre || '', PX / 2, panelY + 190);
-
-  // Línea separadora
-  ctx.strokeStyle = 'rgba(160,120,220,0.3)';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(300, panelY + 215);
-  ctx.lineTo(PX - 300, panelY + 215);
-  ctx.stroke();
-
-  // Dedicatoria personal o líneas
-  if (dedPersonal && dedPersonal.trim()) {
-    ctx.font = `italic 34px Georgia, serif`;
-    ctx.fillStyle = '#5a3880';
-    const maxW = PX - 300;
-    const lineas = medirLineas(ctx, dedPersonal, maxW);
-    let dy = panelY + 290;
-    lineas.forEach(l => { ctx.fillText(l, PX / 2, dy); dy += 48; });
-  } else {
-    // Líneas para escribir a mano
-    ctx.strokeStyle = 'rgba(180,150,220,0.4)';
-    ctx.lineWidth = 1;
-    [290, 350, 410, 470].forEach(offset => {
-      ctx.beginPath();
-      ctx.moveTo(200, panelY + offset);
-      ctx.lineTo(PX - 200, panelY + offset);
-      ctx.stroke();
-    });
-    ctx.font = `italic 26px Georgia, serif`;
-    ctx.fillStyle = 'rgba(160,130,200,0.5)';
-    ctx.fillText('escribe aquí tu dedicatoria', PX / 2, panelY + 530);
-  }
-
-  // Logo
-  ctx.font = `bold 26px Arial, sans-serif`;
-  ctx.fillStyle = 'rgba(107,63,168,0.4)';
-  ctx.fillText('🦉 StoryOwl', PX / 2, PY - 40);
-  ctx.textAlign = 'left';
-
-  return cv.toDataURL('image/jpeg', 0.92);
-}
-
-// ── Composición portada ───────────────────────────────────
-async function componerPortada(imgUrl, titulo, dedicatoria) {
-  const PX = 1240, PY = 1754;
-  const cv = document.createElement('canvas');
-  cv.width = PX; cv.height = PY;
-  const ctx = cv.getContext('2d');
-
-  ctx.fillStyle = '#1a0840';
-  ctx.fillRect(0, 0, PX, PY);
-
-  try {
-    const img = await cargarImagen(imgUrl);
-    const scale = Math.max(PX / img.width, PY / img.height);
-    const sw = img.width * scale, sh = img.height * scale;
-    ctx.drawImage(img, (PX - sw) / 2, (PY - sh) / 2, sw, sh);
-  } catch(e) {}
-
-  // Degradado abajo para el texto
-  const grad = ctx.createLinearGradient(0, PY * 0.55, 0, PY);
-  grad.addColorStop(0, 'rgba(10,4,25,0)');
-  grad.addColorStop(0.4, 'rgba(10,4,25,0.75)');
-  grad.addColorStop(1, 'rgba(10,4,25,0.97)');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, PY * 0.55, PX, PY * 0.45);
+  // Número
+  ctx.font=`bold ${szNum}px Arial,sans-serif`; ctx.fillStyle='#b88000'; ctx.textAlign='left';
+  ctx.fillText(`PÁGINA ${numero}`, pX+PH, cy+szNum); cy+=hNum;
 
   // Título
-  ctx.textAlign = 'center';
-  ctx.font = `bold 72px Georgia, serif`;
-  ctx.fillStyle = '#ffffff';
-  ctx.shadowColor = 'rgba(0,0,0,0.6)';
-  ctx.shadowBlur = 20;
-  const lineasT = medirLineas(ctx, titulo || '', PX - 160);
-  let ty = PY * 0.72;
-  lineasT.forEach(l => { ctx.fillText(l, PX / 2, ty); ty += 90; });
+  ctx.font=`italic bold ${szT}px Georgia,serif`; ctx.fillStyle='#3a1070';
+  const lhT=Math.round(szT*1.35);
+  for(const l of lT){ ctx.fillText(l,pX+PH,cy+lhT); cy+=lhT; } cy+=18;
 
-  // Línea dorada
-  ctx.shadowBlur = 0;
-  ctx.strokeStyle = '#f7c94b';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(280, ty + 10);
-  ctx.lineTo(PX - 280, ty + 10);
-  ctx.stroke();
-  ty += 30;
-
-  // Dedicatoria
-  if (dedicatoria) {
-    ctx.font = `italic 36px Georgia, serif`;
-    ctx.fillStyle = 'rgba(220,200,255,0.85)';
-    const lineasD = medirLineas(ctx, dedicatoria, PX - 200);
-    lineasD.forEach(l => { ctx.fillText(l, PX / 2, ty + 40); ty += 50; });
-  }
+  // Texto
+  ctx.font=`${szB}px Georgia,serif`; ctx.fillStyle='#2a1a40';
+  for(const l of lB){ ctx.fillText(l,pX+PH,cy+lhB); cy+=lhB; }
 
   // Logo
-  ctx.font = `bold 28px Arial, sans-serif`;
-  ctx.fillStyle = 'rgba(247,201,75,0.7)';
-  ctx.fillText('🦉 StoryOwl', PX / 2, PY - 50);
-  ctx.textAlign = 'left';
-
-  return cv.toDataURL('image/jpeg', 0.92);
+  ctx.font='bold 22px Arial,sans-serif'; ctx.fillStyle='rgba(107,63,168,0.38)';
+  ctx.textAlign='right'; ctx.fillText('🦉 StoryOwl',pX+pW-PH,panY+panH-18);
+  ctx.textAlign='left';
+  return cv.toDataURL('image/jpeg',0.92);
 }
 
-// ── Composición colofón ───────────────────────────────────
-async function componerColofonPagina(nombre, fecha) {
-  const PX = 1240, PY = 1754;
-  const cv = document.createElement('canvas');
-  cv.width = PX; cv.height = PY;
-  const ctx = cv.getContext('2d');
+// PORTADA — solo imagen + título + logo, SIN dedicatoria
+async function componerPortada(imgUrl, titulo) {
+  const cv=document.createElement('canvas'); cv.width=PX; cv.height=PY;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle='#1a0840'; ctx.fillRect(0,0,PX,PY);
+  try { const img=await cargarImagen(imgUrl); drawCover(ctx,img,0,0,PX,PY); } catch(e){}
 
-  ctx.fillStyle = '#fffaf0';
-  ctx.fillRect(0, 0, PX, PY);
+  const g=ctx.createLinearGradient(0,PY*0.50,0,PY);
+  g.addColorStop(0,'rgba(6,2,16,0)'); g.addColorStop(0.38,'rgba(6,2,16,0.75)'); g.addColorStop(1,'rgba(6,2,16,0.97)');
+  ctx.fillStyle=g; ctx.fillRect(0,PY*0.50,PX,PY*0.50);
+
+  // Título: máx 3 líneas, 50-88px
+  const tW=PX-180;
+  const {sz:szT,lines:lT}=fitFontSize(ctx,titulo||'','bold SIZEpx Georgia,serif',tW,3,46,88);
+  const lhT=Math.round(szT*1.18);
+  const totalH=lT.length*lhT;
+  const zY=PY*0.60, zH=PY*0.30;
+  let ty=zY+(zH-totalH)/2+lhT;
+
+  ctx.textAlign='center'; ctx.font=`bold ${szT}px Georgia,serif`;
+  ctx.fillStyle='#fff'; ctx.shadowColor='rgba(0,0,0,0.65)'; ctx.shadowBlur=22;
+  for(const l of lT){ ctx.fillText(l,PX/2,ty); ty+=lhT; }
+  ctx.shadowBlur=0;
+
+  ctx.strokeStyle='#f7c94b'; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.moveTo(PX/2-180,ty+12); ctx.lineTo(PX/2+180,ty+12); ctx.stroke();
+
+  ctx.font='bold 30px Arial,sans-serif'; ctx.fillStyle='rgba(247,201,75,0.82)';
+  ctx.fillText('🦉 StoryOwl',PX/2,PY-52); ctx.textAlign='left';
+  return cv.toDataURL('image/jpeg',0.92);
+}
+
+// DEDICATORIA — página 2, editorial premium
+async function componerDedicatoria(nombre, dedPersonal) {
+  const cv=document.createElement('canvas'); cv.width=PX; cv.height=PY;
+  const ctx=cv.getContext('2d');
+
+  const bg=ctx.createLinearGradient(0,0,PX,PY);
+  bg.addColorStop(0,'#fff9f0'); bg.addColorStop(0.5,'#fdf4ff'); bg.addColorStop(1,'#f0f6ff');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,PX,PY);
+
+  // Imagen búho zona superior ~52%
+  try {
+    const img=await cargarImagen('/imagenes/dedicatoria.png');
+    const imgH=Math.round(PY*0.50);
+    ctx.save(); ctx.beginPath(); ctx.rect(0,0,PX,imgH); ctx.clip();
+    drawCover(ctx,img,0,0,PX,imgH); ctx.restore();
+    const fade=ctx.createLinearGradient(0,imgH-130,0,imgH+40);
+    fade.addColorStop(0,'rgba(253,244,255,0)'); fade.addColorStop(1,'rgba(253,244,255,1)');
+    ctx.fillStyle=fade; ctx.fillRect(0,imgH-130,PX,170);
+  } catch(e){
+    const cols=['#f7c94b','#c084fc','#60a5fa','#f472b6'];
+    for(let i=0;i<22;i++){
+      ctx.save(); ctx.globalAlpha=0.10+Math.random()*0.16;
+      ctx.font=`${22+Math.random()*28}px serif`; ctx.fillStyle=cols[i%cols.length];
+      ctx.fillText('✦',Math.random()*PX,60+Math.random()*PY*0.44); ctx.restore();
+    }
+  }
+
+  const tZ=Math.round(PY*0.52); const cx=PX/2;
+  ctx.textAlign='center';
+
+  // Línea dorada
+  ctx.strokeStyle='#f7c94b'; ctx.lineWidth=2.5;
+  ctx.beginPath(); ctx.moveTo(cx-230,tZ+8); ctx.lineTo(cx+230,tZ+8); ctx.stroke();
+
+  // "Para"
+  ctx.font='italic 38px Georgia,serif'; ctx.fillStyle='#9b6fd8';
+  ctx.fillText('Para',cx,tZ+66);
+
+  // Nombre
+  const {sz:szN,lines:lN}=fitFontSize(ctx,nombre||'','bold SIZEpx Georgia,serif',PX-220,1,50,96);
+  ctx.font=`bold ${szN}px Georgia,serif`; ctx.fillStyle='#3a2070';
+  ctx.fillText(lN[0]||nombre,cx,tZ+66+szN+16);
+
+  ctx.strokeStyle='rgba(160,120,220,0.22)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(cx-190,tZ+66+szN+40); ctx.lineTo(cx+190,tZ+66+szN+40); ctx.stroke();
+
+  let dedY=tZ+66+szN+84;
+  const dedW=PX-300;
+
+  if(dedPersonal&&dedPersonal.trim()){
+    const {sz:szD,lines:lD}=fitFontSize(ctx,dedPersonal,'italic SIZEpx Georgia,serif',dedW,5,24,36);
+    const lhD=Math.round(szD*1.62); ctx.font=`italic ${szD}px Georgia,serif`; ctx.fillStyle='#5a3880';
+    for(const l of lD){ if(dedY+lhD>PY-110) break; ctx.fillText(l,cx,dedY); dedY+=lhD; }
+  } else {
+    ctx.strokeStyle='rgba(180,150,220,0.32)'; ctx.lineWidth=1;
+    for(let i=0;i<4;i++){
+      const ly=dedY+i*52; if(ly>PY-130) break;
+      ctx.beginPath(); ctx.moveTo(cx-280,ly); ctx.lineTo(cx+280,ly); ctx.stroke();
+    }
+    ctx.font='italic 24px Georgia,serif'; ctx.fillStyle='rgba(160,130,200,0.42)';
+    ctx.fillText('escribe aquí tu dedicatoria',cx,dedY+4*52+28);
+  }
+
+  ctx.font='bold 24px Arial,sans-serif'; ctx.fillStyle='rgba(107,63,168,0.32)';
+  ctx.fillText('🦉 StoryOwl',cx,PY-50); ctx.textAlign='left';
+  return cv.toDataURL('image/jpeg',0.92);
+}
+
+// COLOFÓN
+async function componerColofonPagina(nombre, fecha) {
+  const cv=document.createElement('canvas'); cv.width=PX; cv.height=PY;
+  const ctx=cv.getContext('2d');
+  const bg=ctx.createLinearGradient(0,0,0,PY);
+  bg.addColorStop(0,'#fffaf0'); bg.addColorStop(1,'#f8f4ff');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,PX,PY);
 
   try {
-    const img = await cargarImagen('/imagenes/colofonowl.png');
-    ctx.drawImage(img, 0, 0, PX, PY);
-  } catch(e) {}
+    const img=await cargarImagen('/imagenes/colofonowl.png');
+    const imgH=Math.round(PY*0.48);
+    ctx.save(); ctx.beginPath(); ctx.rect(0,0,PX,imgH); ctx.clip();
+    drawCover(ctx,img,0,0,PX,imgH); ctx.restore();
+    const fade=ctx.createLinearGradient(0,imgH-110,0,imgH+30);
+    fade.addColorStop(0,'rgba(248,244,255,0)'); fade.addColorStop(1,'rgba(248,244,255,1)');
+    ctx.fillStyle=fade; ctx.fillRect(0,imgH-110,PX,140);
+  } catch(e){}
 
-  // Panel inferior
-  const panelY = PY * 0.58;
-  const grad = ctx.createLinearGradient(0, panelY - 60, 0, PY);
-  grad.addColorStop(0, 'rgba(255,252,248,0)');
-  grad.addColorStop(0.2, 'rgba(255,252,248,0.97)');
-  grad.addColorStop(1, 'rgba(255,252,248,1)');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, panelY - 60, PX, PY - (panelY - 60));
+  const bY=Math.round(PY*0.51); const cx=PX/2;
+  ctx.textAlign='center';
 
-  ctx.strokeStyle = '#f7c94b';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(200, panelY + 10);
-  ctx.lineTo(PX - 200, panelY + 10);
-  ctx.stroke();
+  ctx.strokeStyle='#f7c94b'; ctx.lineWidth=2.5;
+  ctx.beginPath(); ctx.moveTo(cx-210,bY); ctx.lineTo(cx+210,bY); ctx.stroke();
 
-  ctx.textAlign = 'center';
-  ctx.font = `38px Georgia, serif`;
-  ctx.fillStyle = '#6b3fa8';
-  ctx.fillText('Este cuento fue creado especialmente para', PX / 2, panelY + 80);
+  ctx.font='34px Georgia,serif'; ctx.fillStyle='#6b3fa8';
+  ctx.fillText('Este cuento fue creado especialmente para',cx,bY+52);
 
-  ctx.font = `bold 80px Georgia, serif`;
-  ctx.fillStyle = '#3a2070';
-  ctx.fillText(nombre || '', PX / 2, panelY + 190);
+  const {sz:szN}=fitFontSize(ctx,nombre||'','bold SIZEpx Georgia,serif',PX-200,1,46,84);
+  ctx.font=`bold ${szN}px Georgia,serif`; ctx.fillStyle='#3a2070';
+  ctx.fillText(nombre||'',cx,bY+52+szN+18);
 
-  ctx.font = `italic 34px Georgia, serif`;
-  ctx.fillStyle = '#9b6fd8';
-  ctx.fillText('el ' + (fecha || ''), PX / 2, panelY + 260);
+  ctx.font='italic 30px Georgia,serif'; ctx.fillStyle='#9b6fd8';
+  ctx.fillText('el '+(fecha||''),cx,bY+52+szN+66);
 
-  ctx.strokeStyle = 'rgba(247,201,75,0.5)';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(300, panelY + 295);
-  ctx.lineTo(PX - 300, panelY + 295);
-  ctx.stroke();
+  ctx.strokeStyle='rgba(247,201,75,0.35)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(cx-240,bY+52+szN+92); ctx.lineTo(cx+240,bY+52+szN+92); ctx.stroke();
 
-  ctx.font = `italic 36px Georgia, serif`;
-  ctx.fillStyle = '#5a3880';
-  ctx.fillText('Una historia única en el mundo, igual que tú.', PX / 2, panelY + 360);
+  ctx.font='italic 32px Georgia,serif'; ctx.fillStyle='#5a3880';
+  ctx.fillText('Una historia única en el mundo, igual que tú.',cx,bY+52+szN+142);
 
-  ctx.font = `bold 28px Arial, sans-serif`;
-  ctx.fillStyle = 'rgba(107,63,168,0.5)';
-  ctx.fillText('storyowl.com', PX / 2, PY - 50);
-  ctx.textAlign = 'left';
-
-  return cv.toDataURL('image/jpeg', 0.92);
+  ctx.font='bold 24px Arial,sans-serif'; ctx.fillStyle='rgba(107,63,168,0.38)';
+  ctx.fillText('storyowl.com',cx,PY-52); ctx.textAlign='left';
+  return cv.toDataURL('image/jpeg',0.92);
 }
 
-// ── PDF PRINCIPAL ─────────────────────────────────────────
 async function descargarPDF(){
   const btn = document.getElementById('btnPdf');
   btn.textContent = '⏳ Generando PDF...'; btn.disabled = true;
@@ -850,7 +731,7 @@ async function descargarPDF(){
     // ── PÁG 1: PORTADA ──────────────────────────────────────
     btn.textContent = '⏳ Componiendo portada...';
     if (coverImg && coverImg.src && coverImg.style.display !== 'none') {
-      const portadaDataUrl = await componerPortada(coverImg.src, titulo, ded);
+      const portadaDataUrl = await componerPortada(coverImg.src, titulo);
       pdf.addImage(portadaDataUrl, 'JPEG', 0, 0, W, H);
     }
 
