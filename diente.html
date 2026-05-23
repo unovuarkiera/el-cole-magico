@@ -340,198 +340,321 @@ function procesarEvento(data){
   }
 }
 
+function cargarImagen(url) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => res(img);
+    img.onerror = () => rej(new Error('No se pudo cargar: ' + url));
+    img.src = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
+  });
+}
+
+// Motor tipográfico: calcula líneas con wrap estricto
+function calcLineas(ctx, texto, maxW) {
+  if (!texto) return [];
+  const words = texto.split(' ');
+  const lines = []; let line = '';
+  for (const w of words) {
+    const test = line ? line + ' ' + w : w;
+    if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = w; }
+    else line = test;
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+// Encuentra fontSize óptimo para que el texto quepa en maxLines
+function fitFontSize(ctx, texto, fontTpl, maxW, maxLines, minSz, maxSz) {
+  for (let sz = maxSz; sz >= minSz; sz--) {
+    ctx.font = fontTpl.replace('SIZE', sz);
+    const lines = calcLineas(ctx, texto, maxW);
+    if (lines.length <= maxLines) return { sz, lines };
+  }
+  ctx.font = fontTpl.replace('SIZE', minSz);
+  return { sz: minSz, lines: calcLineas(ctx, texto, maxW) };
+}
+
+// Object-fit: cover
+function drawCover(ctx, img, x, y, w, h) {
+  const scale = Math.max(w / img.width, h / img.height);
+  const sw = img.width * scale, sh = img.height * scale;
+  ctx.drawImage(img, x + (w - sw) / 2, y + (h - sh) / 2, sw, sh);
+}
+
+// Rectángulo redondeado
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+// Constantes A4 @ 150dpi
+const PX=1240, PY=1754, PH=88, PV=52;
+
+// PÁGINA INTERIOR
+async function componerPaginaInterior(imgUrl, numero, titulo, texto) {
+  const cv=document.createElement('canvas'); cv.width=PX; cv.height=PY;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle='#f5f0ff'; ctx.fillRect(0,0,PX,PY);
+  try { const img=await cargarImagen(imgUrl); drawCover(ctx,img,0,0,PX,PY); } catch(e){}
+
+  const pX=60, pW=PX-120, tW=pW-PH*2;
+
+  // Número (fijo)
+  const szNum=28, hNum=szNum+20;
+
+  // Título: italic bold, máx 2 líneas, 30-52px
+  const {sz:szT,lines:lT}=fitFontSize(ctx,titulo||'','italic bold SIZEpx Georgia,serif',tW,2,28,52);
+  const hT=lT.length*Math.round(szT*1.35)+18;
+
+  // Texto: normal, máx 4 líneas, 26-38px
+  const {sz:szB,lines:lB}=fitFontSize(ctx,texto||'','SIZEpx Georgia,serif',tW,4,24,38);
+  const lhB=Math.round(szB*1.58);
+  const hB=lB.length*lhB;
+
+  const panH=PV+hNum+hT+hB+PV+10;
+  const panY=PY-panH;
+
+  // Degradado suave
+  const g=ctx.createLinearGradient(0,panY-60,0,panY+20);
+  g.addColorStop(0,'rgba(8,3,18,0)'); g.addColorStop(1,'rgba(8,3,18,0.45)');
+  ctx.fillStyle=g; ctx.fillRect(0,panY-60,PX,80);
+
+  // Panel blanco redondeado
+  ctx.save();
+  roundRect(ctx,pX,panY,pW,panH,32);
+  ctx.fillStyle='rgba(255,253,250,0.97)';
+  ctx.shadowColor='rgba(50,20,100,0.13)'; ctx.shadowBlur=28; ctx.shadowOffsetY=-3;
+  ctx.fill(); ctx.restore();
+
+  // Línea dorada
+  ctx.strokeStyle='#f7c94b'; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.moveTo(pX+50,panY+3); ctx.lineTo(pX+pW-50,panY+3); ctx.stroke();
+
+  let cy=panY+PV;
+
+  // Número
+  ctx.font=`bold ${szNum}px Arial,sans-serif`; ctx.fillStyle='#b88000'; ctx.textAlign='left';
+  ctx.fillText(`PÁGINA ${numero}`, pX+PH, cy+szNum); cy+=hNum;
+
+  // Título
+  ctx.font=`italic bold ${szT}px Georgia,serif`; ctx.fillStyle='#3a1070';
+  const lhT=Math.round(szT*1.35);
+  for(const l of lT){ ctx.fillText(l,pX+PH,cy+lhT); cy+=lhT; } cy+=18;
+
+  // Texto
+  ctx.font=`${szB}px Georgia,serif`; ctx.fillStyle='#2a1a40';
+  for(const l of lB){ ctx.fillText(l,pX+PH,cy+lhB); cy+=lhB; }
+
+  // Logo
+  ctx.font='bold 22px Arial,sans-serif'; ctx.fillStyle='rgba(107,63,168,0.38)';
+  ctx.textAlign='right'; ctx.fillText('🦉 StoryOwl',pX+pW-PH,panY+panH-18);
+  ctx.textAlign='left';
+  return cv.toDataURL('image/jpeg',0.92);
+}
+
+// PORTADA — imagen a full page, SIN título escrito (ya está en el JPG generado)
+async function componerPortada(imgUrl, titulo) {
+  const cv=document.createElement('canvas'); cv.width=PX; cv.height=PY;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle='#1a0840'; ctx.fillRect(0,0,PX,PY);
+  try { const img=await cargarImagen(imgUrl); drawCover(ctx,img,0,0,PX,PY); } catch(e){}
+  // Solo logo pequeño y discreto
+  ctx.textAlign='center';
+  ctx.font='bold 26px Arial,sans-serif';
+  ctx.fillStyle='rgba(255,255,255,0.5)';
+  ctx.shadowColor='rgba(0,0,0,0.6)'; ctx.shadowBlur=10;
+  ctx.fillText('🦉 StoryOwl',PX/2,PY-50);
+  ctx.shadowBlur=0; ctx.textAlign='left';
+  return cv.toDataURL('image/jpeg',0.92);
+}
+
+// DEDICATORIA — página 2, editorial premium
+async function componerDedicatoria(nombre, dedPersonal) {
+  const cv=document.createElement('canvas'); cv.width=PX; cv.height=PY;
+  const ctx=cv.getContext('2d');
+
+  const bg=ctx.createLinearGradient(0,0,PX,PY);
+  bg.addColorStop(0,'#fff9f0'); bg.addColorStop(0.5,'#fdf4ff'); bg.addColorStop(1,'#f0f6ff');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,PX,PY);
+
+  // Imagen búho completa (contain, sin recortar), zona superior
+  try {
+    const img=await cargarImagen('/imagenes/dedicatoria.png');
+    // Escalar para que quepa entera (contain)
+    const scale=Math.min(PX/img.width, (PY*0.52)/img.height);
+    const iw=img.width*scale, ih=img.height*scale;
+    const ix=(PX-iw)/2, iy=0;
+    ctx.drawImage(img,ix,iy,iw,ih);
+    const imgH=ih;
+    const fade=ctx.createLinearGradient(0,imgH-100,0,imgH+60);
+    fade.addColorStop(0,'rgba(253,244,255,0)'); fade.addColorStop(1,'rgba(253,244,255,1)');
+    ctx.fillStyle=fade; ctx.fillRect(0,imgH-100,PX,160);
+  } catch(e){
+    const cols=['#f7c94b','#c084fc','#60a5fa','#f472b6'];
+    for(let i=0;i<22;i++){
+      ctx.save(); ctx.globalAlpha=0.10+Math.random()*0.16;
+      ctx.font=`${22+Math.random()*28}px serif`; ctx.fillStyle=cols[i%cols.length];
+      ctx.fillText('✦',Math.random()*PX,60+Math.random()*PY*0.44); ctx.restore();
+    }
+  }
+
+  const tZ=Math.round(PY*0.52); const cx=PX/2;
+  ctx.textAlign='center';
+
+  // Línea dorada
+  ctx.strokeStyle='#f7c94b'; ctx.lineWidth=2.5;
+  ctx.beginPath(); ctx.moveTo(cx-230,tZ+8); ctx.lineTo(cx+230,tZ+8); ctx.stroke();
+
+  // "Para"
+  ctx.font='italic 38px Georgia,serif'; ctx.fillStyle='#9b6fd8';
+  ctx.fillText('Para',cx,tZ+66);
+
+  // Nombre
+  const {sz:szN,lines:lN}=fitFontSize(ctx,nombre||'','bold SIZEpx Georgia,serif',PX-220,1,50,96);
+  ctx.font=`bold ${szN}px Georgia,serif`; ctx.fillStyle='#3a2070';
+  ctx.fillText(lN[0]||nombre,cx,tZ+66+szN+16);
+
+  ctx.strokeStyle='rgba(160,120,220,0.22)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(cx-190,tZ+66+szN+40); ctx.lineTo(cx+190,tZ+66+szN+40); ctx.stroke();
+
+  let dedY=tZ+66+szN+84;
+  const dedW=PX-300;
+
+  if(dedPersonal&&dedPersonal.trim()){
+    const {sz:szD,lines:lD}=fitFontSize(ctx,dedPersonal,'italic SIZEpx Georgia,serif',dedW,5,24,36);
+    const lhD=Math.round(szD*1.62); ctx.font=`italic ${szD}px Georgia,serif`; ctx.fillStyle='#5a3880';
+    for(const l of lD){ if(dedY+lhD>PY-110) break; ctx.fillText(l,cx,dedY); dedY+=lhD; }
+  } else {
+    ctx.strokeStyle='rgba(180,150,220,0.32)'; ctx.lineWidth=1;
+    for(let i=0;i<4;i++){
+      const ly=dedY+i*52; if(ly>PY-130) break;
+      ctx.beginPath(); ctx.moveTo(cx-280,ly); ctx.lineTo(cx+280,ly); ctx.stroke();
+    }
+    ctx.font='italic 24px Georgia,serif'; ctx.fillStyle='rgba(160,130,200,0.42)';
+    ctx.fillText('escribe aquí tu dedicatoria',cx,dedY+4*52+28);
+  }
+
+  ctx.font='bold 24px Arial,sans-serif'; ctx.fillStyle='rgba(107,63,168,0.32)';
+  ctx.fillText('🦉 StoryOwl',cx,PY-50); ctx.textAlign='left';
+  return cv.toDataURL('image/jpeg',0.92);
+}
+
+// COLOFÓN
+async function componerColofonPagina(nombre, fecha) {
+  const cv=document.createElement('canvas'); cv.width=PX; cv.height=PY;
+  const ctx=cv.getContext('2d');
+  const bg=ctx.createLinearGradient(0,0,0,PY);
+  bg.addColorStop(0,'#fffaf0'); bg.addColorStop(1,'#f8f4ff');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,PX,PY);
+
+  try {
+    const img=await cargarImagen('/imagenes/colofonowl.png');
+    // Escalar para que quepa entera (contain)
+    const scale=Math.min(PX/img.width, (PY*0.50)/img.height);
+    const iw=img.width*scale, ih=img.height*scale;
+    const ix=(PX-iw)/2, iy=0;
+    ctx.drawImage(img,ix,iy,iw,ih);
+    const fade=ctx.createLinearGradient(0,ih-100,0,ih+60);
+    fade.addColorStop(0,'rgba(248,244,255,0)'); fade.addColorStop(1,'rgba(248,244,255,1)');
+    ctx.fillStyle=fade; ctx.fillRect(0,ih-100,PX,160);
+  } catch(e){}
+
+  const bY=Math.round(PY*0.51); const cx=PX/2;
+  ctx.textAlign='center';
+
+  ctx.strokeStyle='#f7c94b'; ctx.lineWidth=2.5;
+  ctx.beginPath(); ctx.moveTo(cx-210,bY); ctx.lineTo(cx+210,bY); ctx.stroke();
+
+  ctx.font='34px Georgia,serif'; ctx.fillStyle='#6b3fa8';
+  ctx.fillText('Este cuento fue creado especialmente para',cx,bY+52);
+
+  const {sz:szN}=fitFontSize(ctx,nombre||'','bold SIZEpx Georgia,serif',PX-200,1,46,84);
+  ctx.font=`bold ${szN}px Georgia,serif`; ctx.fillStyle='#3a2070';
+  ctx.fillText(nombre||'',cx,bY+52+szN+18);
+
+  ctx.font='italic 30px Georgia,serif'; ctx.fillStyle='#9b6fd8';
+  ctx.fillText('el '+(fecha||''),cx,bY+52+szN+66);
+
+  ctx.strokeStyle='rgba(247,201,75,0.35)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(cx-240,bY+52+szN+92); ctx.lineTo(cx+240,bY+52+szN+92); ctx.stroke();
+
+  ctx.font='italic 32px Georgia,serif'; ctx.fillStyle='#5a3880';
+  ctx.fillText('Una historia única en el mundo, igual que tú.',cx,bY+52+szN+142);
+
+  ctx.font='bold 24px Arial,sans-serif'; ctx.fillStyle='rgba(107,63,168,0.38)';
+  ctx.fillText('storyowl.com',cx,PY-52); ctx.textAlign='left';
+  return cv.toDataURL('image/jpeg',0.92);
+}
+
 async function descargarPDF(){
-  const btn=document.getElementById('btnPdf');
-  btn.textContent='⏳ Generando PDF...';btn.disabled=true;
-  try{
-    const{jsPDF}=window.jspdf;
-    const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-    const W=210,H=297;
-    const titulo=document.getElementById('bookTitle').textContent;
-    const ded=document.getElementById('bookDed').textContent;
-    const dedPersonal=document.getElementById('dedicatoriaPersonalTexto')?.textContent||'';
-    const nombreFinal=document.getElementById('nombreFinalTexto')?.textContent||'';
-    const fechaFinal=document.getElementById('fechaFinalTexto')?.textContent||'';
-    const coverImg=document.getElementById('coverImg');
+  const btn = document.getElementById('btnPdf');
+  btn.textContent = '⏳ Generando PDF...'; btn.disabled = true;
 
-    // === PÁGINA 1 — DEDICATORIA ===
-    // Fondo oscuro elegante
-    pdf.setFillColor(13,8,32);pdf.rect(0,0,W,H,'F');
-    // Estrellas
-    [[20,25],[190,20],[15,140],[195,180],[105,15],[45,260],[165,255],[80,80],[140,200]].forEach(([x,y])=>{
-      pdf.setFillColor(247,201,75);pdf.circle(x,y,0.7,'F');
-    });
-    // Si hay portada, ponerla arriba difuminada
-    if(coverImg&&coverImg.src&&coverImg.style.display!=='none'){
-      try{
-        const d=await toBase64(coverImg.src);
-        pdf.addImage(d,'JPEG',0,0,W,H*0.5);
-        // Degradado sobre la imagen
-        pdf.setFillColor(13,8,32);
-        for(let i=0;i<20;i++){
-          pdf.setGState(new pdf.GState({opacity:i/20}));
-          pdf.rect(0,H*0.5-20+(i*1),W,1,'F');
-        }
-        pdf.setGState(new pdf.GState({opacity:1}));
-      }catch(e){}
-    }
-    // "Para"
-    pdf.setFont('helvetica','italic');pdf.setFontSize(18);pdf.setTextColor(180,150,255);
-    pdf.text('Para',W/2,155,{align:'center'});
-    // NOMBRE grande dorado
-    pdf.setFont('helvetica','bold');pdf.setFontSize(48);
-    pdf.setTextColor(0,0,0);pdf.text(nombreFinal||'',W/2+1,181,{align:'center'});
-    pdf.setTextColor(247,201,75);pdf.text(nombreFinal||'',W/2,180,{align:'center'});
-    // Línea
-    pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.5);pdf.line(45,188,165,188);
-    // Dedicatoria
-    if(dedPersonal&&dedPersonal.trim()){
-      pdf.setFont('helvetica','italic');pdf.setFontSize(13);
-      const lineas=pdf.splitTextToSize(dedPersonal,160);
-      let y=202;
-      lineas.forEach(l=>{
-        pdf.setTextColor(0,0,0);pdf.text(l,W/2+0.4,y+0.4,{align:'center'});
-        pdf.setTextColor(235,225,255);pdf.text(l,W/2,y,{align:'center'});
-        y+=9;
-      });
-    } else {
-      pdf.setDrawColor(100,80,160);pdf.setLineWidth(0.15);
-      [205,218,231,244].forEach(y=>pdf.line(38,y,172,y));
-      pdf.setFont('helvetica','italic');pdf.setFontSize(9);pdf.setTextColor(120,100,180);
-      pdf.text('escribe aquí tu dedicatoria',W/2,255,{align:'center'});
-    }
-    // Corazón y logo
-    pdf.setFont('helvetica','normal');pdf.setFontSize(16);
-    pdf.setTextColor(220,30,120);pdf.text('♥',W/2,272,{align:'center'});
-    pdf.setFont('helvetica','bold');pdf.setFontSize(8);pdf.setTextColor(247,201,75);
-    pdf.text('StoryOwl',W/2,283,{align:'center'});
+  try {
+    const { jsPDF } = window.jspdf;
+    // A4 en píxeles a 150dpi → 1240x1754px → en mm: 210x297
+    const pdf = new jsPDF({orientation:'portrait', unit:'mm', format:'a4'});
+    const W = 210, H = 297;
 
-    // === PORTADA ===
+    const titulo      = document.getElementById('bookTitle').textContent;
+    const ded         = document.getElementById('bookDed').textContent;
+    const dedPersonal = document.getElementById('dedicatoriaPersonalTexto')?.textContent || '';
+    const nombreFinal = document.getElementById('nombreFinalTexto')?.textContent || '';
+    const fechaFinal  = document.getElementById('fechaFinalTexto')?.textContent || '';
+    const coverImg    = document.getElementById('coverImg');
+
+    // ── PÁG 1: PORTADA ──────────────────────────────────────
+    btn.textContent = '⏳ Componiendo portada...';
+    if (coverImg && coverImg.src && coverImg.style.display !== 'none') {
+      const portadaDataUrl = await componerPortada(coverImg.src, titulo);
+      pdf.addImage(portadaDataUrl, 'JPEG', 0, 0, W, H);
+    }
+
+    // ── PÁG 2: DEDICATORIA ──────────────────────────────────
+    btn.textContent = '⏳ Componiendo dedicatoria...';
     pdf.addPage();
-    if(coverImg&&coverImg.src&&coverImg.style.display!=='none'){
-      try{
-        const d=await toBase64(coverImg.src);
-        // Imagen ocupa los 2/3 superiores
-        pdf.addImage(d,'JPEG',0,0,W,198);
-        // Franja blanca abajo
-        pdf.setFillColor(255,255,255);pdf.rect(0,198,W,99,'F');
-        // Línea separadora dorada
-        pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.8);pdf.line(0,198,W,198);
-        // Título en negro
-        pdf.setFont('helvetica','bold');pdf.setFontSize(18);pdf.setTextColor(30,15,60);
-        pdf.text(titulo,W/2,218,{align:'center',maxWidth:185});
-        // Dedicatoria en gris
-        if(ded){
-          pdf.setFont('helvetica','italic');pdf.setFontSize(10);pdf.setTextColor(100,80,140);
-          pdf.text(pdf.splitTextToSize(ded,175),W/2,235,{align:'center'});
-        }
-        // Logo pequeño
-        pdf.setFont('helvetica','bold');pdf.setFontSize(8);pdf.setTextColor(180,160,220);
-        pdf.text('🦉 StoryOwl',W/2,285,{align:'center'});
-      }catch(e){}
-    }
+    const dedDataUrl = await componerDedicatoria(nombreFinal, dedPersonal);
+    pdf.addImage(dedDataUrl, 'JPEG', 0, 0, W, H);
 
-    // === PÁGINAS INTERIORES — exactamente como la web ===
-    const pages=document.querySelectorAll('.page');
-    let i=1;
-    for(const page of pages){
-      btn.textContent=`⏳ Página ${i} de ${pages.length}...`;
+    // ── PÁGINAS INTERIORES ───────────────────────────────────
+    const pages = document.querySelectorAll('.page');
+    let i = 1;
+    for (const page of pages) {
+      btn.textContent = `⏳ Componiendo página ${i} de ${pages.length}...`;
       pdf.addPage();
-      const img=page.querySelector('.page-img');
-      const num=page.querySelector('.page-num')?.textContent||'';
-      const tit=page.querySelector('.page-title')?.textContent||'';
-      const txt=page.querySelector('.page-text')?.textContent||'';
 
-      // Imagen ocupa los 2/3 superiores (exactamente como la web)
-      try{
-        const d=await toBase64(img.src);
-        pdf.addImage(d,'JPEG',0,0,W,196);
-      }catch(e){
-        pdf.setFillColor(240,235,255);pdf.rect(0,0,W,196,'F');
-      }
+      const img     = page.querySelector('.page-img');
+      const numTxt  = page.querySelector('.page-num')?.textContent?.replace('Página ','') || String(i);
+      const titTxt  = page.querySelector('.page-title')?.textContent || '';
+      const bodyTxt = page.querySelector('.page-text')?.textContent || '';
 
-      // Franja blanca inferior (como la web)
-      pdf.setFillColor(250,247,255);pdf.rect(0,196,W,101,'F');
-
-      // Línea separadora dorada (como la web)
-      pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.8);pdf.line(0,196,W,196);
-
-      // Número de página en naranja/dorado pequeño
-      pdf.setFont('helvetica','bold');pdf.setFontSize(8);
-      pdf.setTextColor(180,130,0);pdf.text(num.toUpperCase(),14,207);
-
-      // Título en lila cursiva (igual que la web)
-      pdf.setFont('helvetica','italic');pdf.setFontSize(16);
-      pdf.setTextColor(80,40,160);pdf.text(tit,14,220,{maxWidth:W-28});
-
-      // Texto en gris oscuro limpio (igual que la web)
-      pdf.setFont('helvetica','normal');pdf.setFontSize(11);
-      pdf.setTextColor(58,48,80);
-      const lineas=pdf.splitTextToSize(txt,W-28);
-      pdf.text(lineas.slice(0,5),14,233);
-
-      // Número pequeño abajo centrado
-      pdf.setFontSize(8);pdf.setTextColor(180,160,210);
-      pdf.text(String(i),W/2,291,{align:'center'});
+      const pngDataUrl = await componerPaginaInterior(img?.src || '', numTxt, titTxt, bodyTxt);
+      pdf.addImage(pngDataUrl, 'JPEG', 0, 0, W, H);
       i++;
     }
 
-    // === COLOFÓN ===
+    // ── ÚLTIMA PÁG: COLOFÓN ──────────────────────────────────
+    btn.textContent = '⏳ Componiendo colofón...';
     pdf.addPage();
-    pdf.setFillColor(13,8,32);pdf.rect(0,0,W,H,'F');
-    [[25,35],[185,28],[12,155],[198,195],[105,18],[48,268],[162,258],[82,115],[142,185]].forEach(([x,y])=>{
-      pdf.setFillColor(247,201,75);pdf.circle(x,y,0.6,'F');
-    });
-    pdf.setFont('helvetica','bold');pdf.setFontSize(22);
-    pdf.setTextColor(0,0,0);pdf.text('StoryOwl',W/2+0.5,116.5,{align:'center'});
-    pdf.setTextColor(247,201,75);pdf.text('StoryOwl',W/2,116,{align:'center'});
-    pdf.setDrawColor(107,63,168);pdf.setLineWidth(0.4);pdf.line(72,124,138,124);
-    pdf.setFont('helvetica','italic');pdf.setFontSize(11);
-    pdf.setTextColor(155,111,216);pdf.text('Cuentos únicos para tu peque',W/2,136,{align:'center'});
-    pdf.setFont('helvetica','normal');pdf.setFontSize(11);
-    pdf.setTextColor(200,180,255);pdf.text('Este cuento fue creado especialmente para',W/2,170,{align:'center'});
-    pdf.setFont('helvetica','bold');pdf.setFontSize(22);
-    pdf.setTextColor(0,0,0);pdf.text(nombreFinal||'',W/2+0.5,188.5,{align:'center'});
-    pdf.setTextColor(247,201,75);pdf.text(nombreFinal||'',W/2,188,{align:'center'});
-    pdf.setFont('helvetica','normal');pdf.setFontSize(10);
-    pdf.setTextColor(155,111,216);pdf.text('el '+fechaFinal,W/2,200,{align:'center'});
-    pdf.setDrawColor(247,201,75);pdf.setLineWidth(0.4);pdf.line(62,210,148,210);
-    pdf.setFont('helvetica','italic');pdf.setFontSize(11);
-    pdf.setTextColor(210,190,255);pdf.text('Una historia única en el mundo, igual que tú.',W/2,224,{align:'center'});
-    pdf.setFont('helvetica','bold');pdf.setFontSize(9);
-    pdf.setTextColor(107,63,168);pdf.text('storyowl.com',W/2,262,{align:'center'});
+    const colDataUrl = await componerColofonPagina(nombreFinal, fechaFinal);
+    pdf.addImage(colDataUrl, 'JPEG', 0, 0, W, H);
 
-    pdf.save((titulo||'cuento')+'.pdf');
-  }catch(e){alert('Error PDF: '+e.message);}
-  btn.textContent='📄 Descargar PDF';btn.disabled=false;
+    pdf.save((titulo || 'mi-cuento') + '.pdf');
+
+  } catch(e){
+    console.error('[StoryOwl] Error PDF:', e);
+    alert('Error al generar el PDF: ' + e.message);
+  }
+
+  btn.textContent='📄 Descargar PDF'; btn.disabled=false;
 }
 
-async function toBase64(url){
-  const blob=await(await fetch(url)).blob();
-  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob);});
-}
 
-async function toBase64(url){
-  const blob=await(await fetch(url)).blob();
-  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob);});
-}
-
-async function toBase64(url){
-  const blob=await(await fetch(url)).blob();
-  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob);});
-}
-
-async function toBase64(url){
-  const blob=await(await fetch(url)).blob();
-  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob);});
-}
-
-async function toBase64(url){
-  const blob=await(await fetch(url)).blob();
-  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob);});
-}
-
-async function toBase64(url){const blob=await(await fetch(url)).blob();return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob);});}
 </script>
 </body>
 </html>
