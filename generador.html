@@ -566,35 +566,19 @@ async function componerPaginaInterior(imgUrl, numero, titulo, texto) {
   return cv.toDataURL('image/jpeg',0.92);
 }
 
-// PORTADA — solo imagen + título + logo, SIN dedicatoria
+// PORTADA — imagen a full page, SIN título escrito (ya está en el JPG generado)
 async function componerPortada(imgUrl, titulo) {
   const cv=document.createElement('canvas'); cv.width=PX; cv.height=PY;
   const ctx=cv.getContext('2d');
   ctx.fillStyle='#1a0840'; ctx.fillRect(0,0,PX,PY);
   try { const img=await cargarImagen(imgUrl); drawCover(ctx,img,0,0,PX,PY); } catch(e){}
-
-  const g=ctx.createLinearGradient(0,PY*0.50,0,PY);
-  g.addColorStop(0,'rgba(6,2,16,0)'); g.addColorStop(0.38,'rgba(6,2,16,0.75)'); g.addColorStop(1,'rgba(6,2,16,0.97)');
-  ctx.fillStyle=g; ctx.fillRect(0,PY*0.50,PX,PY*0.50);
-
-  // Título: máx 3 líneas, 50-88px
-  const tW=PX-180;
-  const {sz:szT,lines:lT}=fitFontSize(ctx,titulo||'','bold SIZEpx Georgia,serif',tW,3,46,88);
-  const lhT=Math.round(szT*1.18);
-  const totalH=lT.length*lhT;
-  const zY=PY*0.60, zH=PY*0.30;
-  let ty=zY+(zH-totalH)/2+lhT;
-
-  ctx.textAlign='center'; ctx.font=`bold ${szT}px Georgia,serif`;
-  ctx.fillStyle='#fff'; ctx.shadowColor='rgba(0,0,0,0.65)'; ctx.shadowBlur=22;
-  for(const l of lT){ ctx.fillText(l,PX/2,ty); ty+=lhT; }
-  ctx.shadowBlur=0;
-
-  ctx.strokeStyle='#f7c94b'; ctx.lineWidth=3;
-  ctx.beginPath(); ctx.moveTo(PX/2-180,ty+12); ctx.lineTo(PX/2+180,ty+12); ctx.stroke();
-
-  ctx.font='bold 30px Arial,sans-serif'; ctx.fillStyle='rgba(247,201,75,0.82)';
-  ctx.fillText('🦉 StoryOwl',PX/2,PY-52); ctx.textAlign='left';
+  // Solo logo pequeño y discreto
+  ctx.textAlign='center';
+  ctx.font='bold 26px Arial,sans-serif';
+  ctx.fillStyle='rgba(255,255,255,0.5)';
+  ctx.shadowColor='rgba(0,0,0,0.6)'; ctx.shadowBlur=10;
+  ctx.fillText('🦉 StoryOwl',PX/2,PY-50);
+  ctx.shadowBlur=0; ctx.textAlign='left';
   return cv.toDataURL('image/jpeg',0.92);
 }
 
@@ -607,15 +591,18 @@ async function componerDedicatoria(nombre, dedPersonal) {
   bg.addColorStop(0,'#fff9f0'); bg.addColorStop(0.5,'#fdf4ff'); bg.addColorStop(1,'#f0f6ff');
   ctx.fillStyle=bg; ctx.fillRect(0,0,PX,PY);
 
-  // Imagen búho zona superior ~52%
+  // Imagen búho completa (contain, sin recortar), zona superior
   try {
     const img=await cargarImagen('/imagenes/dedicatoria.png');
-    const imgH=Math.round(PY*0.50);
-    ctx.save(); ctx.beginPath(); ctx.rect(0,0,PX,imgH); ctx.clip();
-    drawCover(ctx,img,0,0,PX,imgH); ctx.restore();
-    const fade=ctx.createLinearGradient(0,imgH-130,0,imgH+40);
+    // Escalar para que quepa entera (contain)
+    const scale=Math.min(PX/img.width, (PY*0.52)/img.height);
+    const iw=img.width*scale, ih=img.height*scale;
+    const ix=(PX-iw)/2, iy=0;
+    ctx.drawImage(img,ix,iy,iw,ih);
+    const imgH=ih;
+    const fade=ctx.createLinearGradient(0,imgH-100,0,imgH+60);
     fade.addColorStop(0,'rgba(253,244,255,0)'); fade.addColorStop(1,'rgba(253,244,255,1)');
-    ctx.fillStyle=fade; ctx.fillRect(0,imgH-130,PX,170);
+    ctx.fillStyle=fade; ctx.fillRect(0,imgH-100,PX,160);
   } catch(e){
     const cols=['#f7c94b','#c084fc','#60a5fa','#f472b6'];
     for(let i=0;i<22;i++){
@@ -676,12 +663,14 @@ async function componerColofonPagina(nombre, fecha) {
 
   try {
     const img=await cargarImagen('/imagenes/colofonowl.png');
-    const imgH=Math.round(PY*0.48);
-    ctx.save(); ctx.beginPath(); ctx.rect(0,0,PX,imgH); ctx.clip();
-    drawCover(ctx,img,0,0,PX,imgH); ctx.restore();
-    const fade=ctx.createLinearGradient(0,imgH-110,0,imgH+30);
+    // Escalar para que quepa entera (contain)
+    const scale=Math.min(PX/img.width, (PY*0.50)/img.height);
+    const iw=img.width*scale, ih=img.height*scale;
+    const ix=(PX-iw)/2, iy=0;
+    ctx.drawImage(img,ix,iy,iw,ih);
+    const fade=ctx.createLinearGradient(0,ih-100,0,ih+60);
     fade.addColorStop(0,'rgba(248,244,255,0)'); fade.addColorStop(1,'rgba(248,244,255,1)');
-    ctx.fillStyle=fade; ctx.fillRect(0,imgH-110,PX,140);
+    ctx.fillStyle=fade; ctx.fillRect(0,ih-100,PX,160);
   } catch(e){}
 
   const bY=Math.round(PY*0.51); const cx=PX/2;
