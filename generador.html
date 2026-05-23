@@ -528,8 +528,8 @@ async function componerPaginaInterior(imgUrl, numero, titulo, texto) {
   } catch(e) { console.warn('Imagen no cargada:', e); }
 
   // 3. Medir texto para calcular panel dinámico
-  const PAD = 52, MARGEN = 80;
-  const maxW = PX - MARGEN * 2;
+  const PAD = 52, MARGEN = 72;
+  const maxW = PX - MARGEN * 2 - 80; // más margen interior para evitar cortes
 
   ctx.font = `bold 38px Georgia, serif`;
   const lineasTit = medirLineas(ctx, titulo || '', maxW);
@@ -847,18 +847,18 @@ async function descargarPDF(){
     const fechaFinal  = document.getElementById('fechaFinalTexto')?.textContent || '';
     const coverImg    = document.getElementById('coverImg');
 
-    // ── PÁG 1: DEDICATORIA ──────────────────────────────────
-    btn.textContent = '⏳ Componiendo dedicatoria...';
-    const dedDataUrl = await componerDedicatoria(nombreFinal, dedPersonal);
-    pdf.addImage(dedDataUrl, 'JPEG', 0, 0, W, H);
-
-    // ── PÁG 2: PORTADA ──────────────────────────────────────
+    // ── PÁG 1: PORTADA ──────────────────────────────────────
     btn.textContent = '⏳ Componiendo portada...';
-    pdf.addPage();
     if (coverImg && coverImg.src && coverImg.style.display !== 'none') {
       const portadaDataUrl = await componerPortada(coverImg.src, titulo, ded);
       pdf.addImage(portadaDataUrl, 'JPEG', 0, 0, W, H);
     }
+
+    // ── PÁG 2: DEDICATORIA ──────────────────────────────────
+    btn.textContent = '⏳ Componiendo dedicatoria...';
+    pdf.addPage();
+    const dedDataUrl = await componerDedicatoria(nombreFinal, dedPersonal);
+    pdf.addImage(dedDataUrl, 'JPEG', 0, 0, W, H);
 
     // ── PÁGINAS INTERIORES ───────────────────────────────────
     const pages = document.querySelectorAll('.page');
