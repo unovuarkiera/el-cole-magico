@@ -443,214 +443,447 @@ function procesarEvento(data){
 }
 
 // ── PDF Premium ─────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// STORYBOOK PIPELINE — Canvas compositor
+// Cada página = una imagen completa (no texto flotante)
+// ═══════════════════════════════════════════════════════════
+
+// Carga una imagen como HTMLImageElement (con CORS)
+function cargarImagen(url) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => res(img);
+    img.onerror = () => rej(new Error('No se pudo cargar: ' + url));
+    img.src = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
+  });
+}
+
+// Dibuja texto con word-wrap en Canvas, devuelve altura usada
+function dibujarTexto(ctx, texto, x, y, maxW, lineH) {
+  const palabras = texto.split(' ');
+  let linea = '';
+  let totalH = 0;
+  for (const pal of palabras) {
+    const prueba = linea ? linea + ' ' + pal : pal;
+    if (ctx.measureText(prueba).width > maxW && linea) {
+      ctx.fillText(linea, x, y + totalH);
+      linea = pal;
+      totalH += lineH;
+    } else {
+      linea = prueba;
+    }
+  }
+  if (linea) { ctx.fillText(linea, x, y + totalH); totalH += lineH; }
+  return totalH;
+}
+
+// Redondea rectángulo en Canvas
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+// Mide líneas de texto con wrap
+function medirLineas(ctx, texto, maxW) {
+  const palabras = texto.split(' ');
+  let linea = '', lineas = [];
+  for (const pal of palabras) {
+    const prueba = linea ? linea + ' ' + pal : pal;
+    if (ctx.measureText(prueba).width > maxW && linea) { lineas.push(linea); linea = pal; }
+    else linea = prueba;
+  }
+  if (linea) lineas.push(linea);
+  return lineas;
+}
+
+// ── Composición de página interior ──────────────────────────
+async function componerPaginaInterior(imgUrl, numero, titulo, texto) {
+  const PX = 1240, PY = 1754; // A4 a 150dpi
+  const cv = document.createElement('canvas');
+  cv.width = PX; cv.height = PY;
+  const ctx = cv.getContext('2d');
+
+  // 1. Fondo por si falla la imagen
+  ctx.fillStyle = '#f0ebff';
+  ctx.fillRect(0, 0, PX, PY);
+
+  // 2. Imagen de fondo completa
+  try {
+    const img = await cargarImagen(imgUrl);
+    // Recortar/escalar para cubrir todo el canvas
+    const scale = Math.max(PX / img.width, PY / img.height);
+    const sw = img.width * scale, sh = img.height * scale;
+    const sx = (PX - sw) / 2, sy = (PY - sh) / 2;
+    ctx.drawImage(img, sx, sy, sw, sh);
+  } catch(e) { console.warn('Imagen no cargada:', e); }
+
+  // 3. Medir texto para calcular panel dinámico
+  const PAD = 52, MARGEN = 80;
+  const maxW = PX - MARGEN * 2;
+
+  ctx.font = `bold 38px Georgia, serif`;
+  const lineasTit = medirLineas(ctx, titulo || '', maxW);
+  ctx.font = `32px Georgia, serif`;
+  const lineasTxt = medirLineas(ctx, texto || '', maxW);
+
+  const lineHTit = 52, lineHTxt = 48;
+  const altoTit = lineasTit.length * lineHTit;
+  const altoTxt = lineasTxt.length * lineHTxt;
+  const altoNum = 40;
+  const panelH = PAD * 2 + altoNum + altoTit + 24 + altoTxt + 20;
+  const panelY = PY - panelH;
+
+  // 4. Degradado oscuro sobre la imagen (parte inferior)
+  const grad = ctx.createLinearGradient(0, panelY - 120, 0, PY);
+  grad.addColorStop(0, 'rgba(15,8,35,0)');
+  grad.addColorStop(0.3, 'rgba(15,8,35,0.55)');
+  grad.addColorStop(1, 'rgba(15,8,35,0.92)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, panelY - 120, PX, PY - (panelY - 120));
+
+  // 5. Panel redondeado semitransparente
+  const panelX = 48, panelW = PX - 96;
+  ctx.save();
+  roundRect(ctx, panelX, panelY, panelW, panelH - 10, 32);
+  ctx.fillStyle = 'rgba(255,252,248,0.93)';
+  ctx.shadowColor = 'rgba(58,32,112,0.18)';
+  ctx.shadowBlur = 40;
+  ctx.fill();
+  ctx.restore();
+
+  // 6. Línea dorada superior del panel
+  ctx.strokeStyle = '#f7c94b';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(panelX + 40, panelY + 2);
+  ctx.lineTo(panelX + panelW - 40, panelY + 2);
+  ctx.stroke();
+
+  let cy = panelY + PAD;
+
+  // 7. Número de página
+  ctx.font = `bold 26px Arial, sans-serif`;
+  ctx.fillStyle = '#b88000';
+  ctx.letterSpacing = '3px';
+  ctx.fillText(`PÁGINA ${numero}`, panelX + 40, cy);
+  cy += altoNum;
+
+  // 8. Título en serif itálica
+  ctx.font = `italic bold 38px Georgia, serif`;
+  ctx.fillStyle = '#3a1070';
+  for (const l of lineasTit) {
+    ctx.fillText(l, panelX + 40, cy);
+    cy += lineHTit;
+  }
+  cy += 24;
+
+  // 9. Texto del cuento
+  ctx.font = `32px Georgia, serif`;
+  ctx.fillStyle = '#2a1a40';
+  for (const l of lineasTxt) {
+    ctx.fillText(l, panelX + 40, cy);
+    cy += lineHTxt;
+  }
+
+  // 10. Logo StoryOwl pequeño abajo a la derecha
+  ctx.font = `bold 22px Arial, sans-serif`;
+  ctx.fillStyle = 'rgba(107,63,168,0.5)';
+  ctx.textAlign = 'right';
+  ctx.fillText('🦉 StoryOwl', panelX + panelW - 30, panelY + panelH - 22);
+  ctx.textAlign = 'left';
+
+  return cv.toDataURL('image/jpeg', 0.92);
+}
+
+// ── Composición dedicatoria ───────────────────────────────
+async function componerDedicatoria(nombre, dedPersonal) {
+  const PX = 1240, PY = 1754;
+  const cv = document.createElement('canvas');
+  cv.width = PX; cv.height = PY;
+  const ctx = cv.getContext('2d');
+
+  // Fondo cálido
+  const grad = ctx.createLinearGradient(0, 0, PX, PY);
+  grad.addColorStop(0, '#fff8ee');
+  grad.addColorStop(0.5, '#fdf0ff');
+  grad.addColorStop(1, '#eef4ff');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, PX, PY);
+
+  // Imagen de dedicatoria de fondo si existe
+  try {
+    const img = await cargarImagen('/imagenes/dedicatoria.png');
+    ctx.drawImage(img, 0, 0, PX, PY);
+  } catch(e) {
+    // Fallback: estrellas decorativas
+    const colores = ['#f7c94b','#c084fc','#60a5fa','#f472b6'];
+    for (let i = 0; i < 30; i++) {
+      ctx.font = `${20 + Math.random()*30}px serif`;
+      ctx.fillStyle = colores[i % colores.length];
+      ctx.globalAlpha = 0.15 + Math.random() * 0.2;
+      ctx.fillText('✦', Math.random() * PX, Math.random() * PY * 0.6);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // Panel inferior
+  const panelH = 580, panelY = PY - panelH;
+  const grad2 = ctx.createLinearGradient(0, panelY - 80, 0, PY);
+  grad2.addColorStop(0, 'rgba(255,252,248,0)');
+  grad2.addColorStop(0.25, 'rgba(255,252,248,0.97)');
+  grad2.addColorStop(1, 'rgba(255,252,248,1)');
+  ctx.fillStyle = grad2;
+  ctx.fillRect(0, panelY - 80, PX, PY - (panelY - 80));
+
+  // Línea dorada
+  ctx.strokeStyle = '#f7c94b';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(200, panelY + 10);
+  ctx.lineTo(PX - 200, panelY + 10);
+  ctx.stroke();
+
+  // "Para"
+  ctx.font = `italic 44px Georgia, serif`;
+  ctx.fillStyle = '#9b6fd8';
+  ctx.textAlign = 'center';
+  ctx.fillText('Para', PX / 2, panelY + 80);
+
+  // Nombre
+  ctx.font = `bold 88px Georgia, serif`;
+  ctx.fillStyle = '#3a2070';
+  ctx.fillText(nombre || '', PX / 2, panelY + 190);
+
+  // Línea separadora
+  ctx.strokeStyle = 'rgba(160,120,220,0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(300, panelY + 215);
+  ctx.lineTo(PX - 300, panelY + 215);
+  ctx.stroke();
+
+  // Dedicatoria personal o líneas
+  if (dedPersonal && dedPersonal.trim()) {
+    ctx.font = `italic 34px Georgia, serif`;
+    ctx.fillStyle = '#5a3880';
+    const maxW = PX - 300;
+    const lineas = medirLineas(ctx, dedPersonal, maxW);
+    let dy = panelY + 290;
+    lineas.forEach(l => { ctx.fillText(l, PX / 2, dy); dy += 48; });
+  } else {
+    // Líneas para escribir a mano
+    ctx.strokeStyle = 'rgba(180,150,220,0.4)';
+    ctx.lineWidth = 1;
+    [290, 350, 410, 470].forEach(offset => {
+      ctx.beginPath();
+      ctx.moveTo(200, panelY + offset);
+      ctx.lineTo(PX - 200, panelY + offset);
+      ctx.stroke();
+    });
+    ctx.font = `italic 26px Georgia, serif`;
+    ctx.fillStyle = 'rgba(160,130,200,0.5)';
+    ctx.fillText('escribe aquí tu dedicatoria', PX / 2, panelY + 530);
+  }
+
+  // Logo
+  ctx.font = `bold 26px Arial, sans-serif`;
+  ctx.fillStyle = 'rgba(107,63,168,0.4)';
+  ctx.fillText('🦉 StoryOwl', PX / 2, PY - 40);
+  ctx.textAlign = 'left';
+
+  return cv.toDataURL('image/jpeg', 0.92);
+}
+
+// ── Composición portada ───────────────────────────────────
+async function componerPortada(imgUrl, titulo, dedicatoria) {
+  const PX = 1240, PY = 1754;
+  const cv = document.createElement('canvas');
+  cv.width = PX; cv.height = PY;
+  const ctx = cv.getContext('2d');
+
+  ctx.fillStyle = '#1a0840';
+  ctx.fillRect(0, 0, PX, PY);
+
+  try {
+    const img = await cargarImagen(imgUrl);
+    const scale = Math.max(PX / img.width, PY / img.height);
+    const sw = img.width * scale, sh = img.height * scale;
+    ctx.drawImage(img, (PX - sw) / 2, (PY - sh) / 2, sw, sh);
+  } catch(e) {}
+
+  // Degradado abajo para el texto
+  const grad = ctx.createLinearGradient(0, PY * 0.55, 0, PY);
+  grad.addColorStop(0, 'rgba(10,4,25,0)');
+  grad.addColorStop(0.4, 'rgba(10,4,25,0.75)');
+  grad.addColorStop(1, 'rgba(10,4,25,0.97)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, PY * 0.55, PX, PY * 0.45);
+
+  // Título
+  ctx.textAlign = 'center';
+  ctx.font = `bold 72px Georgia, serif`;
+  ctx.fillStyle = '#ffffff';
+  ctx.shadowColor = 'rgba(0,0,0,0.6)';
+  ctx.shadowBlur = 20;
+  const lineasT = medirLineas(ctx, titulo || '', PX - 160);
+  let ty = PY * 0.72;
+  lineasT.forEach(l => { ctx.fillText(l, PX / 2, ty); ty += 90; });
+
+  // Línea dorada
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = '#f7c94b';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(280, ty + 10);
+  ctx.lineTo(PX - 280, ty + 10);
+  ctx.stroke();
+  ty += 30;
+
+  // Dedicatoria
+  if (dedicatoria) {
+    ctx.font = `italic 36px Georgia, serif`;
+    ctx.fillStyle = 'rgba(220,200,255,0.85)';
+    const lineasD = medirLineas(ctx, dedicatoria, PX - 200);
+    lineasD.forEach(l => { ctx.fillText(l, PX / 2, ty + 40); ty += 50; });
+  }
+
+  // Logo
+  ctx.font = `bold 28px Arial, sans-serif`;
+  ctx.fillStyle = 'rgba(247,201,75,0.7)';
+  ctx.fillText('🦉 StoryOwl', PX / 2, PY - 50);
+  ctx.textAlign = 'left';
+
+  return cv.toDataURL('image/jpeg', 0.92);
+}
+
+// ── Composición colofón ───────────────────────────────────
+async function componerColofonPagina(nombre, fecha) {
+  const PX = 1240, PY = 1754;
+  const cv = document.createElement('canvas');
+  cv.width = PX; cv.height = PY;
+  const ctx = cv.getContext('2d');
+
+  ctx.fillStyle = '#fffaf0';
+  ctx.fillRect(0, 0, PX, PY);
+
+  try {
+    const img = await cargarImagen('/imagenes/colofonowl.png');
+    ctx.drawImage(img, 0, 0, PX, PY);
+  } catch(e) {}
+
+  // Panel inferior
+  const panelY = PY * 0.58;
+  const grad = ctx.createLinearGradient(0, panelY - 60, 0, PY);
+  grad.addColorStop(0, 'rgba(255,252,248,0)');
+  grad.addColorStop(0.2, 'rgba(255,252,248,0.97)');
+  grad.addColorStop(1, 'rgba(255,252,248,1)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, panelY - 60, PX, PY - (panelY - 60));
+
+  ctx.strokeStyle = '#f7c94b';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(200, panelY + 10);
+  ctx.lineTo(PX - 200, panelY + 10);
+  ctx.stroke();
+
+  ctx.textAlign = 'center';
+  ctx.font = `38px Georgia, serif`;
+  ctx.fillStyle = '#6b3fa8';
+  ctx.fillText('Este cuento fue creado especialmente para', PX / 2, panelY + 80);
+
+  ctx.font = `bold 80px Georgia, serif`;
+  ctx.fillStyle = '#3a2070';
+  ctx.fillText(nombre || '', PX / 2, panelY + 190);
+
+  ctx.font = `italic 34px Georgia, serif`;
+  ctx.fillStyle = '#9b6fd8';
+  ctx.fillText('el ' + (fecha || ''), PX / 2, panelY + 260);
+
+  ctx.strokeStyle = 'rgba(247,201,75,0.5)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(300, panelY + 295);
+  ctx.lineTo(PX - 300, panelY + 295);
+  ctx.stroke();
+
+  ctx.font = `italic 36px Georgia, serif`;
+  ctx.fillStyle = '#5a3880';
+  ctx.fillText('Una historia única en el mundo, igual que tú.', PX / 2, panelY + 360);
+
+  ctx.font = `bold 28px Arial, sans-serif`;
+  ctx.fillStyle = 'rgba(107,63,168,0.5)';
+  ctx.fillText('storyowl.com', PX / 2, PY - 50);
+  ctx.textAlign = 'left';
+
+  return cv.toDataURL('image/jpeg', 0.92);
+}
+
+// ── PDF PRINCIPAL ─────────────────────────────────────────
 async function descargarPDF(){
   const btn = document.getElementById('btnPdf');
   btn.textContent = '⏳ Generando PDF...'; btn.disabled = true;
 
   try {
     const { jsPDF } = window.jspdf;
+    // A4 en píxeles a 150dpi → 1240x1754px → en mm: 210x297
     const pdf = new jsPDF({orientation:'portrait', unit:'mm', format:'a4'});
-    const W=210, H=297;
+    const W = 210, H = 297;
 
-    const titulo    = document.getElementById('bookTitle').textContent;
-    const ded       = document.getElementById('bookDed').textContent;
+    const titulo      = document.getElementById('bookTitle').textContent;
+    const ded         = document.getElementById('bookDed').textContent;
     const dedPersonal = document.getElementById('dedicatoriaPersonalTexto')?.textContent || '';
     const nombreFinal = document.getElementById('nombreFinalTexto')?.textContent || '';
     const fechaFinal  = document.getElementById('fechaFinalTexto')?.textContent || '';
     const coverImg    = document.getElementById('coverImg');
 
-    // ══════════════════════════════════════════
-    // PÁG 1 — DEDICATORIA PREMIUM
-    // ══════════════════════════════════════════
-    const DEDICATORIA_IMG_URL = '/imagenes/dedicatoria.png';
-    try {
-      const dedImg = await toBase64(DEDICATORIA_IMG_URL);
-      pdf.addImage(dedImg, 'PNG', 0, 0, W, H);
-    } catch(e) {
-      // Fallback elegante si no hay imagen
-      pdf.setFillColor(255, 250, 240); pdf.rect(0,0,W,H,'F');
-      // Marco decorativo
-      pdf.setDrawColor(200,180,240); pdf.setLineWidth(0.3);
-      pdf.rect(8,8,W-16,H-16,'S');
-      pdf.rect(11,11,W-22,H-22,'S');
-      // Estrellas pequeñas decorativas
-      const starsPos=[[25,30],[185,25],[20,150],[190,170],[105,22],[50,265],[160,258]];
-      starsPos.forEach(([x,y])=>{
-        pdf.setFontSize(8); pdf.setTextColor(220,180,255); pdf.text('✦',x,y,{align:'center'});
-      });
-    }
+    // ── PÁG 1: DEDICATORIA ──────────────────────────────────
+    btn.textContent = '⏳ Componiendo dedicatoria...';
+    const dedDataUrl = await componerDedicatoria(nombreFinal, dedPersonal);
+    pdf.addImage(dedDataUrl, 'JPEG', 0, 0, W, H);
 
-    // Franja blanca suave para el texto (38% inferior)
-    const dedY = H * 0.60;
-    pdf.setFillColor(255,252,248); pdf.rect(0, dedY, W, H - dedY, 'F');
-
-    // Línea decorativa dorada
-    pdf.setDrawColor(247,201,75); pdf.setLineWidth(0.5); pdf.line(40, dedY+2, W-40, dedY+2);
-
-    // "Para" — pequeño, elegante
-    pdf.setFont('helvetica','italic'); pdf.setFontSize(13);
-    pdf.setTextColor(160,120,220); pdf.text('Para', W/2, dedY+14, {align:'center'});
-
-    // NOMBRE — grande, impactante
-    pdf.setFont('helvetica','bold'); pdf.setFontSize(34);
-    pdf.setTextColor(58,32,112);
-    pdf.text(nombreFinal||'', W/2, dedY+32, {align:'center'});
-
-    // Separador
-    pdf.setDrawColor(220,200,255); pdf.setLineWidth(0.2);
-    pdf.line(50, dedY+37, W-50, dedY+37);
-
-    // Texto dedicatoria o líneas para escribir a mano
-    let cy = dedY + 50;
-    if(dedPersonal && dedPersonal.trim()){
-      pdf.setFont('helvetica','italic'); pdf.setFontSize(12);
-      pdf.setTextColor(80,55,130);
-      const lineas = pdf.splitTextToSize(dedPersonal, 160);
-      lineas.forEach(l => { pdf.text(l, W/2, cy, {align:'center'}); cy += 8; });
-    } else {
-      pdf.setDrawColor(210,190,240); pdf.setLineWidth(0.2);
-      [cy, cy+14, cy+28, cy+42].forEach(y => pdf.line(38,y,172,y));
-      pdf.setFont('helvetica','italic'); pdf.setFontSize(8.5);
-      pdf.setTextColor(190,170,220);
-      pdf.text('escribe aquí tu dedicatoria', W/2, cy+56, {align:'center'});
-      cy += 70;
-    }
-
-    // ♥ y logo pequeño
-    cy = Math.max(cy, dedY + 90);
-    pdf.setFont('helvetica','normal'); pdf.setFontSize(12);
-    pdf.setTextColor(220,30,120); pdf.text('♥', W/2, cy+8, {align:'center'});
-    pdf.setFont('helvetica','bold'); pdf.setFontSize(7.5);
-    pdf.setTextColor(180,150,220); pdf.text('StoryOwl · cuentos únicos para tu peque', W/2, cy+18, {align:'center'});
-
-    // ══════════════════════════════════════════
-    // PÁG 2 — PORTADA
-    // ══════════════════════════════════════════
+    // ── PÁG 2: PORTADA ──────────────────────────────────────
+    btn.textContent = '⏳ Componiendo portada...';
     pdf.addPage();
-    if(coverImg && coverImg.src && coverImg.style.display !== 'none'){
-      try {
-        const d = await toBase64(coverImg.src);
-        // Calcular overlay para portada (título + dedicatoria)
-        pdf.setFont('helvetica','bold'); pdf.setFontSize(20);
-        const titLines = pdf.splitTextToSize(titulo, 185).length;
-        pdf.setFont('helvetica','italic'); pdf.setFontSize(10);
-        const dedLines = ded ? pdf.splitTextToSize(ded, 175).length : 0;
-        const portadaBlockH = 12 + titLines*10 + (dedLines > 0 ? 4+dedLines*7 : 0) + 16 + 10;
-        const portadaImgH = H - portadaBlockH;
-
-        pdf.addImage(d,'JPEG',0,0,W,portadaImgH);
-        pdf.setFillColor(255,253,248); pdf.rect(0,portadaImgH,W,portadaBlockH,'F');
-        pdf.setDrawColor(247,201,75); pdf.setLineWidth(0.8); pdf.line(0,portadaImgH,W,portadaImgH);
-
-        let pY = portadaImgH + 12;
-        pdf.setFont('helvetica','bold'); pdf.setFontSize(20); pdf.setTextColor(30,15,60);
-        const tlines = pdf.splitTextToSize(titulo, 185);
-        tlines.forEach(l=>{ pdf.text(l,W/2,pY,{align:'center'}); pY+=10; });
-
-        if(ded){
-          pY += 4;
-          pdf.setFont('helvetica','italic'); pdf.setFontSize(10); pdf.setTextColor(100,80,140);
-          pdf.splitTextToSize(ded,175).forEach(l=>{ pdf.text(l,W/2,pY,{align:'center'}); pY+=7; });
-        }
-        pdf.setFont('helvetica','bold'); pdf.setFontSize(8); pdf.setTextColor(180,160,220);
-        pdf.text('🦉 StoryOwl', W/2, H-8, {align:'center'});
-      } catch(e){ console.warn('Error portada PDF:', e); }
+    if (coverImg && coverImg.src && coverImg.style.display !== 'none') {
+      const portadaDataUrl = await componerPortada(coverImg.src, titulo, ded);
+      pdf.addImage(portadaDataUrl, 'JPEG', 0, 0, W, H);
     }
 
-    // ══════════════════════════════════════════
-    // PÁGINAS INTERIORES — overlay DINÁMICO
-    // ══════════════════════════════════════════
+    // ── PÁGINAS INTERIORES ───────────────────────────────────
     const pages = document.querySelectorAll('.page');
     let i = 1;
-    for(const page of pages){
-      btn.textContent = `⏳ Página ${i} de ${pages.length}...`;
+    for (const page of pages) {
+      btn.textContent = `⏳ Componiendo página ${i} de ${pages.length}...`;
       pdf.addPage();
 
-      const img    = page.querySelector('.page-img');
-      const numTxt = page.querySelector('.page-num')?.textContent || '';
-      const titTxt = page.querySelector('.page-title')?.textContent || '';
-      const bodyTxt= page.querySelector('.page-text')?.textContent || '';
+      const img     = page.querySelector('.page-img');
+      const numTxt  = page.querySelector('.page-num')?.textContent?.replace('Página ','') || String(i);
+      const titTxt  = page.querySelector('.page-title')?.textContent || '';
+      const bodyTxt = page.querySelector('.page-text')?.textContent || '';
 
-      // Medir altura real del bloque de texto
-      pdf.setFont('helvetica','bold');   pdf.setFontSize(8);
-      pdf.setFont('helvetica','italic'); pdf.setFontSize(15);
-      const titArr = pdf.splitTextToSize(titTxt, W-32);
-      pdf.setFont('helvetica','normal'); pdf.setFontSize(11);
-      const txtArr = pdf.splitTextToSize(bodyTxt, W-32);
-
-      const PAD = 10;   // padding top+bottom de la franja
-      const H_NUM = 7;  // "Página X"
-      const H_TIT = titArr.length * 8 + 4;
-      const H_TXT = txtArr.length * 6.5 + 6;
-      const H_PIE = 7;  // número de página pie
-      const blockH = PAD*2 + H_NUM + H_TIT + H_TXT + H_PIE;
-      const imgH   = H - blockH;
-
-      // Imagen
-      try {
-        const d = await toBase64(img.src);
-        pdf.addImage(d,'JPEG',0,0,W,imgH);
-      } catch(e){
-        pdf.setFillColor(240,235,255); pdf.rect(0,0,W,imgH,'F');
-      }
-
-      // Franja dinámica
-      pdf.setFillColor(250,247,255); pdf.rect(0, imgH, W, blockH, 'F');
-      pdf.setDrawColor(247,201,75); pdf.setLineWidth(0.7); pdf.line(0, imgH, W, imgH);
-
-      let cy = imgH + PAD;
-
-      // Número página
-      pdf.setFont('helvetica','bold'); pdf.setFontSize(8);
-      pdf.setTextColor(180,130,0); pdf.text(numTxt.toUpperCase(), 14, cy);
-      cy += H_NUM;
-
-      // Título
-      pdf.setFont('helvetica','italic'); pdf.setFontSize(15);
-      pdf.setTextColor(80,40,160);
-      titArr.forEach(l=>{ pdf.text(l,14,cy); cy+=8; }); cy+=4;
-
-      // Texto
-      pdf.setFont('helvetica','normal'); pdf.setFontSize(11);
-      pdf.setTextColor(58,48,80);
-      txtArr.forEach(l=>{ pdf.text(l,14,cy); cy+=6.5; }); cy+=6;
-
-      // Pie
-      pdf.setFontSize(8); pdf.setTextColor(200,180,230);
-      pdf.text(String(i), W/2, cy, {align:'center'});
+      const pngDataUrl = await componerPaginaInterior(img?.src || '', numTxt, titTxt, bodyTxt);
+      pdf.addImage(pngDataUrl, 'JPEG', 0, 0, W, H);
       i++;
     }
 
-    // ══════════════════════════════════════════
-    // ÚLTIMA PÁG — COLOFÓN
-    // ══════════════════════════════════════════
+    // ── ÚLTIMA PÁG: COLOFÓN ──────────────────────────────────
+    btn.textContent = '⏳ Componiendo colofón...';
     pdf.addPage();
-    const COLOFONIMG_URL = '/imagenes/colofonowl.png';
-    try {
-      const colImg = await toBase64(COLOFONIMG_URL);
-      pdf.addImage(colImg,'PNG',0,0,W,H);
-    } catch(e){
-      pdf.setFillColor(255,250,240); pdf.rect(0,0,W,H,'F');
-    }
+    const colDataUrl = await componerColofonPagina(nombreFinal, fechaFinal);
+    pdf.addImage(colDataUrl, 'JPEG', 0, 0, W, H);
 
-    // Franja texto inferior
-    const colY = H * 0.58;
-    pdf.setFillColor(255,252,248); pdf.rect(0, colY, W, H-colY, 'F');
-    pdf.setDrawColor(247,201,75); pdf.setLineWidth(0.5); pdf.line(40,colY+2,W-40,colY+2);
-
-    pdf.setFont('helvetica','normal'); pdf.setFontSize(10); pdf.setTextColor(107,63,168);
-    pdf.text('Este cuento fue creado especialmente para', W/2, colY+14, {align:'center'});
-    pdf.setFont('helvetica','bold'); pdf.setFontSize(26); pdf.setTextColor(58,32,112);
-    pdf.text(nombreFinal||'', W/2, colY+32, {align:'center'});
-    pdf.setFont('helvetica','normal'); pdf.setFontSize(9); pdf.setTextColor(155,111,216);
-    pdf.text('el '+fechaFinal, W/2, colY+42, {align:'center'});
-    pdf.setDrawColor(247,201,75); pdf.setLineWidth(0.4); pdf.line(55,colY+48,W-55,colY+48);
-    pdf.setFont('helvetica','italic'); pdf.setFontSize(10); pdf.setTextColor(80,55,130);
-    pdf.text('Una historia única en el mundo, igual que tú.', W/2, colY+60, {align:'center'});
-    pdf.setFont('helvetica','bold'); pdf.setFontSize(8); pdf.setTextColor(180,150,220);
-    pdf.text('storyowl.com', W/2, colY+80, {align:'center'});
-
-    pdf.save((titulo||'mi-cuento')+'.pdf');
+    pdf.save((titulo || 'mi-cuento') + '.pdf');
 
   } catch(e){
     console.error('[StoryOwl] Error PDF:', e);
@@ -660,13 +893,7 @@ async function descargarPDF(){
   btn.textContent='📄 Descargar PDF'; btn.disabled=false;
 }
 
-// ── Utilidad ────────────────────────────────────────────
-async function toBase64(url){
-  const blob = await (await fetch(url)).blob();
-  return new Promise((res,rej)=>{
-    const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(blob);
-  });
-}
+
 </script>
 </body>
 </html>
