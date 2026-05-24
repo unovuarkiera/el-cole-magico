@@ -92,188 +92,147 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
 .flipbook-title{text-align:center;font-family:'Fraunces',serif;font-size:clamp(20px,4vw,36px);font-weight:900;color:white;margin-bottom:4px;}
 .flipbook-subtitle{text-align:center;font-size:13px;color:rgba(255,255,255,.38);margin-bottom:28px;letter-spacing:1px;}
 
-/* Escenario del libro */
-.book-stage{position:relative;max-width:820px;margin:0 auto 28px;perspective:1400px;perspective-origin:50% 45%;}
-
 /* ── PORTADA CERRADA ── */
-.book-closed{position:relative;max-width:340px;margin:0 auto;transform:rotateY(-8deg) rotateX(3deg);transform-style:preserve-3d;transition:transform .6s ease;cursor:pointer;}
-.book-closed:hover{transform:rotateY(-4deg) rotateX(1deg) scale(1.02);}
-.book-closed-img{width:100%;border-radius:4px 14px 14px 4px;display:block;box-shadow:-8px 12px 40px rgba(0,0,0,.7),4px 0 12px rgba(0,0,0,.4),inset -3px 0 8px rgba(0,0,0,.3);}
-/* Lomo */
-.book-closed::before{content:'';position:absolute;left:-14px;top:3px;bottom:3px;width:14px;background:linear-gradient(90deg,#0a0520,#1a0840,#0a0520);border-radius:3px 0 0 3px;transform:rotateY(-90deg) translateZ(7px);box-shadow:-4px 0 12px rgba(0,0,0,.5);}
-/* Sombra suelo */
-.book-closed::after{content:'';position:absolute;bottom:-20px;left:5%;right:5%;height:24px;background:radial-gradient(ellipse,rgba(0,0,0,.5) 0%,transparent 70%);filter:blur(8px);}
-.book-closed-overlay{position:absolute;inset:0;border-radius:4px 14px 14px 4px;background:linear-gradient(160deg,rgba(255,255,255,.06) 0%,transparent 40%,rgba(0,0,0,.2) 100%);}
+.book-closed{position:relative;max-width:300px;margin:0 auto;cursor:pointer;
+  filter:drop-shadow(-12px 20px 40px rgba(0,0,0,.75));}
+.book-closed:hover .book-closed-img{transform:scale(1.02) rotateY(-2deg);}
+.book-closed-img{width:100%;border-radius:4px 14px 14px 4px;display:block;transition:transform .4s ease;
+  box-shadow:-8px 12px 40px rgba(0,0,0,.7),4px 0 12px rgba(0,0,0,.4);}
+.book-closed-overlay{position:absolute;inset:0;border-radius:4px 14px 14px 4px;
+  background:linear-gradient(160deg,rgba(255,255,255,.06) 0%,transparent 40%,rgba(0,0,0,.2) 100%);}
 .watermark-overlay{position:absolute;inset:0;pointer-events:none;z-index:10;overflow:hidden;border-radius:inherit;}
-.watermark-overlay::before{content:'PREVIEW · El Cole Mágico · PREVIEW · El Cole Mágico';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);font-family:'Fraunces',serif;font-size:clamp(12px,2vw,18px);font-weight:900;color:rgba(255,255,255,0.16);letter-spacing:3px;white-space:nowrap;user-select:none;width:200%;text-align:center;}
-.watermark-overlay::after{content:'🦉 storyowl.com';position:absolute;bottom:10px;right:14px;font-size:10px;color:rgba(255,255,255,.25);font-weight:700;user-select:none;}
+.watermark-overlay::before{content:'PREVIEW · StoryOwl · PREVIEW · StoryOwl';
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);
+  font-family:'Fraunces',serif;font-size:clamp(12px,2vw,16px);font-weight:900;
+  color:rgba(255,255,255,0.15);letter-spacing:3px;white-space:nowrap;user-select:none;width:200%;text-align:center;}
+.watermark-overlay::after{content:'🦉 storyowl.com';position:absolute;bottom:10px;right:14px;
+  font-size:10px;color:rgba(255,255,255,.25);font-weight:700;user-select:none;}
+.cover-title-panel{position:absolute;bottom:0;left:0;right:0;padding:18px 16px 22px;
+  background:linear-gradient(0deg,rgba(6,2,16,.98) 0%,rgba(6,2,16,.55) 70%,transparent 100%);
+  text-align:center;border-radius:0 0 14px 14px;}
+.cover-title-text{font-family:'Fraunces',serif;font-size:clamp(12px,2vw,16px);font-weight:900;
+  color:white;text-shadow:0 2px 8px rgba(0,0,0,.9);line-height:1.25;}
+.cover-brand-text{font-size:10px;color:rgba(247,201,75,.65);font-weight:700;letter-spacing:2px;margin-top:5px;}
 
 /* Botón abrir libro */
-.btn-open-book{display:block;margin:20px auto 0;background:linear-gradient(135deg,#f7c94b,#e5a800);color:#1a0840;font-family:'Fraunces',serif;font-weight:900;font-size:16px;padding:13px 36px;border-radius:50px;border:none;cursor:pointer;box-shadow:0 6px 24px rgba(247,201,75,.35);transition:all .25s;animation:pulse-cta 2s ease-in-out infinite;}
+.btn-open-book{display:block;margin:22px auto 0;background:linear-gradient(135deg,#f7c94b,#e5a800);
+  color:#1a0840;font-family:'Fraunces',serif;font-weight:900;font-size:16px;padding:13px 36px;
+  border-radius:50px;border:none;cursor:pointer;box-shadow:0 6px 24px rgba(247,201,75,.35);
+  transition:all .25s;animation:pulse-cta 2s ease-in-out infinite;}
 @keyframes pulse-cta{0%,100%{box-shadow:0 6px 24px rgba(247,201,75,.35)}50%{box-shadow:0 8px 32px rgba(247,201,75,.6)}}
 .btn-open-book:hover{transform:translateY(-3px);}
 
 /* ── LIBRO ABIERTO ── */
-.book-open{display:none;position:relative;}
-/* Animación de apertura */
-.book-open.opening{animation:openBook .6s cubic-bezier(.4,0,.2,1) forwards;}
-@keyframes openBook{0%{opacity:0;transform:scale(.92) rotateX(8deg)}100%{opacity:1;transform:scale(1) rotateX(0deg)}}
-
-/* Spread desktop */
-.book-spread{display:grid;grid-template-columns:1fr 6px 1fr;gap:0;border-radius:10px 14px 14px 10px;overflow:visible;box-shadow:0 50px 100px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.05);}
-.book-spine{background:linear-gradient(90deg,#12062a,#2a1060,#12062a);box-shadow:-2px 0 8px rgba(0,0,0,.5),2px 0 8px rgba(0,0,0,.5);}
-.book-page-left,.book-page-right{position:relative;background:#0d0820;overflow:hidden;min-height:480px;}
-.book-page-left{border-radius:10px 0 0 10px;box-shadow:inset -12px 0 28px rgba(0,0,0,.45);}
-.book-page-right{border-radius:0 14px 14px 0;box-shadow:inset 12px 0 28px rgba(0,0,0,.45);}
-/* Curvatura de páginas */
-.book-page-left::after,.book-page-right::before{content:'';position:absolute;top:0;bottom:0;width:30px;pointer-events:none;z-index:6;}
-.book-page-left::after{right:0;background:linear-gradient(90deg,transparent,rgba(0,0,0,.18));}
-.book-page-right::before{left:0;background:linear-gradient(270deg,transparent,rgba(0,0,0,.18));}
-
-/* Libro móvil */
-.book-single{display:none;position:relative;max-width:380px;margin:0 auto;border-radius:10px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.6);}
-
-/* Imágenes */
-.flip-img-wrap{position:relative;width:100%;height:100%;}
-.flip-img{width:100%;height:100%;object-fit:cover;display:block;min-height:420px;}
-.flip-img-wrap.flipping{animation:flipAnim .38s cubic-bezier(.4,0,.2,1);}
-@keyframes flipAnim{0%{opacity:1;transform:scale(1)}40%{opacity:0;transform:scale(.96) rotateY(6deg)}100%{opacity:1;transform:scale(1) rotateY(0deg)}}
-
-/* Paneles de texto */
-.flip-text-panel{position:absolute;bottom:0;left:0;right:0;padding:14px 18px 18px;background:linear-gradient(0deg,rgba(6,2,16,.98) 0%,rgba(6,2,16,.85) 50%,transparent 100%);z-index:5;}
-.flip-page-num{font-size:9px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#b88000;margin-bottom:3px;}
-.flip-page-title{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(11px,1.6vw,15px);color:#c084fc;margin-bottom:4px;line-height:1.2;}
-.flip-page-text{font-size:clamp(10px,1.3vw,13px);color:rgba(255,255,255,.72);line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;}
-.flip-cover-panel{position:absolute;bottom:0;left:0;right:0;padding:18px;background:linear-gradient(0deg,rgba(6,2,16,.98) 0%,rgba(6,2,16,.6) 70%,transparent 100%);z-index:5;text-align:center;}
-.flip-cover-title{font-family:'Fraunces',serif;font-size:clamp(13px,1.8vw,18px);font-weight:900;color:white;text-shadow:0 2px 12px rgba(0,0,0,.8);line-height:1.2;}
-.flip-cover-brand{font-size:10px;color:rgba(247,201,75,.6);margin-top:4px;font-weight:700;letter-spacing:2px;}
-/* Contraportada */
-.flip-back-panel{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,#0d0820,#1a0840);z-index:5;padding:24px;}
-.flip-back-stars{font-size:28px;margin-bottom:16px;opacity:.7;}
-.flip-back-phrase{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(14px,2vw,18px);color:rgba(255,255,255,.8);text-align:center;line-height:1.6;margin-bottom:20px;max-width:220px;}
-.flip-back-logo{font-size:13px;color:rgba(247,201,75,.6);font-weight:700;letter-spacing:2px;}
-/* Página FIN */
-.flip-end-panel{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,#0d0820,#160a35);z-index:5;padding:24px;}
-.flip-end-icon{font-size:52px;margin-bottom:14px;}
-.flip-end-text{font-family:'Fraunces',serif;font-size:clamp(16px,2.5vw,22px);color:white;margin-bottom:8px;}
-.flip-end-sub{font-size:13px;color:rgba(255,255,255,.45);text-align:center;}
-
-/* Skeleton */
-.flip-skeleton{width:100%;min-height:420px;background:linear-gradient(90deg,#0d0820 25%,#1a0840 50%,#0d0820 75%);background-size:200% 100%;animation:skelshimmer 1.5s infinite;}
-@keyframes skelshimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes openBook{0%{opacity:0;transform:scale(.94)}100%{opacity:1;transform:scale(1)}}
 
 /* Controles */
-.flipbook-controls{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:24px;}
-.flip-btn{width:50px;height:50px;border-radius:50%;border:2px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:white;font-size:22px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);}
+.flipbook-controls{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:20px;}
+.flip-btn{width:50px;height:50px;border-radius:50%;border:2px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.06);color:white;font-size:22px;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);}
 .flip-btn:hover:not(:disabled){background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.38);transform:scale(1.1);}
 .flip-btn:disabled{opacity:.2;cursor:not-allowed;}
 .flip-counter{font-family:'Fraunces',serif;font-size:14px;color:rgba(255,255,255,.5);min-width:80px;text-align:center;}
-.flip-dots{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:280px;}
+.flip-dots{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:320px;}
 .flip-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.18);transition:all .3s;cursor:pointer;flex-shrink:0;}
 .flip-dot.active{background:#f7c94b;transform:scale(1.6);}
 
+/* ── SPREAD VIEWER — imagen panorámica ── */
+.spread-viewer{position:relative;max-width:860px;margin:0 auto;
+  border-radius:8px 14px 14px 8px;overflow:hidden;
+  box-shadow:0 40px 80px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.05);}
+
+/* Imagen panorámica del spread — ocupa todo el ancho */
+.spread-img-wrap{position:relative;width:100%;background:#080318;}
+.spread-img{width:100%;height:auto;display:block;max-height:520px;object-fit:cover;}
+.spread-img.loading{display:none;}
+.spread-skeleton{width:100%;height:420px;background:linear-gradient(90deg,#0d0820 25%,#1a0840 50%,#0d0820 75%);
+  background-size:200% 100%;animation:skelshimmer 1.5s infinite;}
+@keyframes skelshimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* Watermark sobre el spread */
+.spread-wm{position:absolute;inset:0;pointer-events:none;z-index:8;overflow:hidden;}
+.spread-wm::before{content:'PREVIEW · StoryOwl · PREVIEW · StoryOwl · PREVIEW · StoryOwl';
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-20deg);
+  font-family:'Fraunces',serif;font-size:clamp(10px,1.8vw,18px);font-weight:900;
+  color:rgba(255,255,255,0.10);letter-spacing:4px;white-space:nowrap;user-select:none;width:200%;text-align:center;}
+.spread-wm::after{content:'🦉 storyowl.com';position:absolute;bottom:10px;right:16px;
+  font-size:11px;color:rgba(255,255,255,.18);font-weight:700;user-select:none;}
+
+/* Paneles de texto izq/der sobre el spread */
+.spread-texts{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;pointer-events:none;z-index:6;}
+.spread-text-izq,.spread-text-der{position:relative;display:flex;flex-direction:column;justify-content:flex-end;}
+.spread-text-izq{padding:10px 14px 16px 18px;}
+.spread-text-der{padding:10px 18px 16px 14px;}
+/* Gradiente de texto — solo en la zona inferior */
+.spread-text-izq::before,.spread-text-der::before{content:'';position:absolute;left:0;right:0;bottom:0;height:55%;
+  background:linear-gradient(0deg,rgba(4,1,12,.95) 0%,rgba(4,1,12,.7) 50%,transparent 100%);z-index:-1;}
+.spread-pnum{font-size:8px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#b88000;margin-bottom:2px;}
+.spread-ptitle{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(9px,1.2vw,13px);
+  color:#c084fc;margin-bottom:3px;line-height:1.2;}
+.spread-pbody{font-size:clamp(8px,1vw,12px);color:rgba(255,255,255,.75);line-height:1.5;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;}
+
+/* Página especial: portada izquierda, spread de portada */
+.spread-cover-panel{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:flex-end;padding:20px;text-align:center;z-index:6;}
+.spread-cover-panel::before{content:'';position:absolute;left:0;right:0;bottom:0;height:45%;
+  background:linear-gradient(0deg,rgba(4,1,12,.97) 0%,rgba(4,1,12,.5) 60%,transparent 100%);}
+.spread-cover-title{font-family:'Fraunces',serif;font-size:clamp(13px,2vw,20px);font-weight:900;
+  color:white;text-shadow:0 2px 12px rgba(0,0,0,.9);line-height:1.2;position:relative;z-index:1;}
+.spread-cover-brand{font-size:10px;color:rgba(247,201,75,.6);font-weight:700;letter-spacing:2px;
+  margin-top:5px;position:relative;z-index:1;}
+
+/* Páginas especiales: FIN y contraportada */
+.spread-special{width:100%;min-height:380px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(160deg,#0d0820,#160a35);}
+.spread-fin{text-align:center;padding:40px;}
+.spread-fin-icon{font-size:52px;margin-bottom:16px;}
+.spread-fin-title{font-family:'Fraunces',serif;font-size:clamp(28px,5vw,48px);font-weight:900;color:white;margin-bottom:10px;}
+.spread-fin-sub{font-size:14px;color:rgba(255,255,255,.5);line-height:1.7;}
+.spread-contraportada{text-align:center;padding:40px;background:linear-gradient(160deg,#0d0820,#1a0840);}
+.spread-cp-icon{font-size:40px;margin-bottom:16px;opacity:.8;}
+.spread-cp-phrase{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(15px,2vw,20px);
+  color:rgba(255,255,255,.78);line-height:1.7;margin-bottom:18px;max-width:280px;}
+.spread-cp-line{width:50px;height:2px;background:rgba(247,201,75,.4);margin:0 auto 14px;}
+.spread-cp-brand{font-size:12px;color:rgba(247,201,75,.5);font-weight:700;letter-spacing:2px;}
+
+/* Animación de cambio de spread */
+.spread-flip{animation:spreadFlip .42s cubic-bezier(.4,0,.2,1);}
+@keyframes spreadFlip{
+  0%  {opacity:1;transform:scale(1)}
+  42% {opacity:0;transform:scale(.97)}
+  100%{opacity:1;transform:scale(1)}
+}
+
+/* Skeleton portada */
+.flip-skeleton{width:100%;min-height:440px;border-radius:4px 14px 14px 4px;
+  background:linear-gradient(90deg,#0d0820 25%,#1a0840 50%,#0d0820 75%);
+  background-size:200% 100%;animation:skelshimmer 1.5s infinite;}
+
 /* CTA */
 .flipbook-cta{text-align:center;padding:0 16px;}
-.flipbook-cta-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:24px;padding:36px 28px;max-width:460px;margin:0 auto;backdrop-filter:blur(12px);}
+.flipbook-cta-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+  border-radius:24px;padding:36px 28px;max-width:460px;margin:0 auto;backdrop-filter:blur(12px);}
 .flipbook-cta-icon{font-size:46px;margin-bottom:12px;}
 .flipbook-cta-title{font-family:'Fraunces',serif;font-size:24px;color:white;margin-bottom:8px;}
 .flipbook-cta-sub{font-size:14px;color:rgba(255,255,255,.45);margin-bottom:26px;line-height:1.6;}
-.btn-comprar{background:linear-gradient(135deg,#f7c94b,#e5a800);color:#1a0840;font-family:'Fraunces',serif;font-weight:900;font-size:19px;padding:17px 50px;border-radius:50px;border:none;cursor:pointer;box-shadow:0 8px 32px rgba(247,201,75,.35);transition:all .25s;display:inline-block;}
+.btn-comprar{background:linear-gradient(135deg,#f7c94b,#e5a800);color:#1a0840;font-family:'Fraunces',serif;
+  font-weight:900;font-size:19px;padding:17px 50px;border-radius:50px;border:none;cursor:pointer;
+  box-shadow:0 8px 32px rgba(247,201,75,.35);transition:all .25s;display:inline-block;}
 .btn-comprar:hover{transform:translateY(-3px);box-shadow:0 14px 44px rgba(247,201,75,.5);}
-.btn-crear-otro{display:block;background:transparent;color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.1);font-size:14px;padding:11px 28px;border-radius:50px;cursor:pointer;margin:12px auto 0;transition:all .2s;font-family:'Nunito',sans-serif;}
+.btn-crear-otro{display:block;background:transparent;color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.1);
+  font-size:14px;padding:11px 28px;border-radius:50px;cursor:pointer;margin:12px auto 0;transition:all .2s;font-family:'Nunito',sans-serif;}
 .btn-crear-otro:hover{color:white;border-color:rgba(255,255,255,.28);}
 
-.fp-page,.fp-cover,.fp-interior,.fp-final,.fp-back{
-  position:relative;overflow:hidden;user-select:none;
-}
-.fp-cover,.fp-back,.fp-final{background:#0d0820;}
-.fp-interior{background:#0d0820;}
-.fp-cover-panel{position:absolute;bottom:0;left:0;right:0;padding:16px;
-  background:linear-gradient(0deg,rgba(6,2,16,.98) 0%,rgba(6,2,16,.6) 70%,transparent 100%);
-  text-align:center;z-index:5;}
-.fp-cover-title{font-family:'Fraunces',serif;font-size:clamp(11px,2vw,16px);font-weight:900;
-  color:white;text-shadow:0 2px 8px rgba(0,0,0,.8);line-height:1.2;}
-.fp-cover-brand{font-size:10px;color:rgba(247,201,75,.6);font-weight:700;letter-spacing:2px;margin-top:4px;}
-.fp-text-panel{position:absolute;bottom:0;left:0;right:0;
-  padding:10px 14px 14px;
-  background:linear-gradient(0deg,rgba(6,2,16,.98) 0%,rgba(6,2,16,.85) 50%,transparent 100%);z-index:5;}
-.fp-page-num{font-size:8px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#b88000;margin-bottom:2px;}
-.fp-page-title{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(10px,1.5vw,14px);
-  color:#c084fc;margin-bottom:4px;line-height:1.2;}
-.fp-page-text{font-size:clamp(9px,1.2vw,12px);color:rgba(255,255,255,.72);line-height:1.5;
-  overflow:hidden;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;}
-.fp-final-inner,.fp-back-inner{display:flex;flex-direction:column;align-items:center;
-  justify-content:center;height:100%;padding:24px;text-align:center;}
-.fp-final-title{font-family:'Fraunces',serif;font-size:clamp(22px,4vw,36px);font-weight:900;
-  color:white;margin-bottom:12px;}
-.fp-final-sub{font-size:clamp(12px,1.5vw,15px);color:rgba(255,255,255,.6);line-height:1.6;}
-.fp-back-phrase{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(14px,2vw,18px);
-  color:rgba(255,255,255,.75);line-height:1.65;margin-bottom:16px;max-width:200px;}
-.fp-back-brand{font-size:11px;color:rgba(247,201,75,.5);font-weight:700;letter-spacing:2px;}
-#flipBook{margin:0 auto;}
-
-/* ── FLIPBOOK CSS3D sin dependencias ──────────────────── */
-.book-viewer{position:relative;max-width:820px;margin:0 auto;}
-
-/* Desktop: libro abierto 2 páginas */
-.book-spread-view{display:none;position:relative;}
-.book-spread-view.active{display:flex;gap:0;border-radius:8px 12px 12px 8px;
-  overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.05);}
-.page-left-view,.page-right-view{flex:1;position:relative;min-height:480px;overflow:hidden;background:#0d0820;}
-.page-left-view{box-shadow:inset -8px 0 20px rgba(0,0,0,.4);border-radius:8px 0 0 8px;}
-.page-right-view{box-shadow:inset 8px 0 20px rgba(0,0,0,.4);border-radius:0 12px 12px 0;}
-/* Lomo */
-.book-spine-view{width:8px;background:linear-gradient(90deg,#08031a,#1a0840,#08031a);flex-shrink:0;}
-
-/* Móvil: página única */
-.book-single-view{display:none;position:relative;max-width:380px;margin:0 auto;
-  border-radius:12px;overflow:hidden;box-shadow:0 24px 56px rgba(0,0,0,.6);}
-.book-single-view.active{display:block;}
-
-/* Flip animation */
-.page-flip-anim{animation:pageFlipAnim .45s cubic-bezier(.4,0,.2,1);}
-@keyframes pageFlipAnim{
-  0%{opacity:1;transform:scale(1)}
-  45%{opacity:0;transform:scale(.97) rotateY(4deg)}
-  100%{opacity:1;transform:scale(1) rotateY(0deg)}
-}
-
-/* Contenido de página */
-.stpf-page{position:relative;overflow:hidden;background:#0d0820;user-select:none;
-  width:100%;height:100%;box-sizing:border-box;}
-.stpf-page img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
-.stpf-wm{position:absolute;inset:0;pointer-events:none;z-index:10;overflow:hidden;}
-.stpf-wm::before{content:'PREVIEW · El Cole Mágico · PREVIEW · El Cole Mágico';
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);
-  font-family:'Fraunces',serif;font-size:clamp(9px,1.5vw,15px);font-weight:900;
-  color:rgba(255,255,255,0.13);letter-spacing:3px;white-space:nowrap;user-select:none;width:200%;text-align:center;}
-.stpf-wm::after{content:'🦉 storyowl.com';position:absolute;bottom:8px;right:12px;
-  font-size:10px;color:rgba(255,255,255,.2);font-weight:700;user-select:none;}
-.stpf-cover-panel{position:absolute;bottom:0;left:0;right:0;padding:14px 16px 18px;
-  background:linear-gradient(0deg,rgba(6,2,16,.98) 0%,rgba(6,2,16,.55) 70%,transparent 100%);
-  text-align:center;z-index:5;}
-.stpf-cover-title{font-family:'Fraunces',serif;font-size:clamp(10px,1.6vw,15px);font-weight:900;
-  color:white;text-shadow:0 2px 8px rgba(0,0,0,.8);line-height:1.2;}
-.stpf-cover-brand{font-size:9px;color:rgba(247,201,75,.6);font-weight:700;letter-spacing:2px;margin-top:3px;}
-.stpf-text-panel{position:absolute;bottom:0;left:0;right:0;
-  padding:10px 14px 14px;
-  background:linear-gradient(0deg,rgba(6,2,16,.98) 0%,rgba(6,2,16,.82) 50%,transparent 100%);z-index:5;}
-.stpf-num{font-size:8px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#b88000;margin-bottom:2px;}
-.stpf-title{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(9px,1.4vw,13px);
-  color:#c084fc;margin-bottom:3px;line-height:1.2;}
-.stpf-body{font-size:clamp(8px,1.2vw,12px);color:rgba(255,255,255,.72);line-height:1.5;
-  overflow:hidden;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;}
-#flipBook{margin:0 auto;}
-
-@media(max-width:640px){
-  .book-spread{display:none!important;}
-  .book-single{display:block!important;}
-  .book-closed{transform:rotateY(0deg) rotateX(0deg);}
-  .flip-page-text{-webkit-line-clamp:3;}
-}
-@media(min-width:641px){
-  .book-single{display:none!important;}
-  .book-spread{display:grid!important;}
+/* Móvil: spread ocupa pantalla completa */
+@media(max-width:600px){
+  .spread-texts{grid-template-columns:1fr;}
+  .spread-text-der{display:none;}
+  .spread-text-izq{padding:8px 12px 14px;}
+  .spread-pbody{-webkit-line-clamp:3;}
+  .spread-img{max-height:280px;}
+  .spread-special{min-height:260px;}
 }
 
 /* Status */
@@ -450,16 +409,17 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
   <p class="flipbook-subtitle">Vista previa · Descarga el PDF para la versión completa en alta resolución</p>
 
   <!-- PORTADA CERRADA (estado inicial) -->
-  <div id="bookClosed" style="text-align:center">
+  <div id="bookClosed" style="text-align:center;padding-bottom:8px;">
     <div class="book-closed" id="bookClosedInner" onclick="abrirLibro()">
-      <div class="flip-skeleton" id="coverSkeleton" style="min-height:460px;border-radius:4px 14px 14px 4px;"></div>
-      <img id="coverPreviewImg" src="" alt="Portada" style="display:none;width:100%;border-radius:4px 14px 14px 4px;"
+      <div class="flip-skeleton" id="coverSkeleton" style="min-height:420px;"></div>
+      <img id="coverPreviewImg" src="" alt="Portada"
+           style="display:none;width:100%;border-radius:4px 14px 14px 4px;"
            oncontextmenu="return false" ondragstart="return false"/>
       <div class="book-closed-overlay"></div>
       <div class="watermark-overlay"></div>
-      <div class="flip-cover-panel" id="coverTitlePanel" style="display:none">
-        <div class="flip-cover-title" id="coverTitleText"></div>
-        <div class="flip-cover-brand">🦉 El Cole Mágico</div>
+      <div class="cover-title-panel" id="coverTitlePanel" style="display:none">
+        <div class="cover-title-text" id="coverTitleText"></div>
+        <div class="cover-brand-text">🦉 StoryOwl</div>
       </div>
     </div>
     <button class="btn-open-book" id="btnOpenBook" onclick="abrirLibro()" style="display:none">📖 Abrir libro</button>
@@ -474,17 +434,9 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
       <button class="flip-btn" id="flipNext" onclick="flipPage(1)">&#8594;</button>
     </div>
 
-    <div class="book-viewer">
-      <!-- Desktop: spread 2 páginas -->
-      <div class="book-spread-view" id="bookSpreadView">
-        <div class="page-left-view"  id="pageLeft"></div>
-        <div class="book-spine-view"></div>
-        <div class="page-right-view" id="pageRight"></div>
-      </div>
-      <!-- Móvil: 1 página -->
-      <div class="book-single-view" id="bookSingleView">
-        <div id="pageSingle"></div>
-      </div>
+    <!-- Viewer: imagen panorámica de spread -->
+    <div class="spread-viewer" id="spreadViewer">
+      <!-- El contenido se inyecta aquí por JS -->
     </div>
 
     <!-- Dots -->
@@ -548,18 +500,17 @@ function mostrarIndicador(n,total){
   const c=document.getElementById('pagesContainer');if(!c)return;
   const old=document.getElementById('gen-ind');if(old)old.remove();
   const d=document.createElement('div');d.id='gen-ind';d.className='generating-indicator';
-  d.innerHTML=`<div class="generating-dot"></div><span>🎨 Creando ilustración ${n} de ${total}...</span>`;
+  d.innerHTML=`<div class="generating-dot"></div><span>🎨 Creando spread ${n} de ${total}...</span>`;
   c.appendChild(d);d.scrollIntoView({behavior:'smooth',block:'end'});
 }
 function quitarIndicador(){const d=document.getElementById('gen-ind');if(d)d.remove();}
 
-// ── GENERAR — Bug corregido: campos exactos que espera /generar-cuento ──
+// ── GENERAR ─────────────────────────────────────────────
 async function generar(){
   const nombre = document.getElementById('nombre').value.trim();
   const tema   = document.getElementById('tema').value.trim();
   const personaje = document.getElementById('personaje').value.trim();
 
-  // Validación con mensajes claros
   if(!nombre)   { alert('Escribe el nombre del protagonista'); document.getElementById('nombre').focus(); return; }
   if(!tema)     { alert('Escribe el tema de la aventura');     document.getElementById('tema').focus();   return; }
   if(!personaje){ alert('Escribe el personaje especial');      document.getElementById('personaje').focus(); return; }
@@ -567,23 +518,13 @@ async function generar(){
   const edad = parseInt(document.getElementById('edad').value);
   const dedicatoriaPersonal = document.getElementById('dedicatoriaPersonal')?.value || '';
 
-  // Payload exacto que espera el backend (/generar-cuento)
-  const payload = {
-    nombre,
-    edad,
-    tema,
-    personaje,
-    opciones,   // { genero, tipopelo, gafas, pecas, piel, pelo, ojos }
-    estilo,
-    dedicatoriaPersonal
-  };
-
+  const payload = { nombre, edad, tema, personaje, opciones, estilo, dedicatoriaPersonal };
   console.log('[StoryOwl] Enviando payload:', JSON.stringify(payload, null, 2));
 
   document.getElementById('btnGenerar').disabled = true;
   document.getElementById('bookSection').style.display = 'none';
   document.getElementById('pagesContainer').innerHTML = '';
-  
+
   const coverImg = document.getElementById('coverImg');
   coverImg.src = ''; coverImg.style.display = 'none';
   crearProgreso();
@@ -594,11 +535,7 @@ async function generar(){
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-
-    if(!resp.ok) {
-      const err = await resp.text();
-      throw new Error(`Error ${resp.status}: ${err}`);
-    }
+    if(!resp.ok) { const err = await resp.text(); throw new Error(`Error ${resp.status}: ${err}`); }
 
     const reader = resp.body.getReader();
     const decoder = new TextDecoder();
@@ -621,7 +558,9 @@ async function generar(){
 }
 
 // ── Procesar eventos SSE ────────────────────────────────
-const TOTAL = 16;
+// El backend ahora emite: estado | cuento | imagen | spread | completado | error
+const TOTAL_SPREADS = 10;
+
 function procesarEvento(data){
   console.log('[StoryOwl] Evento:', data.tipo, data);
 
@@ -629,38 +568,49 @@ function procesarEvento(data){
     actualizarStatus(data.mensaje);
 
   } else if(data.tipo === 'cuento'){
-    // Guardar datos para el PDF
     document.getElementById('bookTitle').textContent = data.titulo;
     document.getElementById('bookDed').textContent = data.dedicatoria;
-    // Iniciar flipbook con título y nombre del protagonista
     flipInit(data.titulo, document.getElementById('nombre')?.value || '');
-    actualizarProgreso(1, TOTAL); mostrarIndicador(1, TOTAL);
+    actualizarProgreso(1, TOTAL_SPREADS);
+    mostrarIndicador(1, TOTAL_SPREADS);
 
   } else if(data.tipo === 'imagen'){
-    // Portada: guardar en img oculto para PDF + mostrar libro cerrado
-
+    // Portada
     const img = document.getElementById('coverImg');
     img.src = data.url; img.style.display = 'block';
     flipShowCover(data.url, document.getElementById('bookTitle').textContent);
-    actualizarProgreso(2, TOTAL);
+    actualizarProgreso(2, TOTAL_SPREADS);
 
-  } else if(data.tipo === 'pagina'){
+  } else if(data.tipo === 'spread'){
     quitarIndicador();
-    // Guardar en pagesContainer para el PDF
+    // Guardar datos de ambas páginas en pagesContainer para el PDF
     const container = document.getElementById('pagesContainer');
-    const page = document.createElement('div'); page.className = 'page';
-    page.innerHTML = `
-      <img class="page-img" src="${data.url}" alt="Página ${data.numero}" loading="lazy"/>
+    // Página izquierda
+    const pageIzq = document.createElement('div'); pageIzq.className = 'page';
+    pageIzq.innerHTML = `
+      <img class="page-img" src="${data.url}" alt="Página ${data.pagIzq.numero}" loading="lazy"/>
       <div class="page-body">
-        <div class="page-num">Página ${data.numero}</div>
-        <div class="page-title">${data.titulo}</div>
-        <p class="page-text">${data.texto}</p>
+        <div class="page-num">Página ${data.pagIzq.numero}</div>
+        <div class="page-title">${data.pagIzq.titulo}</div>
+        <p class="page-text">${data.pagIzq.texto}</p>
       </div>`;
-    container.appendChild(page);
-    // Añadir al flipbook
-    flipAddPage({ tipo:'pagina', url: data.url, numero: data.numero, titulo: data.titulo, texto: data.texto });
-    actualizarProgreso(data.numero + 2, TOTAL);
-    if(data.numero < TOTAL) mostrarIndicador(data.numero + 1, TOTAL);
+    container.appendChild(pageIzq);
+    // Página derecha
+    const pageDer = document.createElement('div'); pageDer.className = 'page';
+    pageDer.innerHTML = `
+      <img class="page-img" src="${data.url}" alt="Página ${data.pagDer.numero}" loading="lazy"/>
+      <div class="page-body">
+        <div class="page-num">Página ${data.pagDer.numero}</div>
+        <div class="page-title">${data.pagDer.titulo}</div>
+        <p class="page-text">${data.pagDer.texto}</p>
+      </div>`;
+    container.appendChild(pageDer);
+
+    // Añadir spread al flipbook
+    flipAddSpread(data);
+
+    actualizarProgreso(data.spread + 2, TOTAL_SPREADS);
+    if(data.spread < TOTAL_SPREADS) mostrarIndicador(data.spread + 1, TOTAL_SPREADS);
 
   } else if(data.tipo === 'completado'){
     quitarIndicador();
@@ -671,7 +621,6 @@ function procesarEvento(data){
     if(pb){ pb.style.width='100%'; setTimeout(()=>pb.style.opacity='0',1000); }
     const sb=document.getElementById('status-bar');
     if(sb){ sb.style.opacity='0'; setTimeout(()=>sb.remove(),500); }
-    // Mostrar CTA del flipbook
     flipComplete();
     document.getElementById('btnGenerar').disabled = false;
 
@@ -687,179 +636,167 @@ function procesarEvento(data){
 
 
 // ═══════════════════════════════════════════════════════════
-// FLIPBOOK ENGINE — CSS3D puro, sin dependencias externas
+// FLIPBOOK ENGINE — spreads panorámicos
+// Cada "página" del viewer = un spread horizontal (imagen 1536x1024)
+// Array flipSpreads:
+//   tipo:'portada'       → imagen vertical de portada sola
+//   tipo:'spread'        → imagen horizontal + datos pagIzq + pagDer
+//   tipo:'fin'           → página FIN (sin imagen, generada en frontend)
+//   tipo:'contraportada' → contraportada (sin imagen, generada en frontend)
 // ═══════════════════════════════════════════════════════════
 
-let flipPages  = [];   // {tipo, url, numero, titulo, texto}
-let flipIdx    = 0;    // índice actual (desktop = par → izq)
-let flipIsOpen = false;
-let flipNombre = '';
+let flipSpreads  = [];   // array de spreads
+let flipIdx      = 0;    // índice actual en flipSpreads
+let flipIsOpen   = false;
+let flipNombre   = '';
 
-// ── Renderiza el contenido de una página en un contenedor ─
-function renderPageIn(container, p) {
-  if (!container) return;
+// ── Construye el HTML de un spread y lo inyecta en el viewer ─
+function renderSpread(animate) {
+  const viewer = document.getElementById('spreadViewer');
+  if (!viewer) return;
 
-  if (!p) {
-    container.innerHTML = '<div style="background:#080318;width:100%;height:100%;min-height:440px;display:flex;align-items:center;justify-content:center;"><span style="color:rgba(255,255,255,.08);font-size:48px;">🦉</span></div>';
-    return;
-  }
+  const sp = flipSpreads[flipIdx];
+  if (!sp) return;
 
-  if (p.tipo === 'final') {
-    container.innerHTML = `<div class="stpf-page" style="min-height:440px;background:linear-gradient(160deg,#0d0820,#160a35);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;">
-      <div style="font-size:52px;margin-bottom:16px;">✨</div>
-      <div style="font-family:'Fraunces',serif;font-size:clamp(22px,3vw,32px);font-weight:900;color:white;margin-bottom:12px;">¡FIN!</div>
-      <div style="font-size:clamp(12px,1.5vw,16px);color:rgba(255,255,255,.55);line-height:1.7;">
-        Un cuento creado especialmente para<br>
-        <strong style="color:rgba(255,255,255,.85);">${flipNombre}</strong>
+  const oldContent = viewer.firstElementChild;
+
+  let html = '';
+
+  if (sp.tipo === 'portada') {
+    // Portada: imagen vertical centrada con overlay
+    html = `<div class="spread-img-wrap" style="background:#080318;display:flex;justify-content:center;">
+      <div style="position:relative;display:inline-block;max-height:520px;">
+        <img src="${sp.url}" alt="Portada"
+             style="max-height:520px;max-width:100%;display:block;object-fit:contain;"
+             oncontextmenu="return false" ondragstart="return false"/>
+        <div class="spread-wm"></div>
+        <div class="spread-cover-panel">
+          <div class="spread-cover-title">${escapeHtml(sp.titulo||'')}</div>
+          <div class="spread-cover-brand">🦉 StoryOwl</div>
+        </div>
       </div>
     </div>`;
-    return;
-  }
 
-  if (p.tipo === 'contraportada') {
-    container.innerHTML = `<div class="stpf-page" style="min-height:440px;background:linear-gradient(160deg,#0d0820,#1a0840);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;">
-      <div style="font-size:48px;margin-bottom:16px;opacity:.8;">🦉</div>
-      <div style="font-family:'Fraunces',serif;font-style:italic;font-size:clamp(14px,1.8vw,20px);color:rgba(255,255,255,.75);line-height:1.7;margin-bottom:20px;max-width:260px;">
-        Que la magia de las historias<br>te acompañe siempre.
-      </div>
-      <div style="width:50px;height:2px;background:rgba(247,201,75,.4);margin:0 auto 16px;"></div>
-      <div style="font-size:12px;color:rgba(247,201,75,.5);font-weight:700;letter-spacing:2px;">El Cole Mágico · storyowl.com</div>
-    </div>`;
-    return;
-  }
-
-  if (p.tipo === 'portada') {
-    container.innerHTML = `<div class="stpf-page" style="min-height:440px;position:relative;">
-      <img src="${p.url}" style="width:100%;height:100%;object-fit:cover;display:block;min-height:440px;"
+  } else if (sp.tipo === 'spread') {
+    // Spread normal: imagen panorámica con texto superpuesto
+    html = `<div class="spread-img-wrap">
+      <div class="spread-skeleton" id="spreadSkeleton_${flipIdx}" style="${sp.url?'display:none':''}"></div>
+      <img src="${sp.url||''}" alt="Spread ${flipIdx}"
+           class="spread-img${sp.url?'':' loading'}"
+           onload="document.getElementById('spreadSkeleton_${flipIdx}')?.remove()"
+           onerror="document.getElementById('spreadSkeleton_${flipIdx}')?.remove()"
            oncontextmenu="return false" ondragstart="return false"/>
-      <div class="stpf-wm"></div>
-      <div class="stpf-cover-panel">
-        <div class="stpf-cover-title">${p.titulo||''}</div>
-        <div class="stpf-cover-brand">🦉 El Cole Mágico</div>
+      <div class="spread-wm"></div>
+      <div class="spread-texts">
+        <div class="spread-text-izq">
+          <div class="spread-pnum">Página ${sp.pagIzq.numero}</div>
+          <div class="spread-ptitle">${escapeHtml(sp.pagIzq.titulo||'')}</div>
+          <div class="spread-pbody">${escapeHtml(sp.pagIzq.texto||'')}</div>
+        </div>
+        <div class="spread-text-der">
+          <div class="spread-pnum">Página ${sp.pagDer.numero}</div>
+          <div class="spread-ptitle">${escapeHtml(sp.pagDer.titulo||'')}</div>
+          <div class="spread-pbody">${escapeHtml(sp.pagDer.texto||'')}</div>
+        </div>
       </div>
     </div>`;
-    return;
+
+  } else if (sp.tipo === 'fin') {
+    html = `<div class="spread-special spread-fin">
+      <div>
+        <div class="spread-fin-icon">✨</div>
+        <div class="spread-fin-title">¡FIN!</div>
+        <div class="spread-fin-sub">Un cuento creado especialmente para<br>
+          <strong style="color:rgba(255,255,255,.85);font-size:16px;">${escapeHtml(flipNombre)}</strong>
+        </div>
+      </div>
+    </div>`;
+
+  } else if (sp.tipo === 'contraportada') {
+    html = `<div class="spread-special spread-contraportada">
+      <div>
+        <div class="spread-cp-icon">🦉</div>
+        <div class="spread-cp-phrase">Que la magia de las historias<br>te acompañe siempre.</div>
+        <div class="spread-cp-line"></div>
+        <div class="spread-cp-brand">StoryOwl · storyowl.com</div>
+      </div>
+    </div>`;
   }
 
-  // Página interior
-  container.innerHTML = `<div class="stpf-page" style="min-height:440px;position:relative;">
-    <img src="${p.url}" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;min-height:440px;"
-         loading="lazy" oncontextmenu="return false" ondragstart="return false"/>
-    <div class="stpf-wm"></div>
-    <div class="stpf-text-panel">
-      <div class="stpf-num">Página ${p.numero}</div>
-      <div class="stpf-title">${p.titulo||''}</div>
-      <div class="stpf-body">${p.texto||''}</div>
-    </div>
-  </div>`;
-}
+  // Crear nuevo elemento
+  const newEl = document.createElement('div');
+  newEl.innerHTML = html;
+  const newContent = newEl.firstElementChild;
 
-// ── Anima el cambio de página ─────────────────────────────
-function animatePageChange(containerId, p) {
-  const el = document.getElementById(containerId);
-  if (!el) return;
-  el.classList.remove('page-flip-anim');
-  void el.offsetWidth; // reflow
-  el.classList.add('page-flip-anim');
-  renderPageIn(el, p);
-  setTimeout(() => el.classList.remove('page-flip-anim'), 460);
-}
-
-// ── Actualiza lo que se muestra ───────────────────────────
-function flipRender(animate) {
-  const isMobile = window.innerWidth <= 640;
-
-  if (isMobile) {
-    const p = flipPages[flipIdx];
-    if (animate) animatePageChange('pageSingle', p);
-    else renderPageIn(document.getElementById('pageSingle'), p);
+  if (animate && oldContent) {
+    oldContent.classList.add('spread-flip');
+    oldContent.addEventListener('animationend', () => {
+      viewer.innerHTML = html;
+    }, { once: true });
   } else {
-    // Desktop: par=izquierda, impar=derecha
-    // flipIdx siempre apunta al par (página izquierda del spread)
-    const pL = flipPages[flipIdx];
-    const pR = flipPages[flipIdx + 1] || null;
-    if (animate) {
-      animatePageChange('pageLeft', pL);
-      animatePageChange('pageRight', pR);
-    } else {
-      renderPageIn(document.getElementById('pageLeft'),  pL);
-      renderPageIn(document.getElementById('pageRight'), pR);
-    }
+    viewer.innerHTML = html;
   }
 
-  // Controles
-  const isMob = window.innerWidth <= 640;
-  const step  = isMob ? 1 : 2;
-  const total = flipPages.length;
-  const ctr   = document.getElementById('flipCounter');
-  const pg    = Math.floor(flipIdx / step) + 1;
-  const tots  = Math.ceil(total / step);
-  if (ctr) ctr.textContent = `${pg} / ${tots}`;
+  // Actualizar controles
+  const total = flipSpreads.length;
+  const ctr = document.getElementById('flipCounter');
+  if (ctr) ctr.textContent = `${flipIdx + 1} / ${total}`;
   document.getElementById('flipPrev').disabled = flipIdx === 0;
-  document.getElementById('flipNext').disabled = flipIdx + step >= total;
-  flipUpdateDots(tots, pg - 1);
+  document.getElementById('flipNext').disabled = flipIdx >= total - 1;
+  flipUpdateDots(total, flipIdx);
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 function flipUpdateDots(total, current) {
   const dots = document.getElementById('flipDots');
   if (!dots) return;
   dots.innerHTML = '';
-  for (let i = 0; i < Math.min(total, 14); i++) {
+  const maxDots = Math.min(total, 14);
+  for (let i = 0; i < maxDots; i++) {
     const d = document.createElement('div');
     d.className = 'flip-dot' + (i === current ? ' active' : '');
-    const isMob = window.innerWidth <= 640;
-    d.onclick = () => {
-      flipIdx = i * (isMob ? 1 : 2);
-      flipIdx = Math.min(flipIdx, flipPages.length - 1);
-      flipRender(true);
-    };
+    d.onclick = () => { flipIdx = i; renderSpread(true); };
     dots.appendChild(d);
   }
 }
 
-// ── Navegación ────────────────────────────────────────────
+// ── Navegación ─────────────────────────────────────────
 function flipPage(dir) {
-  const isMob = window.innerWidth <= 640;
-  const step  = isMob ? 1 : 2;
-  flipIdx = Math.max(0, Math.min(flipPages.length - (isMob?1:2), flipIdx + dir * step));
-  flipRender(true);
+  const newIdx = flipIdx + dir;
+  if (newIdx < 0 || newIdx >= flipSpreads.length) return;
+  flipIdx = newIdx;
+  renderSpread(true);
 }
 
-// ── Abrir libro ───────────────────────────────────────────
+// ── Abrir libro ────────────────────────────────────────
 function abrirLibro() {
-  if (flipIsOpen || flipPages.length === 0) return;
+  if (flipIsOpen || flipSpreads.length === 0) return;
   flipIsOpen = true;
   flipIdx = 0;
 
   const closed = document.getElementById('bookClosed');
   closed.style.transition = 'opacity .4s, transform .5s';
   closed.style.opacity = '0';
-  closed.style.transform = 'scale(.92) rotateY(-12deg)';
+  closed.style.transform = 'scale(.92)';
 
   setTimeout(() => {
     closed.style.display = 'none';
     const open = document.getElementById('bookOpen');
     open.style.display = 'block';
-    open.style.animation = 'openBook .5s ease forwards';
-
-    const isMob = window.innerWidth <= 640;
-    const spread = document.getElementById('bookSpreadView');
-    const single = document.getElementById('bookSingleView');
-    if (isMob) {
-      spread.classList.remove('active');
-      single.classList.add('active');
-    } else {
-      spread.classList.add('active');
-      single.classList.remove('active');
-    }
-    flipRender(false);
-  }, 430);
+    open.style.animation = 'openBook .45s ease forwards';
+    renderSpread(false);
+  }, 420);
 }
 
-// ── API pública ───────────────────────────────────────────
-function flipAddPage(p) {
-  flipPages.push(p);
-  if (flipIsOpen) flipRender(false);
+// ── API pública ────────────────────────────────────────
+function flipAddSpread(spreadData) {
+  flipSpreads.push({ tipo: 'spread', ...spreadData });
+  if (flipIsOpen) renderSpread(false);
 }
 
 function flipShowCover(url, titulo) {
@@ -869,53 +806,50 @@ function flipShowCover(url, titulo) {
   document.getElementById('coverTitleText').textContent = titulo || '';
   document.getElementById('coverTitlePanel').style.display = 'block';
   document.getElementById('btnOpenBook').style.display = 'inline-block';
-  // Portada es la primera página del libro
-  flipPages.unshift({ tipo:'portada', url, titulo });
+  // Insertar portada al principio del array
+  flipSpreads.unshift({ tipo: 'portada', url, titulo });
 }
 
 function flipInit(titulo, nombre) {
-  flipPages = []; flipIdx = 0; flipIsOpen = false;
+  flipSpreads = []; flipIdx = 0; flipIsOpen = false;
   flipNombre = nombre || '';
   document.getElementById('flipbookSection').style.display = 'block';
   document.getElementById('flipTitle').textContent = titulo || '';
   document.getElementById('flipCta').style.display = 'none';
   const closed = document.getElementById('bookClosed');
-  closed.style.cssText = 'text-align:center';
+  closed.style.cssText = 'text-align:center;padding-bottom:8px;';
   document.getElementById('bookOpen').style.display = 'none';
   document.getElementById('coverSkeleton').style.display = 'block';
   document.getElementById('coverPreviewImg').style.display = 'none';
   document.getElementById('coverTitlePanel').style.display = 'none';
   document.getElementById('btnOpenBook').style.display = 'none';
-  document.getElementById('flipbookSection').scrollIntoView({behavior:'smooth'});
+  document.getElementById('flipbookSection').scrollIntoView({ behavior: 'smooth' });
 }
 
 function flipComplete() {
-  flipPages.push({ tipo:'final'         });
-  flipPages.push({ tipo:'contraportada' });
+  flipSpreads.push({ tipo: 'fin' });
+  flipSpreads.push({ tipo: 'contraportada' });
   document.getElementById('flipCta').style.display = 'block';
-  if (flipIsOpen) flipRender(false);
-  setTimeout(() => document.getElementById('flipCta').scrollIntoView({behavior:'smooth', block:'nearest'}), 400);
+  if (flipIsOpen) renderSpread(false);
+  setTimeout(() => document.getElementById('flipCta').scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 400);
 }
 
 
-// ── PDF Premium ─────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════
-// STORYBOOK PIPELINE — Canvas compositor
-// Cada página = una imagen completa (no texto flotante)
+// PDF PIPELINE — Canvas compositor
+// Portada vertical + 10 spreads (cada uno = 2 páginas A4) + colofón
 // ═══════════════════════════════════════════════════════════
 
-// Carga una imagen como HTMLImageElement (con CORS)
 function cargarImagen(url) {
   return new Promise((res, rej) => {
     const img = new Image();
     img.crossOrigin = 'anonymous';
-    img.onload = () => res(img);
+    img.onload  = () => res(img);
     img.onerror = () => rej(new Error('No se pudo cargar: ' + url));
     img.src = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
   });
 }
 
-// Motor tipográfico: calcula líneas con wrap estricto
 function calcLineas(ctx, texto, maxW) {
   if (!texto) return [];
   const words = texto.split(' ');
@@ -929,7 +863,6 @@ function calcLineas(ctx, texto, maxW) {
   return lines;
 }
 
-// Encuentra fontSize óptimo para que el texto quepa en maxLines
 function fitFontSize(ctx, texto, fontTpl, maxW, maxLines, minSz, maxSz) {
   for (let sz = maxSz; sz >= minSz; sz--) {
     ctx.font = fontTpl.replace('SIZE', sz);
@@ -940,14 +873,18 @@ function fitFontSize(ctx, texto, fontTpl, maxW, maxLines, minSz, maxSz) {
   return { sz: minSz, lines: calcLineas(ctx, texto, maxW) };
 }
 
-// Object-fit: cover
 function drawCover(ctx, img, x, y, w, h) {
   const scale = Math.max(w / img.width, h / img.height);
   const sw = img.width * scale, sh = img.height * scale;
   ctx.drawImage(img, x + (w - sw) / 2, y + (h - sh) / 2, sw, sh);
 }
 
-// Rectángulo redondeado
+function drawContain(ctx, img, x, y, w, h) {
+  const scale = Math.min(w / img.width, h / img.height);
+  const sw = img.width * scale, sh = img.height * scale;
+  ctx.drawImage(img, x + (w - sw) / 2, y + (h - sh) / 2, sw, sh);
+}
+
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
   ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
@@ -957,266 +894,255 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-// Constantes A4 @ 150dpi
-const PX=1240, PY=1754, PH=88, PV=52;
+// Constantes A4 a 150dpi
+const PX = 1240, PY = 1754, PH = 88, PV = 52;
 
-// PÁGINA INTERIOR
-async function componerPaginaInterior(imgUrl, numero, titulo, texto) {
-  const cv=document.createElement('canvas'); cv.width=PX; cv.height=PY;
-  const ctx=cv.getContext('2d');
-  ctx.fillStyle='#f5f0ff'; ctx.fillRect(0,0,PX,PY);
-  try { const img=await cargarImagen(imgUrl); drawCover(ctx,img,0,0,PX,PY); } catch(e){}
+// ── Página interior: imagen del spread + texto de UNA página ──
+// Usamos la misma imagen panorámica pero mostramos solo la mitad relevante
+async function componerPaginaInterior(imgUrl, numero, titulo, texto, lado) {
+  const cv = document.createElement('canvas'); cv.width = PX; cv.height = PY;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#f5f0ff'; ctx.fillRect(0, 0, PX, PY);
 
-  const pX=60, pW=PX-120, tW=pW-PH*2;
+  // La imagen del spread es 1536x1024 (landscape).
+  // Para una página A4 portrait mostramos la mitad izquierda o derecha escalada.
+  try {
+    const img = await cargarImagen(imgUrl);
+    // Recortar la mitad correspondiente
+    const halfW = img.width / 2;
+    const srcX = (lado === 'der') ? halfW : 0;
+    // Escalar esa mitad para cubrir la página A4 (cover)
+    const scale = Math.max(PX / halfW, PY / img.height);
+    const dw = halfW * scale, dh = img.height * scale;
+    ctx.drawImage(img, srcX, 0, halfW, img.height,
+                       (PX - dw) / 2, (PY - dh) / 2, dw, dh);
+  } catch(e) {
+    ctx.fillStyle = '#e8e0f8'; ctx.fillRect(0, 0, PX, PY);
+  }
 
-  // Número (fijo)
-  const szNum=28, hNum=szNum+20;
+  // Panel texto
+  const pX = 60, pW = PX - 120, tW = pW - PH * 2;
+  const szNum = 28, hNum = szNum + 20;
+  const {sz:szT, lines:lT} = fitFontSize(ctx, titulo||'', 'italic bold SIZEpx Georgia,serif', tW, 2, 28, 52);
+  const hT = lT.length * Math.round(szT * 1.35) + 18;
+  const {sz:szB, lines:lB} = fitFontSize(ctx, texto||'', 'SIZEpx Georgia,serif', tW, 4, 24, 38);
+  const lhB = Math.round(szB * 1.58);
+  const hB  = lB.length * lhB;
+  const panH = PV + hNum + hT + hB + PV + 10;
+  const panY = PY - panH;
 
-  // Título: italic bold, máx 2 líneas, 30-52px
-  const {sz:szT,lines:lT}=fitFontSize(ctx,titulo||'','italic bold SIZEpx Georgia,serif',tW,2,28,52);
-  const hT=lT.length*Math.round(szT*1.35)+18;
+  const g = ctx.createLinearGradient(0, panY - 60, 0, panY + 20);
+  g.addColorStop(0, 'rgba(8,3,18,0)'); g.addColorStop(1, 'rgba(8,3,18,0.45)');
+  ctx.fillStyle = g; ctx.fillRect(0, panY - 60, PX, 80);
 
-  // Texto: normal, máx 4 líneas, 26-38px
-  const {sz:szB,lines:lB}=fitFontSize(ctx,texto||'','SIZEpx Georgia,serif',tW,4,24,38);
-  const lhB=Math.round(szB*1.58);
-  const hB=lB.length*lhB;
-
-  const panH=PV+hNum+hT+hB+PV+10;
-  const panY=PY-panH;
-
-  // Degradado suave
-  const g=ctx.createLinearGradient(0,panY-60,0,panY+20);
-  g.addColorStop(0,'rgba(8,3,18,0)'); g.addColorStop(1,'rgba(8,3,18,0.45)');
-  ctx.fillStyle=g; ctx.fillRect(0,panY-60,PX,80);
-
-  // Panel blanco redondeado
   ctx.save();
-  roundRect(ctx,pX,panY,pW,panH,32);
-  ctx.fillStyle='rgba(255,253,250,0.97)';
-  ctx.shadowColor='rgba(50,20,100,0.13)'; ctx.shadowBlur=28; ctx.shadowOffsetY=-3;
+  roundRect(ctx, pX, panY, pW, panH, 32);
+  ctx.fillStyle = 'rgba(255,253,250,0.97)';
+  ctx.shadowColor = 'rgba(50,20,100,0.13)'; ctx.shadowBlur = 28; ctx.shadowOffsetY = -3;
   ctx.fill(); ctx.restore();
 
-  // Línea dorada
-  ctx.strokeStyle='#f7c94b'; ctx.lineWidth=3;
-  ctx.beginPath(); ctx.moveTo(pX+50,panY+3); ctx.lineTo(pX+pW-50,panY+3); ctx.stroke();
+  ctx.strokeStyle = '#f7c94b'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(pX + 50, panY + 3); ctx.lineTo(pX + pW - 50, panY + 3); ctx.stroke();
 
-  let cy=panY+PV;
+  let cy = panY + PV;
+  ctx.font = `bold ${szNum}px Arial,sans-serif`; ctx.fillStyle = '#b88000'; ctx.textAlign = 'left';
+  ctx.fillText(`PÁGINA ${numero}`, pX + PH, cy + szNum); cy += hNum;
 
-  // Número
-  ctx.font=`bold ${szNum}px Arial,sans-serif`; ctx.fillStyle='#b88000'; ctx.textAlign='left';
-  ctx.fillText(`PÁGINA ${numero}`, pX+PH, cy+szNum); cy+=hNum;
+  ctx.font = `italic bold ${szT}px Georgia,serif`; ctx.fillStyle = '#3a1070';
+  const lhT = Math.round(szT * 1.35);
+  for (const l of lT) { ctx.fillText(l, pX + PH, cy + lhT); cy += lhT; } cy += 18;
 
-  // Título
-  ctx.font=`italic bold ${szT}px Georgia,serif`; ctx.fillStyle='#3a1070';
-  const lhT=Math.round(szT*1.35);
-  for(const l of lT){ ctx.fillText(l,pX+PH,cy+lhT); cy+=lhT; } cy+=18;
+  ctx.font = `${szB}px Georgia,serif`; ctx.fillStyle = '#2a1a40';
+  for (const l of lB) { ctx.fillText(l, pX + PH, cy + lhB); cy += lhB; }
 
-  // Texto
-  ctx.font=`${szB}px Georgia,serif`; ctx.fillStyle='#2a1a40';
-  for(const l of lB){ ctx.fillText(l,pX+PH,cy+lhB); cy+=lhB; }
-
-  // Logo
-  ctx.font='bold 22px Arial,sans-serif'; ctx.fillStyle='rgba(107,63,168,0.38)';
-  ctx.textAlign='right'; ctx.fillText('🦉 StoryOwl',pX+pW-PH,panY+panH-18);
-  ctx.textAlign='left';
-  return cv.toDataURL('image/jpeg',0.92);
+  ctx.font = 'bold 22px Arial,sans-serif'; ctx.fillStyle = 'rgba(107,63,168,0.38)';
+  ctx.textAlign = 'right'; ctx.fillText('🦉 StoryOwl', pX + pW - PH, panY + panH - 18);
+  ctx.textAlign = 'left';
+  return cv.toDataURL('image/jpeg', 0.92);
 }
 
-// PORTADA — imagen a full page, SIN título escrito (ya está en el JPG generado)
+// PORTADA
 async function componerPortada(imgUrl, titulo) {
-  const cv=document.createElement('canvas'); cv.width=PX; cv.height=PY;
-  const ctx=cv.getContext('2d');
-  ctx.fillStyle='#1a0840'; ctx.fillRect(0,0,PX,PY);
-  try { const img=await cargarImagen(imgUrl); drawCover(ctx,img,0,0,PX,PY); } catch(e){}
-  // Solo logo pequeño y discreto
-  ctx.textAlign='center';
-  ctx.font='bold 26px Arial,sans-serif';
-  ctx.fillStyle='rgba(255,255,255,0.5)';
-  ctx.shadowColor='rgba(0,0,0,0.6)'; ctx.shadowBlur=10;
-  ctx.fillText('🦉 StoryOwl',PX/2,PY-50);
-  ctx.shadowBlur=0; ctx.textAlign='left';
-  return cv.toDataURL('image/jpeg',0.92);
+  const cv = document.createElement('canvas'); cv.width = PX; cv.height = PY;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#1a0840'; ctx.fillRect(0, 0, PX, PY);
+  try { const img = await cargarImagen(imgUrl); drawCover(ctx, img, 0, 0, PX, PY); } catch(e){}
+  ctx.textAlign = 'center';
+  ctx.font = 'bold 26px Arial,sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 10;
+  ctx.fillText('🦉 StoryOwl', PX/2, PY - 50);
+  ctx.shadowBlur = 0; ctx.textAlign = 'left';
+  return cv.toDataURL('image/jpeg', 0.92);
 }
 
-// DEDICATORIA — página 2, editorial premium
+// DEDICATORIA
 async function componerDedicatoria(nombre, dedPersonal) {
-  const cv=document.createElement('canvas'); cv.width=PX; cv.height=PY;
-  const ctx=cv.getContext('2d');
+  const cv = document.createElement('canvas'); cv.width = PX; cv.height = PY;
+  const ctx = cv.getContext('2d');
+  const bg = ctx.createLinearGradient(0, 0, PX, PY);
+  bg.addColorStop(0, '#fff9f0'); bg.addColorStop(0.5, '#fdf4ff'); bg.addColorStop(1, '#f0f6ff');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, PX, PY);
 
-  const bg=ctx.createLinearGradient(0,0,PX,PY);
-  bg.addColorStop(0,'#fff9f0'); bg.addColorStop(0.5,'#fdf4ff'); bg.addColorStop(1,'#f0f6ff');
-  ctx.fillStyle=bg; ctx.fillRect(0,0,PX,PY);
-
-  // Imagen búho completa (contain, sin recortar), zona superior
   try {
-    const img=await cargarImagen('/imagenes/dedicatoria.png');
-    // Escalar para que quepa entera (contain)
-    const scale=Math.min(PX/img.width, (PY*0.52)/img.height);
-    const iw=img.width*scale, ih=img.height*scale;
-    const ix=(PX-iw)/2, iy=0;
-    ctx.drawImage(img,ix,iy,iw,ih);
-    const imgH=ih;
-    const fade=ctx.createLinearGradient(0,imgH-100,0,imgH+60);
-    fade.addColorStop(0,'rgba(253,244,255,0)'); fade.addColorStop(1,'rgba(253,244,255,1)');
-    ctx.fillStyle=fade; ctx.fillRect(0,imgH-100,PX,160);
-  } catch(e){
-    const cols=['#f7c94b','#c084fc','#60a5fa','#f472b6'];
-    for(let i=0;i<22;i++){
-      ctx.save(); ctx.globalAlpha=0.10+Math.random()*0.16;
-      ctx.font=`${22+Math.random()*28}px serif`; ctx.fillStyle=cols[i%cols.length];
-      ctx.fillText('✦',Math.random()*PX,60+Math.random()*PY*0.44); ctx.restore();
+    const img = await cargarImagen('/imagenes/dedicatoria.png');
+    const scale = Math.min(PX / img.width, (PY * 0.52) / img.height);
+    const iw = img.width * scale, ih = img.height * scale;
+    ctx.drawImage(img, (PX - iw) / 2, 0, iw, ih);
+    const fade = ctx.createLinearGradient(0, ih - 100, 0, ih + 60);
+    fade.addColorStop(0, 'rgba(253,244,255,0)'); fade.addColorStop(1, 'rgba(253,244,255,1)');
+    ctx.fillStyle = fade; ctx.fillRect(0, ih - 100, PX, 160);
+  } catch(e) {
+    const cols = ['#f7c94b','#c084fc','#60a5fa','#f472b6'];
+    for (let i = 0; i < 22; i++) {
+      ctx.save(); ctx.globalAlpha = 0.10 + Math.random() * 0.16;
+      ctx.font = `${22 + Math.random() * 28}px serif`; ctx.fillStyle = cols[i%cols.length];
+      ctx.fillText('✦', Math.random() * PX, 60 + Math.random() * PY * 0.44); ctx.restore();
     }
   }
 
-  const tZ=Math.round(PY*0.52); const cx=PX/2;
-  ctx.textAlign='center';
+  const tZ = Math.round(PY * 0.52); const cx = PX / 2;
+  ctx.textAlign = 'center';
+  ctx.strokeStyle = '#f7c94b'; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(cx - 230, tZ + 8); ctx.lineTo(cx + 230, tZ + 8); ctx.stroke();
 
-  // Línea dorada
-  ctx.strokeStyle='#f7c94b'; ctx.lineWidth=2.5;
-  ctx.beginPath(); ctx.moveTo(cx-230,tZ+8); ctx.lineTo(cx+230,tZ+8); ctx.stroke();
+  ctx.font = 'italic 38px Georgia,serif'; ctx.fillStyle = '#9b6fd8';
+  ctx.fillText('Para', cx, tZ + 66);
 
-  // "Para"
-  ctx.font='italic 38px Georgia,serif'; ctx.fillStyle='#9b6fd8';
-  ctx.fillText('Para',cx,tZ+66);
+  const {sz:szN, lines:lN} = fitFontSize(ctx, nombre||'', 'bold SIZEpx Georgia,serif', PX - 220, 1, 50, 96);
+  ctx.font = `bold ${szN}px Georgia,serif`; ctx.fillStyle = '#3a2070';
+  ctx.fillText(lN[0] || nombre, cx, tZ + 66 + szN + 16);
 
-  // Nombre
-  const {sz:szN,lines:lN}=fitFontSize(ctx,nombre||'','bold SIZEpx Georgia,serif',PX-220,1,50,96);
-  ctx.font=`bold ${szN}px Georgia,serif`; ctx.fillStyle='#3a2070';
-  ctx.fillText(lN[0]||nombre,cx,tZ+66+szN+16);
+  ctx.strokeStyle = 'rgba(160,120,220,0.22)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(cx - 190, tZ + 66 + szN + 40); ctx.lineTo(cx + 190, tZ + 66 + szN + 40); ctx.stroke();
 
-  ctx.strokeStyle='rgba(160,120,220,0.22)'; ctx.lineWidth=1.5;
-  ctx.beginPath(); ctx.moveTo(cx-190,tZ+66+szN+40); ctx.lineTo(cx+190,tZ+66+szN+40); ctx.stroke();
-
-  let dedY=tZ+66+szN+84;
-  const dedW=PX-300;
-
-  if(dedPersonal&&dedPersonal.trim()){
-    const {sz:szD,lines:lD}=fitFontSize(ctx,dedPersonal,'italic SIZEpx Georgia,serif',dedW,5,24,36);
-    const lhD=Math.round(szD*1.62); ctx.font=`italic ${szD}px Georgia,serif`; ctx.fillStyle='#5a3880';
-    for(const l of lD){ if(dedY+lhD>PY-110) break; ctx.fillText(l,cx,dedY); dedY+=lhD; }
+  let dedY = tZ + 66 + szN + 84;
+  const dedW = PX - 300;
+  if (dedPersonal && dedPersonal.trim()) {
+    const {sz:szD, lines:lD} = fitFontSize(ctx, dedPersonal, 'italic SIZEpx Georgia,serif', dedW, 5, 24, 36);
+    const lhD = Math.round(szD * 1.62);
+    ctx.font = `italic ${szD}px Georgia,serif`; ctx.fillStyle = '#5a3880';
+    for (const l of lD) { if (dedY + lhD > PY - 110) break; ctx.fillText(l, cx, dedY); dedY += lhD; }
   } else {
-    ctx.strokeStyle='rgba(180,150,220,0.32)'; ctx.lineWidth=1;
-    for(let i=0;i<4;i++){
-      const ly=dedY+i*52; if(ly>PY-130) break;
-      ctx.beginPath(); ctx.moveTo(cx-280,ly); ctx.lineTo(cx+280,ly); ctx.stroke();
+    ctx.strokeStyle = 'rgba(180,150,220,0.32)'; ctx.lineWidth = 1;
+    for (let i = 0; i < 4; i++) {
+      const ly = dedY + i * 52; if (ly > PY - 130) break;
+      ctx.beginPath(); ctx.moveTo(cx - 280, ly); ctx.lineTo(cx + 280, ly); ctx.stroke();
     }
-    ctx.font='italic 24px Georgia,serif'; ctx.fillStyle='rgba(160,130,200,0.42)';
-    ctx.fillText('escribe aquí tu dedicatoria',cx,dedY+4*52+28);
+    ctx.font = 'italic 24px Georgia,serif'; ctx.fillStyle = 'rgba(160,130,200,0.42)';
+    ctx.fillText('escribe aquí tu dedicatoria', cx, dedY + 4 * 52 + 28);
   }
 
-  ctx.font='bold 24px Arial,sans-serif'; ctx.fillStyle='rgba(107,63,168,0.32)';
-  ctx.fillText('🦉 StoryOwl',cx,PY-50); ctx.textAlign='left';
-  return cv.toDataURL('image/jpeg',0.92);
+  ctx.font = 'bold 24px Arial,sans-serif'; ctx.fillStyle = 'rgba(107,63,168,0.32)';
+  ctx.fillText('🦉 StoryOwl', cx, PY - 50); ctx.textAlign = 'left';
+  return cv.toDataURL('image/jpeg', 0.92);
 }
 
 // COLOFÓN
 async function componerColofonPagina(nombre, fecha) {
-  const cv=document.createElement('canvas'); cv.width=PX; cv.height=PY;
-  const ctx=cv.getContext('2d');
-  const bg=ctx.createLinearGradient(0,0,0,PY);
-  bg.addColorStop(0,'#fffaf0'); bg.addColorStop(1,'#f8f4ff');
-  ctx.fillStyle=bg; ctx.fillRect(0,0,PX,PY);
+  const cv = document.createElement('canvas'); cv.width = PX; cv.height = PY;
+  const ctx = cv.getContext('2d');
+  const bg = ctx.createLinearGradient(0, 0, 0, PY);
+  bg.addColorStop(0, '#fffaf0'); bg.addColorStop(1, '#f8f4ff');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, PX, PY);
 
   try {
-    const img=await cargarImagen('/imagenes/colofonowl.png');
-    // Escalar para que quepa entera (contain)
-    const scale=Math.min(PX/img.width, (PY*0.50)/img.height);
-    const iw=img.width*scale, ih=img.height*scale;
-    const ix=(PX-iw)/2, iy=0;
-    ctx.drawImage(img,ix,iy,iw,ih);
-    const fade=ctx.createLinearGradient(0,ih-100,0,ih+60);
-    fade.addColorStop(0,'rgba(248,244,255,0)'); fade.addColorStop(1,'rgba(248,244,255,1)');
-    ctx.fillStyle=fade; ctx.fillRect(0,ih-100,PX,160);
-  } catch(e){}
+    const img = await cargarImagen('/imagenes/colofonowl.png');
+    const scale = Math.min(PX / img.width, (PY * 0.50) / img.height);
+    const iw = img.width * scale, ih = img.height * scale;
+    ctx.drawImage(img, (PX - iw) / 2, 0, iw, ih);
+    const fade = ctx.createLinearGradient(0, ih - 100, 0, ih + 60);
+    fade.addColorStop(0, 'rgba(248,244,255,0)'); fade.addColorStop(1, 'rgba(248,244,255,1)');
+    ctx.fillStyle = fade; ctx.fillRect(0, ih - 100, PX, 160);
+  } catch(e) {}
 
-  const bY=Math.round(PY*0.51); const cx=PX/2;
-  ctx.textAlign='center';
+  const bY = Math.round(PY * 0.51); const cx = PX / 2;
+  ctx.textAlign = 'center';
 
-  ctx.strokeStyle='#f7c94b'; ctx.lineWidth=2.5;
-  ctx.beginPath(); ctx.moveTo(cx-210,bY); ctx.lineTo(cx+210,bY); ctx.stroke();
+  ctx.strokeStyle = '#f7c94b'; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(cx - 210, bY); ctx.lineTo(cx + 210, bY); ctx.stroke();
 
-  ctx.font='34px Georgia,serif'; ctx.fillStyle='#6b3fa8';
-  ctx.fillText('Este cuento fue creado especialmente para',cx,bY+52);
+  ctx.font = '34px Georgia,serif'; ctx.fillStyle = '#6b3fa8';
+  ctx.fillText('Este cuento fue creado especialmente para', cx, bY + 52);
 
-  const {sz:szN}=fitFontSize(ctx,nombre||'','bold SIZEpx Georgia,serif',PX-200,1,46,84);
-  ctx.font=`bold ${szN}px Georgia,serif`; ctx.fillStyle='#3a2070';
-  ctx.fillText(nombre||'',cx,bY+52+szN+18);
+  const {sz:szN} = fitFontSize(ctx, nombre||'', 'bold SIZEpx Georgia,serif', PX - 200, 1, 46, 84);
+  ctx.font = `bold ${szN}px Georgia,serif`; ctx.fillStyle = '#3a2070';
+  ctx.fillText(nombre||'', cx, bY + 52 + szN + 18);
 
-  ctx.font='italic 30px Georgia,serif'; ctx.fillStyle='#9b6fd8';
-  ctx.fillText('el '+(fecha||''),cx,bY+52+szN+66);
+  ctx.font = 'italic 30px Georgia,serif'; ctx.fillStyle = '#9b6fd8';
+  ctx.fillText('el ' + (fecha||''), cx, bY + 52 + szN + 66);
 
-  ctx.strokeStyle='rgba(247,201,75,0.35)'; ctx.lineWidth=1.5;
-  ctx.beginPath(); ctx.moveTo(cx-240,bY+52+szN+92); ctx.lineTo(cx+240,bY+52+szN+92); ctx.stroke();
+  ctx.strokeStyle = 'rgba(247,201,75,0.35)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(cx - 240, bY + 52 + szN + 92); ctx.lineTo(cx + 240, bY + 52 + szN + 92); ctx.stroke();
 
-  ctx.font='italic 32px Georgia,serif'; ctx.fillStyle='#5a3880';
-  ctx.fillText('Una historia única en el mundo, igual que tú.',cx,bY+52+szN+142);
+  ctx.font = 'italic 32px Georgia,serif'; ctx.fillStyle = '#5a3880';
+  ctx.fillText('Una historia única en el mundo, igual que tú.', cx, bY + 52 + szN + 142);
 
-  ctx.font='bold 24px Arial,sans-serif'; ctx.fillStyle='rgba(107,63,168,0.38)';
-  ctx.fillText('storyowl.com',cx,PY-52); ctx.textAlign='left';
-  return cv.toDataURL('image/jpeg',0.92);
+  ctx.font = 'bold 24px Arial,sans-serif'; ctx.fillStyle = 'rgba(107,63,168,0.38)';
+  ctx.fillText('storyowl.com', cx, PY - 52); ctx.textAlign = 'left';
+  return cv.toDataURL('image/jpeg', 0.92);
 }
 
-async function descargarPDF(){
+// ── Descargar PDF ──────────────────────────────────────
+async function descargarPDF() {
   const btn = document.getElementById('btnPdf');
   btn.textContent = '⏳ Generando PDF...'; btn.disabled = true;
 
   try {
     const { jsPDF } = window.jspdf;
-    // A4 en píxeles a 150dpi → 1240x1754px → en mm: 210x297
-    const pdf = new jsPDF({orientation:'portrait', unit:'mm', format:'a4'});
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     const W = 210, H = 297;
 
     const titulo      = document.getElementById('bookTitle').textContent;
-    const ded         = document.getElementById('bookDed').textContent;
     const dedPersonal = document.getElementById('dedicatoriaPersonalTexto')?.textContent || '';
     const nombreFinal = document.getElementById('nombreFinalTexto')?.textContent || '';
     const fechaFinal  = document.getElementById('fechaFinalTexto')?.textContent || '';
     const coverImg    = document.getElementById('coverImg');
 
-    // ── PÁG 1: PORTADA ──────────────────────────────────────
+    // Pág 1: Portada
     btn.textContent = '⏳ Componiendo portada...';
     if (coverImg && coverImg.src && coverImg.style.display !== 'none') {
-      const portadaDataUrl = await componerPortada(coverImg.src, titulo);
-      pdf.addImage(portadaDataUrl, 'JPEG', 0, 0, W, H);
+      const portadaUrl = await componerPortada(coverImg.src, titulo);
+      pdf.addImage(portadaUrl, 'JPEG', 0, 0, W, H);
     }
 
-    // ── PÁG 2: DEDICATORIA ──────────────────────────────────
+    // Pág 2: Dedicatoria
     btn.textContent = '⏳ Componiendo dedicatoria...';
     pdf.addPage();
-    const dedDataUrl = await componerDedicatoria(nombreFinal, dedPersonal);
-    pdf.addImage(dedDataUrl, 'JPEG', 0, 0, W, H);
+    const dedUrl = await componerDedicatoria(nombreFinal, dedPersonal);
+    pdf.addImage(dedUrl, 'JPEG', 0, 0, W, H);
 
-    // ── PÁGINAS INTERIORES ───────────────────────────────────
+    // Páginas interiores: recorremos las páginas guardadas en pagesContainer
+    // Cada "page" tiene la imagen del spread y el texto de su lado (izq o der)
     const pages = document.querySelectorAll('.page');
     let i = 1;
     for (const page of pages) {
       btn.textContent = `⏳ Componiendo página ${i} de ${pages.length}...`;
       pdf.addPage();
-
       const img     = page.querySelector('.page-img');
       const numTxt  = page.querySelector('.page-num')?.textContent?.replace('Página ','') || String(i);
       const titTxt  = page.querySelector('.page-title')?.textContent || '';
       const bodyTxt = page.querySelector('.page-text')?.textContent || '';
-
-      const pngDataUrl = await componerPaginaInterior(img?.src || '', numTxt, titTxt, bodyTxt);
-      pdf.addImage(pngDataUrl, 'JPEG', 0, 0, W, H);
+      // lado: páginas impares (1,3,5...) = izquierda; pares = derecha
+      const lado = (parseInt(numTxt) % 2 === 1) ? 'izq' : 'der';
+      const pngUrl = await componerPaginaInterior(img?.src || '', numTxt, titTxt, bodyTxt, lado);
+      pdf.addImage(pngUrl, 'JPEG', 0, 0, W, H);
       i++;
     }
 
-    // ── ÚLTIMA PÁG: COLOFÓN ──────────────────────────────────
+    // Última pág: Colofón
     btn.textContent = '⏳ Componiendo colofón...';
     pdf.addPage();
-    const colDataUrl = await componerColofonPagina(nombreFinal, fechaFinal);
-    pdf.addImage(colDataUrl, 'JPEG', 0, 0, W, H);
+    const colUrl = await componerColofonPagina(nombreFinal, fechaFinal);
+    pdf.addImage(colUrl, 'JPEG', 0, 0, W, H);
 
     pdf.save((titulo || 'mi-cuento') + '.pdf');
 
-  } catch(e){
+  } catch(e) {
     console.error('[StoryOwl] Error PDF:', e);
     alert('Error al generar el PDF: ' + e.message);
   }
 
-  btn.textContent='📄 Descargar PDF'; btn.disabled=false;
+  btn.textContent = '📄 Descargar PDF'; btn.disabled = false;
 }
 
 
