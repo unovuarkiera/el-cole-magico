@@ -93,18 +93,26 @@ Crea un cuento mágico con estas características:
 - Tema: ${tema}
 - Tono y nivel: ${tonoEdad}
 
-El cuento tiene estructura completa en 8 spreads (páginas dobles). Cada spread tiene 2 páginas narrativas y UNA escena visual panorámica que abarca las dos páginas juntas.
+El cuento debe tener una estructura narrativa completa con introducción, desarrollo y desenlace en 16 páginas.
 
 RESPONDE SOLO JSON sin texto antes ni después, sin backticks:
-{"titulo":"titulo poetico","dedicatoria":"dedicatoria emotiva para ${nombre}","spreads":[
-{"spread":1,"pagIzq":{"numero":1,"titulo":"titulo","texto":"texto adaptado a la edad"},"pagDer":{"numero":2,"titulo":"titulo","texto":"texto"},"escena":"detailed panoramic scene in English covering both pages, wide cinematic composition, left side shows [action of page 1], right side shows [action of page 2], seamlessly connected"},
-{"spread":2,"pagIzq":{"numero":3,"titulo":"titulo","texto":"texto"},"pagDer":{"numero":4,"titulo":"titulo","texto":"texto"},"escena":"panoramic scene"},
-{"spread":3,"pagIzq":{"numero":5,"titulo":"titulo","texto":"texto"},"pagDer":{"numero":6,"titulo":"titulo","texto":"texto"},"escena":"panoramic scene"},
-{"spread":4,"pagIzq":{"numero":7,"titulo":"titulo","texto":"texto"},"pagDer":{"numero":8,"titulo":"titulo","texto":"texto"},"escena":"panoramic scene"},
-{"spread":5,"pagIzq":{"numero":9,"titulo":"titulo","texto":"texto"},"pagDer":{"numero":10,"titulo":"titulo","texto":"texto"},"escena":"panoramic scene"},
-{"spread":6,"pagIzq":{"numero":11,"titulo":"titulo","texto":"texto"},"pagDer":{"numero":12,"titulo":"titulo","texto":"texto"},"escena":"panoramic scene"},
-{"spread":7,"pagIzq":{"numero":13,"titulo":"titulo","texto":"texto"},"pagDer":{"numero":14,"titulo":"titulo","texto":"texto"},"escena":"panoramic scene"},
-{"spread":8,"pagIzq":{"numero":15,"titulo":"titulo","texto":"texto"},"pagDer":{"numero":16,"titulo":"titulo","texto":"texto"},"escena":"panoramic scene"}
+{"titulo":"titulo poetico","dedicatoria":"dedicatoria emotiva para ${nombre}","paginas":[
+{"numero":1,"titulo":"titulo pagina","texto":"texto adaptado a la edad","escena":"detailed scene in English for image generation"},
+{"numero":2,"titulo":"titulo","texto":"texto","escena":"scene"},
+{"numero":3,"titulo":"titulo","texto":"texto","escena":"scene"},
+{"numero":4,"titulo":"titulo","texto":"texto","escena":"scene"},
+{"numero":5,"titulo":"titulo","texto":"texto","escena":"scene"},
+{"numero":6,"titulo":"titulo","texto":"texto","escena":"scene"},
+{"numero":7,"titulo":"titulo","texto":"texto","escena":"scene"},
+{"numero":8,"titulo":"titulo","texto":"texto","escena":"scene"},
+{"numero":9,"titulo":"titulo","texto":"texto","escena":"scene"},
+{"numero":10,"titulo":"titulo","texto":"texto","escena":"scene"},
+{"numero":11,"titulo":"titulo","texto":"texto","escena":"scene"},
+{"numero":12,"titulo":"titulo","texto":"texto","escena":"scene"},
+{"numero":13,"titulo":"titulo","texto":"texto","escena":"scene"},
+{"numero":14,"titulo":"titulo","texto":"texto","escena":"scene"},
+{"numero":15,"titulo":"titulo","texto":"texto","escena":"scene"},
+{"numero":16,"titulo":"titulo","texto":"texto","escena":"scene"}
 ]}` }]
     });
 
@@ -115,13 +123,12 @@ RESPONDE SOLO JSON sin texto antes ni después, sin backticks:
 
     send({ tipo: 'cuento', titulo: cuento.titulo, dedicatoria: cuento.dedicatoria });
 
-    // PASO 3: Portada — vertical 1024x1536
+    // PASO 3: Portada vertical 1024x1536
     send({ tipo: 'estado', mensaje: '🎨 Generando portada...' });
     try {
       const portadaUrl = await generarImagen(
         `${estiloBase}. Book cover: ${protagonistaDesc} with ${personajeDesc} in a magical glowing forest at sunset. Spanish title text: "${cuento.titulo}". Professional children's book cover, portrait format.`,
-        '1024x1536',
-        `portada_${id}.png`
+        '1024x1536', `portada_${id}.png`
       );
       send({ tipo: 'imagen', url: portadaUrl });
     } catch (e) {
@@ -129,20 +136,19 @@ RESPONDE SOLO JSON sin texto antes ni después, sin backticks:
       send({ tipo: 'imagen', url: '' });
     }
 
-    // PASO 4: 8 spreads panorámicos 1792x1024
-    for (const sp of cuento.spreads) {
-      send({ tipo: 'estado', mensaje: `🎨 Generando spread ${sp.spread} de 8...` });
+    // PASO 4: 16 páginas verticales individuales
+    for (const pag of cuento.paginas) {
+      send({ tipo: 'estado', mensaje: `🎨 Generando ilustración ${pag.numero} de 16...` });
       let imgUrl = '';
       try {
         imgUrl = await generarImagen(
-          `${estiloBase}. ${protagonistaDesc} and ${personajeDesc}. ${sp.escena}. Double page spread, ultra-wide panoramic 16:9, cinematic composition, seamless left-right visual flow, consistent character design, magical atmosphere.`,
-          '1792x1024',
-          `spread_${id}_${sp.spread}.png`
+          `${estiloBase}. ${protagonistaDesc} and ${personajeDesc}. Scene: ${pag.escena}. Portrait format, magical atmosphere, consistent character design throughout the book.`,
+          '1024x1536', `pag_${id}_${pag.numero}.png`
         );
       } catch (e) {
-        console.error(`Error spread ${sp.spread}:`, e.message);
+        console.error(`Error imagen página ${pag.numero}:`, e.message);
       }
-      send({ tipo: 'spread', spread: sp.spread, url: imgUrl, pagIzq: sp.pagIzq, pagDer: sp.pagDer });
+      send({ tipo: 'pagina', numero: pag.numero, titulo: pag.titulo, texto: pag.texto, url: imgUrl });
     }
 
     send({ tipo: 'completado', dedicatoriaPersonal: dedicatoriaPersonal || '', nombre, fecha: new Date().toLocaleDateString('es-ES', {day:'numeric', month:'long', year:'numeric'}) });
@@ -259,27 +265,34 @@ Responde SOLO JSON sin backticks: {"titulo":"...","dedicatoria":"..."}` }]
       send({ tipo: 'imagen', url: '' });
     }
 
-    // 8 spreads panorámicos
+    // 16 páginas individuales verticales (2 por spread, imagen propia cada una)
     for (const sp of SPREADS_CUMPLE) {
-      send({ tipo: 'estado', mensaje: `🎨 Generando spread ${sp.spread} de 8...` });
+      for (const pag of [sp.pagIzq, sp.pagDer]) {
+        send({ tipo: 'estado', mensaje: `🎨 Generando página ${pag.numero} de 16...` });
 
-      const textoIzq = sp.pagIzq.texto_base.replace(/\[NOMBRE\]/g, nombre).replace(/\[PERSONAJE\]/g, personaje).replace(/\[EDAD\]/g, String(edad));
-      const textoDer = sp.pagDer.texto_base.replace(/\[NOMBRE\]/g, nombre).replace(/\[PERSONAJE\]/g, personaje).replace(/\[EDAD\]/g, String(edad));
+        const texto = pag.texto_base
+          .replace(/\[NOMBRE\]/g, nombre)
+          .replace(/\[PERSONAJE\]/g, personaje)
+          .replace(/\[EDAD\]/g, String(edad));
 
-      let imgUrl = '';
-      try {
-        imgUrl = await generarImagen(
-          `${estiloBase}. ${protagonistaDesc} and ${personajeDesc}. ${sp.escena}. Double page spread, ultra-wide panoramic 16:9, seamless left-right visual flow, consistent character design, festive birthday atmosphere.`,
-          '1792x1024',
-          `cumple_spread_${id}_${sp.spread}.png`
-        );
-      } catch(e) {
-        console.error(`Error spread ${sp.spread}:`, e.message);
+        // Escena: combina la escena del spread adaptada al lado correspondiente
+        const escenaBase = pag === sp.pagIzq
+          ? sp.escena.replace(/Left side: /i, '').split('. Right side:')[0]
+          : (sp.escena.split('Right side: ')[1] || sp.escena).split('. Wide')[0].split('. Panoramic')[0];
+
+        let imgUrl = '';
+        try {
+          imgUrl = await generarImagen(
+            `${estiloBase}. ${protagonistaDesc} and ${personajeDesc}. Scene: ${escenaBase}. Portrait format, consistent character design, festive birthday atmosphere.`,
+            '1024x1536',
+            `cumple_${id}_${pag.numero}.png`
+          );
+        } catch(e) {
+          console.error(`Error página ${pag.numero}:`, e.message);
+        }
+
+        send({ tipo: 'pagina', numero: pag.numero, titulo: pag.titulo, texto, url: imgUrl });
       }
-
-      send({ tipo: 'spread', spread: sp.spread, url: imgUrl,
-             pagIzq: { numero: sp.pagIzq.numero, titulo: sp.pagIzq.titulo, texto: textoIzq },
-             pagDer: { numero: sp.pagDer.numero, titulo: sp.pagDer.titulo, texto: textoDer } });
     }
 
     send({ tipo: 'completado', dedicatoriaPersonal: dedicatoriaPersonal || '', nombre, fecha: new Date().toLocaleDateString('es-ES', {day:'numeric', month:'long', year:'numeric'}) });
@@ -382,28 +395,35 @@ Responde SOLO JSON sin backticks: {"titulo":"...","dedicatoria":"..."}` }]
       send({ tipo: 'imagen', url: '' });
     }
 
-    // 8 spreads panorámicos
+    // 16 páginas individuales verticales
     for (const sp of SPREADS_DIENTE) {
-      send({ tipo: 'estado', mensaje: `🎨 Generando spread ${sp.spread} de 8...` });
+      for (const pag of [sp.pagIzq, sp.pagDer]) {
+        send({ tipo: 'estado', mensaje: `🎨 Generando página ${pag.numero} de 16...` });
 
-      const textoIzq = sp.pagIzq.texto_base.replace(/\[NOMBRE\]/g, nombre).replace(/\[VISITANTE_NOMBRE\]/g, visitanteNombre).replace(/\[PERSONAJE_NOMBRE\]/g, visitanteNombre);
-      const textoDer = sp.pagDer.texto_base.replace(/\[NOMBRE\]/g, nombre).replace(/\[VISITANTE_NOMBRE\]/g, visitanteNombre).replace(/\[PERSONAJE_NOMBRE\]/g, visitanteNombre);
-      const escenaImg = sp.escena.replace(/\[VISITANTE_DESC\]/g, visitanteDesc);
+        const texto = pag.texto_base
+          .replace(/\[NOMBRE\]/g, nombre)
+          .replace(/\[VISITANTE_NOMBRE\]/g, visitanteNombre)
+          .replace(/\[PERSONAJE_NOMBRE\]/g, visitanteNombre);
 
-      let imgUrl = '';
-      try {
-        imgUrl = await generarImagen(
-          `${estiloBase}. ${protagonistaDesc} and ${visitanteDesc}. ${escenaImg}. Double page spread, ultra-wide panoramic 16:9, seamless left-right visual flow, consistent character design, magical warm atmosphere.`,
-          '1792x1024',
-          `diente_spread_${id}_${sp.spread}.png`
-        );
-      } catch(e) {
-        console.error(`Error spread ${sp.spread}:`, e.message);
+        const escenaBase = pag === sp.pagIzq
+          ? sp.escena.replace(/Left side: /i, '').split('. Right side:')[0]
+          : (sp.escena.split('Right side: ')[1] || sp.escena).split('. Wide')[0].split('. Panoramic')[0];
+
+        const escenaImg = escenaBase.replace(/\[VISITANTE_DESC\]/g, visitanteDesc);
+
+        let imgUrl = '';
+        try {
+          imgUrl = await generarImagen(
+            `${estiloBase}. ${protagonistaDesc} and ${visitanteDesc}. Scene: ${escenaImg}. Portrait format, consistent character design, magical warm atmosphere.`,
+            '1024x1536',
+            `diente_${id}_${pag.numero}.png`
+          );
+        } catch(e) {
+          console.error(`Error página ${pag.numero}:`, e.message);
+        }
+
+        send({ tipo: 'pagina', numero: pag.numero, titulo: pag.titulo, texto, url: imgUrl });
       }
-
-      send({ tipo: 'spread', spread: sp.spread, url: imgUrl,
-             pagIzq: { numero: sp.pagIzq.numero, titulo: sp.pagIzq.titulo, texto: textoIzq },
-             pagDer: { numero: sp.pagDer.numero, titulo: sp.pagDer.titulo, texto: textoDer } });
     }
 
     send({ tipo: 'completado', dedicatoriaPersonal: dedicatoriaPersonal || '', nombre, fecha: new Date().toLocaleDateString('es-ES', {day:'numeric', month:'long', year:'numeric'}) });
@@ -511,27 +531,35 @@ app.post('/generar-verano', async (req, res) => {
       send({ tipo: 'imagen', url: '' });
     }
 
-    // 8 spreads panorámicos
+    // 16 páginas individuales verticales
     for (const sp of SPREADS_VERANO) {
-      send({ tipo: 'estado', mensaje: `🎨 Generando spread ${sp.spread} de 8...` });
+      for (const pag of [sp.pagIzq, sp.pagDer]) {
+        send({ tipo: 'estado', mensaje: `🎨 Generando página ${pag.numero} de 16...` });
 
-      const textoIzq = sp.pagIzq.texto_base.replace(/\[NOMBRE\]/g, nombre).replace(/\[PERSONAJE\]/g, personaje);
-      const textoDer = sp.pagDer.texto_base.replace(/\[NOMBRE\]/g, nombre).replace(/\[PERSONAJE\]/g, personaje);
-      const escenaImg = sp.escena.replace(/\[DESTINO_DESC\]/g, destinoDesc).replace(/\[DESTINO\]/g, destinoNombre);
+        const texto = pag.texto_base
+          .replace(/\[NOMBRE\]/g, nombre)
+          .replace(/\[PERSONAJE\]/g, personaje);
 
-      let imgUrl = '';
-      try {
-        imgUrl = await generarImagen(
-          `${estiloBase}. ${protagonistaDesc} and ${personajeDesc}. ${escenaImg}. Double page spread, ultra-wide panoramic 16:9, seamless left-right visual flow, consistent character design, bright summer colors.`,
-          '1792x1024', `verano_spread_${id}_${sp.spread}.png`
-        );
-      } catch(e) {
-        console.error(`Error spread ${sp.spread}:`, e.message);
+        const escenaBase = pag === sp.pagIzq
+          ? sp.escena.replace(/Left side: /i, '').split('. Right side:')[0]
+          : (sp.escena.split('Right side: ')[1] || sp.escena).split('. Wide')[0].split('. Panoramic')[0];
+
+        const escenaImg = escenaBase
+          .replace(/\[DESTINO_DESC\]/g, destinoDesc)
+          .replace(/\[DESTINO\]/g, destinoNombre);
+
+        let imgUrl = '';
+        try {
+          imgUrl = await generarImagen(
+            `${estiloBase}. ${protagonistaDesc} and ${personajeDesc}. Scene: ${escenaImg}. Portrait format, consistent character design, bright summer colors.`,
+            '1024x1536', `verano_${id}_${pag.numero}.png`
+          );
+        } catch(e) {
+          console.error(`Error página ${pag.numero}:`, e.message);
+        }
+
+        send({ tipo: 'pagina', numero: pag.numero, titulo: pag.titulo, texto, url: imgUrl });
       }
-
-      send({ tipo: 'spread', spread: sp.spread, url: imgUrl,
-             pagIzq: { numero: sp.pagIzq.numero, titulo: sp.pagIzq.titulo, texto: textoIzq },
-             pagDer: { numero: sp.pagDer.numero, titulo: sp.pagDer.titulo, texto: textoDer } });
     }
 
     send({ tipo: 'completado', dedicatoriaPersonal: dedicatoriaPersonal || '', nombre, fecha: new Date().toLocaleDateString('es-ES', {day:'numeric', month:'long', year:'numeric'}) });

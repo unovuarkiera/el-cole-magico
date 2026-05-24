@@ -212,30 +212,31 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
   color:rgba(255,255,255,.75);line-height:1.65;margin-bottom:16px;max-width:200px;}
 .fp-back-brand{font-size:11px;color:rgba(247,201,75,.5);font-weight:700;letter-spacing:2px;}
 #flipBook{margin:0 auto;}
-.stpf-page{position:relative;overflow:hidden;background:#0d0820;user-select:none;}
-.stpf-half{position:relative;width:100%;height:100%;overflow:hidden;}
-.stpf-cover img,.stpf-interior img,.stpf-page>img{width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;}
-.stpf-cover img{position:relative;}
+.stpf-page{position:relative;overflow:hidden;background:#0d0820;user-select:none;box-sizing:border-box;}
+.stpf-page img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
 .stpf-wm{position:absolute;inset:0;pointer-events:none;z-index:10;overflow:hidden;}
-.stpf-wm::before{content:'PREVIEW · El Cole Mágico · PREVIEW · El Cole Mágico';position:absolute;
-  top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);
-  font-family:'Fraunces',serif;font-size:clamp(10px,1.8vw,16px);font-weight:900;
-  color:rgba(255,255,255,0.14);letter-spacing:3px;white-space:nowrap;user-select:none;width:200%;text-align:center;}
+.stpf-wm::before{content:'PREVIEW · El Cole Mágico · PREVIEW · El Cole Mágico';
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);
+  font-family:'Fraunces',serif;font-size:clamp(9px,1.5vw,15px);font-weight:900;
+  color:rgba(255,255,255,0.13);letter-spacing:3px;white-space:nowrap;user-select:none;width:200%;text-align:center;}
 .stpf-wm::after{content:'🦉 storyowl.com';position:absolute;bottom:8px;right:12px;
-  font-size:10px;color:rgba(255,255,255,.22);font-weight:700;user-select:none;}
-.stpf-cover-panel{position:absolute;bottom:0;left:0;right:0;padding:14px 16px 16px;
-  background:linear-gradient(0deg,rgba(6,2,16,.98) 0%,rgba(6,2,16,.6) 70%,transparent 100%);
+  font-size:10px;color:rgba(255,255,255,.2);font-weight:700;user-select:none;}
+.stpf-cover-panel{position:absolute;bottom:0;left:0;right:0;padding:14px 16px 18px;
+  background:linear-gradient(0deg,rgba(6,2,16,.98) 0%,rgba(6,2,16,.55) 70%,transparent 100%);
   text-align:center;z-index:5;}
-.stpf-cover-title{font-family:'Fraunces',serif;font-size:clamp(11px,1.8vw,16px);font-weight:900;
+.stpf-cover-title{font-family:'Fraunces',serif;font-size:clamp(10px,1.6vw,15px);font-weight:900;
   color:white;text-shadow:0 2px 8px rgba(0,0,0,.8);line-height:1.2;}
 .stpf-cover-brand{font-size:9px;color:rgba(247,201,75,.6);font-weight:700;letter-spacing:2px;margin-top:3px;}
+.stpf-text-panel{position:absolute;bottom:0;left:0;right:0;
+  padding:10px 14px 14px;
+  background:linear-gradient(0deg,rgba(6,2,16,.98) 0%,rgba(6,2,16,.82) 50%,transparent 100%);z-index:5;}
 .stpf-num{font-size:8px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#b88000;margin-bottom:2px;}
 .stpf-title{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(9px,1.4vw,13px);
   color:#c084fc;margin-bottom:3px;line-height:1.2;}
 .stpf-body{font-size:clamp(8px,1.2vw,12px);color:rgba(255,255,255,.72);line-height:1.5;
-  overflow:hidden;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;}
-.stpf-empty{width:100%;height:100%;background:#080318;}
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;}
 #flipBook{margin:0 auto;}
+
 @media(max-width:640px){
   .book-spread{display:none!important;}
   .book-single{display:block!important;}
@@ -603,15 +604,15 @@ function procesarEvento(data){
 
   } else if(data.tipo === 'imagen'){
     // Portada: guardar en img oculto para PDF + mostrar libro cerrado
-    // flipShowCover también guarda la portada en rawPages
+
     const img = document.getElementById('coverImg');
     img.src = data.url; img.style.display = 'block';
     flipShowCover(data.url, document.getElementById('bookTitle').textContent);
     actualizarProgreso(2, TOTAL);
 
   } else if(data.tipo === 'pagina'){
-    // Compatibilidad con colecciones antiguas que aún usen pagina
     quitarIndicador();
+    // Guardar en pagesContainer para el PDF
     const container = document.getElementById('pagesContainer');
     const page = document.createElement('div'); page.className = 'page';
     page.innerHTML = `
@@ -622,23 +623,10 @@ function procesarEvento(data){
         <p class="page-text">${data.texto}</p>
       </div>`;
     container.appendChild(page);
+    // Añadir al flipbook
     flipAddPage({ tipo:'pagina', url: data.url, numero: data.numero, titulo: data.titulo, texto: data.texto });
-    actualizarProgreso(data.numero+2, TOTAL);
-    if(data.numero < TOTAL) mostrarIndicador(data.numero+1, TOTAL);
-
-  } else if(data.tipo === 'spread'){
-    quitarIndicador();
-    // Guardar spread en pagesContainer (para PDF)
-    const container = document.getElementById('pagesContainer');
-    const sp = document.createElement('div'); sp.className = 'spread-block';
-    sp.dataset.spreadUrl = data.url;
-    sp.dataset.pagIzq = JSON.stringify(data.pagIzq);
-    sp.dataset.pagDer = JSON.stringify(data.pagDer);
-    container.appendChild(sp);
-    // Añadir al flipbook como spread
-    rawPages.push({ tipo:'spread', url: data.url, pagIzq: data.pagIzq, pagDer: data.pagDer });
-    actualizarProgreso(data.spread + 2, 10);
-    if(data.spread < 8) mostrarIndicador(data.spread + 1, 8);
+    actualizarProgreso(data.numero + 2, TOTAL);
+    if(data.numero < TOTAL) mostrarIndicador(data.numero + 1, TOTAL);
 
   } else if(data.tipo === 'completado'){
     quitarIndicador();
@@ -665,93 +653,26 @@ function procesarEvento(data){
 
 
 // ═══════════════════════════════════════════════════════════
-// FLIPBOOK ENGINE v4 — 8 spreads dobles, PageFlip robusto
+// FLIPBOOK ENGINE — limpio, estable, PageFlip real
+// Estado: portada cerrada → libro abierto → navegación → fin
 // ═══════════════════════════════════════════════════════════
 
-// Estado global
-let rawPages    = [];   // páginas individuales según llegan del servidor
-let spreads     = [];   // spreads finales: {izq, der} para el flipbook
-let flipBook    = null;
+let flipPages   = [];   // {tipo, url, numero, titulo, texto}
+let flipBook    = null; // instancia PageFlip
 let flipIsOpen  = false;
 let flipNombre  = '';
 let mobileIdx   = 0;
 
-// ── Construye spreads para el flipbook ────────────────────
-function buildSpreads() {
-  spreads = [];
-
-  // Portada sola (cubierta)
-  const portada = rawPages.find(p => p.tipo === 'portada');
-  if (portada) spreads.push({ tipo:'cover', izq: portada, der: null });
-
-  // Si el servidor manda 'spread' (nuevo sistema 8 spreads dobles)
-  const rawSpreads = rawPages.filter(p => p.tipo === 'spread');
-  if (rawSpreads.length > 0) {
-    rawSpreads.forEach(sp => {
-      spreads.push({ tipo:'interior', url: sp.url, izq: sp.pagIzq, der: sp.pagDer });
-    });
-  } else {
-    // Compatibilidad: páginas individuales agrupadas de 2 en 2
-    const interior = rawPages.filter(p => p.tipo === 'pagina');
-    for (let i = 0; i < interior.length; i += 2) {
-      spreads.push({ tipo:'interior', url: interior[i].url, izq: interior[i], der: interior[i+1] || null });
-    }
-  }
-
-  // Página FIN
-  spreads.push({ tipo:'final' });
-  // Contraportada
-  spreads.push({ tipo:'back' });
-}
-
-// ── HTML de media página (izquierda o derecha) ─────────────
-function makeHalfHTML(p, side) {
-  if (!p) return `<div class="stpf-empty"></div>`;
-
-  if (p.tipo === 'portada') return `
-    <div class="stpf-half stpf-cover">
-      <img src="${p.url}" oncontextmenu="return false" ondragstart="return false"/>
-      <div class="stpf-wm"></div>
-      <div class="stpf-cover-panel">
-        <div class="stpf-cover-title">${p.titulo||''}</div>
-        <div class="stpf-cover-brand">🦉 El Cole Mágico</div>
-      </div>
-    </div>`;
-
-  // Página interior — imagen panorámica + texto
-  return `
-    <div class="stpf-half stpf-interior">
-      <img src="${p.url}" oncontextmenu="return false" ondragstart="return false" loading="lazy"/>
-      <div class="stpf-wm"></div>
-      <div class="stpf-text">
-        <div class="stpf-num">Página ${p.numero}</div>
-        <div class="stpf-title">${p.titulo||''}</div>
-        <div class="stpf-body">${p.texto||''}</div>
-      </div>
-    </div>`;
-}
-
-// ── HTML de página completa para PageFlip ─────────────────
-// PageFlip necesita: un div.stpf-page por cada "hoja"
-// En desktop muestra 2 hojas juntas (spread)
-// Cada spread de nuestro cuento = 1 hoja PageFlip
-// Pero PageFlip necesita páginas individuales...
-// Usamos modo 2-en-1: cada página muestra un SPREAD completo
-// con overflow hidden y transform para mostrar izq/der
-
-function makeSpreadPageHTML(spread, pageW, pageH) {
+// ── HTML de una página ────────────────────────────────────
+function makePageEl(p, w, h) {
   const div = document.createElement('div');
   div.className = 'stpf-page';
-  div.style.width  = pageW + 'px';
-  div.style.height = pageH + 'px';
-  div.style.overflow = 'hidden';
-  div.style.position = 'relative';
-  div.style.background = '#0d0820';
+  div.style.width  = w + 'px';
+  div.style.height = h + 'px';
 
-  if (spread.tipo === 'cover') {
-    const p = spread.izq;
+  if (p.tipo === 'portada') {
     div.innerHTML = `
-      <img src="${p.url}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;"
+      <img src="${p.url}" style="width:100%;height:100%;object-fit:cover;display:block;"
            oncontextmenu="return false" ondragstart="return false"/>
       <div class="stpf-wm"></div>
       <div class="stpf-cover-panel">
@@ -759,147 +680,78 @@ function makeSpreadPageHTML(spread, pageW, pageH) {
         <div class="stpf-cover-brand">🦉 El Cole Mágico</div>
       </div>`;
 
-  } else if (spread.tipo === 'final') {
+  } else if (p.tipo === 'final') {
     div.style.background = 'linear-gradient(160deg,#0d0820,#160a35)';
     div.innerHTML = `
       <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;
-                  height:100%;padding:24px;text-align:center;">
-        <div style="font-size:clamp(32px,6vw,52px);margin-bottom:14px;">✨</div>
-        <div style="font-family:'Fraunces',serif;font-size:clamp(18px,3vw,28px);
-                    font-weight:900;color:white;margin-bottom:10px;">¡FIN!</div>
-        <div style="font-size:clamp(11px,1.5vw,15px);color:rgba(255,255,255,.55);line-height:1.6;">
+                  height:100%;padding:32px;text-align:center;">
+        <div style="font-size:clamp(36px,5vw,52px);margin-bottom:16px;">✨</div>
+        <div style="font-family:'Fraunces',serif;font-size:clamp(22px,3.5vw,32px);
+                    font-weight:900;color:white;margin-bottom:12px;">¡FIN!</div>
+        <div style="font-size:clamp(12px,1.5vw,16px);color:rgba(255,255,255,.55);line-height:1.7;">
           Un cuento creado especialmente para<br>
           <strong style="color:rgba(255,255,255,.85);">${flipNombre}</strong>
         </div>
       </div>`;
 
-  } else if (spread.tipo === 'back') {
+  } else if (p.tipo === 'contraportada') {
     div.style.background = 'linear-gradient(160deg,#0d0820,#1a0840)';
     div.innerHTML = `
       <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;
-                  height:100%;padding:24px;text-align:center;">
-        <div style="font-size:clamp(28px,5vw,44px);margin-bottom:14px;opacity:.75;">🦉</div>
+                  height:100%;padding:32px;text-align:center;">
+        <div style="font-size:clamp(32px,4vw,48px);margin-bottom:16px;opacity:.8;">🦉</div>
         <div style="font-family:'Fraunces',serif;font-style:italic;
-                    font-size:clamp(12px,1.8vw,17px);color:rgba(255,255,255,.72);
-                    line-height:1.65;margin-bottom:18px;max-width:240px;">
+                    font-size:clamp(14px,1.8vw,20px);color:rgba(255,255,255,.75);
+                    line-height:1.7;margin-bottom:20px;max-width:260px;">
           Que la magia de las historias<br>te acompañe siempre.
         </div>
-        <div style="width:50px;height:2px;background:rgba(247,201,75,.35);margin:0 auto 16px;"></div>
-        <div style="font-size:11px;color:rgba(247,201,75,.45);font-weight:700;letter-spacing:2px;">
+        <div style="width:50px;height:2px;background:rgba(247,201,75,.4);margin:0 auto 16px;"></div>
+        <div style="font-size:12px;color:rgba(247,201,75,.5);font-weight:700;letter-spacing:2px;">
           El Cole Mágico · storyowl.com
         </div>
       </div>`;
 
   } else {
-    // Spread interior: imagen panorámica 1792x1024 a pantalla completa
-    const L = spread.izq, R = spread.der;
-    // spread.url = imagen panorámica del servidor (nuevo sistema)
-    // L?.url = imagen individual (compatibilidad)
-    const imgUrl = spread.url || L?.url || '';
-
+    // Página interior normal
     div.innerHTML = `
-      <img src="${imgUrl}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;"
+      <img src="${p.url}" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"
            loading="lazy" oncontextmenu="return false" ondragstart="return false"/>
       <div class="stpf-wm"></div>
-      <div style="position:absolute;bottom:0;left:0;right:0;
-                  background:linear-gradient(0deg,rgba(6,2,16,.97) 0%,rgba(6,2,16,.8) 50%,transparent 100%);
-                  display:grid;grid-template-columns:1fr 1fr;gap:0;z-index:5;">
-        <div style="padding:10px 12px 14px;border-right:1px solid rgba(255,255,255,.06);">
-          ${L ? `<div class="stpf-num">Pág. ${L.numero}</div>
-                 <div class="stpf-title">${L.titulo||''}</div>
-                 <div class="stpf-body">${L.texto||''}</div>` : ''}
-        </div>
-        <div style="padding:10px 12px 14px;">
-          ${R ? `<div class="stpf-num">Pág. ${R.numero}</div>
-                 <div class="stpf-title">${R.titulo||''}</div>
-                 <div class="stpf-body">${R.texto||''}</div>` : ''}
-        </div>
+      <div class="stpf-text-panel">
+        <div class="stpf-num">Página ${p.numero}</div>
+        <div class="stpf-title">${p.titulo||''}</div>
+        <div class="stpf-body">${p.texto||''}</div>
       </div>`;
   }
-
   return div;
 }
 
-// ── Móvil: renderiza un spread ─────────────────────────────
-function renderMobileSpread(idx) {
-  const mp = document.getElementById('mobilePage');
-  if (!mp || !spreads[idx]) return;
-  const s = spreads[idx];
-  let html = '';
-
-  if (s.tipo === 'cover') {
-    const p = s.izq;
-    html = `<div style="position:relative;background:#0d0820;">
-      <img src="${p.url}" style="width:100%;display:block;" oncontextmenu="return false" ondragstart="return false"/>
-      <div class="stpf-wm"></div>
-      <div class="stpf-cover-panel">
-        <div class="stpf-cover-title">${p.titulo||''}</div>
-        <div class="stpf-cover-brand">🦉 El Cole Mágico</div>
-      </div></div>`;
-  } else if (s.tipo === 'final') {
-    html = `<div style="background:linear-gradient(160deg,#0d0820,#160a35);padding:60px 24px;text-align:center;">
-      <div style="font-size:44px;margin-bottom:12px;">✨</div>
-      <div style="font-family:'Fraunces',serif;font-size:28px;font-weight:900;color:white;margin-bottom:8px;">¡FIN!</div>
-      <div style="font-size:14px;color:rgba(255,255,255,.55);">Un cuento creado especialmente para<br><strong style="color:white;">${flipNombre}</strong></div>
-    </div>`;
-  } else if (s.tipo === 'back') {
-    html = `<div style="background:linear-gradient(160deg,#0d0820,#1a0840);padding:60px 24px;text-align:center;">
-      <div style="font-size:42px;margin-bottom:14px;">🦉</div>
-      <div style="font-family:'Fraunces',serif;font-style:italic;font-size:17px;color:rgba(255,255,255,.72);line-height:1.65;margin-bottom:16px;">Que la magia de las historias<br>te acompañe siempre.</div>
-      <div style="font-size:11px;color:rgba(247,201,75,.5);font-weight:700;letter-spacing:2px;">El Cole Mágico · storyowl.com</div>
-    </div>`;
-  } else {
-    // En móvil mostramos las dos medias páginas apiladas
-    const L = s.izq, R = s.der;
-    const renderMedia = (p) => p ? `
-      <div style="position:relative;background:#0d0820;">
-        <img src="${p.url}" style="width:100%;display:block;" loading="lazy"
-             oncontextmenu="return false" ondragstart="return false"/>
-        <div class="stpf-wm"></div>
-        <div style="position:absolute;bottom:0;left:0;right:0;padding:10px 14px 12px;
-                    background:linear-gradient(0deg,rgba(6,2,16,.97) 0%,rgba(6,2,16,.75) 60%,transparent 100%);">
-          <div class="stpf-num">Pág. ${p.numero}</div>
-          <div class="stpf-title">${p.titulo||''}</div>
-          <div class="stpf-body">${p.texto||''}</div>
-        </div>
-      </div>` : '';
-    html = renderMedia(L) + (R ? renderMedia(R) : '');
-  }
-
-  mp.innerHTML = html;
-  document.getElementById('flipCounter').textContent = `${idx + 1} / ${spreads.length}`;
-  document.getElementById('flipPrev').disabled = idx === 0;
-  document.getElementById('flipNext').disabled = idx >= spreads.length - 1;
-  flipUpdateDots(spreads.length, idx);
-}
-
-// ── Inicializa PageFlip desktop ────────────────────────────
+// ── Inicializa PageFlip ───────────────────────────────────
 function initPageFlip() {
   const container = document.getElementById('flipBook');
-  if (!container) return;
+  if (!container || typeof PageFlip === 'undefined') {
+    console.warn('PageFlip no disponible');
+    return;
+  }
+
   if (flipBook) { try { flipBook.destroy(); } catch(e){} flipBook = null; }
   container.innerHTML = '';
 
-  const stageW = Math.min(window.innerWidth - 32, 900);
+  const stageW = Math.min(window.innerWidth - 32, 860);
   const pageW  = Math.floor(stageW / 2);
-  const pageH  = Math.floor(pageW * 1.35);
+  const pageH  = Math.floor(pageW * 1.42);
 
-  // Añadir páginas al contenedor
-  spreads.forEach(spread => {
-    const el = makeSpreadPageHTML(spread, pageW, pageH);
-    container.appendChild(el);
-  });
+  flipPages.forEach(p => container.appendChild(makePageEl(p, pageW, pageH)));
 
   flipBook = new PageFlip(container, {
-    width: pageW,
-    height: pageH,
+    width: pageW, height: pageH,
     size: 'fixed',
-    maxShadowOpacity: 0.6,
+    maxShadowOpacity: 0.55,
     showCover: true,
     mobileScrollSupport: false,
     usePortrait: false,
     autoSize: false,
-    flippingTime: 650,
+    flippingTime: 680,
     useMouseEvents: true,
     swipeDistance: 30,
   });
@@ -908,14 +760,37 @@ function initPageFlip() {
 
   flipBook.on('flip', e => {
     const pg = e.data;
-    document.getElementById('flipCounter').textContent = `${pg + 1} / ${spreads.length}`;
-    document.getElementById('flipPrev').disabled = pg === 0;
-    document.getElementById('flipNext').disabled = pg >= spreads.length - 1;
-    flipUpdateDots(spreads.length, pg);
+    flipSyncControls(pg, flipPages.length);
   });
+
+  flipSyncControls(0, flipPages.length);
 }
 
-// ── Dots ───────────────────────────────────────────────────
+// ── Móvil: renderiza una página ──────────────────────────
+function renderMobilePage(idx) {
+  const mp = document.getElementById('mobilePage');
+  if (!mp || !flipPages[idx]) return;
+  const p = flipPages[idx];
+  const el = makePageEl(p, mp.offsetWidth || 360, Math.floor((mp.offsetWidth||360)*1.42));
+  el.style.width  = '100%';
+  el.style.height = 'auto';
+  el.style.minHeight = '400px';
+  mp.innerHTML = '';
+  mp.appendChild(el);
+  flipSyncControls(idx, flipPages.length);
+}
+
+// ── Sincroniza controles ─────────────────────────────────
+function flipSyncControls(current, total) {
+  const ctr = document.getElementById('flipCounter');
+  if (ctr) ctr.textContent = `${current + 1} / ${total}`;
+  const prev = document.getElementById('flipPrev');
+  const next = document.getElementById('flipNext');
+  if (prev) prev.disabled = current === 0;
+  if (next) next.disabled = current >= total - 1;
+  flipUpdateDots(total, current);
+}
+
 function flipUpdateDots(total, current) {
   const dots = document.getElementById('flipDots');
   if (!dots) return;
@@ -925,32 +800,31 @@ function flipUpdateDots(total, current) {
     d.className = 'flip-dot' + (i === current ? ' active' : '');
     d.onclick = () => {
       if (flipBook) flipBook.turnToPage(i);
-      else { mobileIdx = i; renderMobileSpread(i); }
+      else { mobileIdx = i; renderMobilePage(i); }
     };
     dots.appendChild(d);
   }
 }
 
-// ── Navegación ─────────────────────────────────────────────
+// ── Navegación ───────────────────────────────────────────
 function flipPage(dir) {
   if (flipBook) {
     dir > 0 ? flipBook.flipNext() : flipBook.flipPrev();
   } else {
-    mobileIdx = Math.max(0, Math.min(spreads.length - 1, mobileIdx + dir));
-    renderMobileSpread(mobileIdx);
+    mobileIdx = Math.max(0, Math.min(flipPages.length - 1, mobileIdx + dir));
+    renderMobilePage(mobileIdx);
   }
 }
 
-// ── Abrir libro ────────────────────────────────────────────
+// ── Abrir libro ──────────────────────────────────────────
 function abrirLibro() {
-  if (flipIsOpen || rawPages.length === 0) return;
+  if (flipIsOpen || flipPages.length === 0) return;
   flipIsOpen = true;
-  buildSpreads();
 
   const closed = document.getElementById('bookClosed');
   closed.style.transition = 'opacity .4s, transform .5s';
   closed.style.opacity = '0';
-  closed.style.transform = 'scale(.92) rotateY(-15deg)';
+  closed.style.transform = 'scale(.92) rotateY(-12deg)';
 
   setTimeout(() => {
     closed.style.display = 'none';
@@ -958,35 +832,44 @@ function abrirLibro() {
     open.style.display = 'block';
     open.style.animation = 'openBook .5s ease forwards';
 
-    const isMobile = window.innerWidth <= 640;
-    if (isMobile) {
+    if (window.innerWidth <= 640) {
       document.getElementById('flipContainer').style.display = 'none';
       document.getElementById('mobilePage').style.display = 'block';
       mobileIdx = 0;
-      renderMobileSpread(0);
+      renderMobilePage(0);
     } else {
       document.getElementById('flipContainer').style.display = 'flex';
       document.getElementById('mobilePage').style.display = 'none';
       initPageFlip();
-      flipUpdateDots(spreads.length, 0);
-      document.getElementById('flipCounter').textContent = `1 / ${spreads.length}`;
-      document.getElementById('flipPrev').disabled = true;
-      document.getElementById('flipNext').disabled = spreads.length <= 1;
     }
   }, 430);
 }
 
-// ── API pública ────────────────────────────────────────────
-function flipAddPage(pageData) {
-  rawPages.push(pageData);
+// ── API pública ───────────────────────────────────────────
+function flipAddPage(p) {
+  flipPages.push(p);
+  // Si está abierto en móvil y es primera página, renderizar
+  if (flipIsOpen && window.innerWidth <= 640 && flipPages.length === 1) renderMobilePage(0);
+}
+
+function flipShowCover(url, titulo) {
+  document.getElementById('coverSkeleton').style.display = 'none';
+  const img = document.getElementById('coverPreviewImg');
+  img.src = url; img.style.display = 'block';
+  document.getElementById('coverTitleText').textContent = titulo || '';
+  document.getElementById('coverTitlePanel').style.display = 'block';
+  document.getElementById('btnOpenBook').style.display = 'inline-block';
+  // Añadir portada a flipPages
+  flipPages.unshift({ tipo:'portada', url, titulo });
 }
 
 function flipInit(titulo, nombre) {
-  rawPages = []; spreads = []; flipIsOpen = false; mobileIdx = 0;
+  flipPages = []; flipIsOpen = false; mobileIdx = 0;
   flipNombre = nombre || '';
   document.getElementById('flipbookSection').style.display = 'block';
   document.getElementById('flipTitle').textContent = titulo || '';
   document.getElementById('flipCta').style.display = 'none';
+  // Reset portada cerrada
   const closed = document.getElementById('bookClosed');
   closed.style.cssText = 'text-align:center';
   document.getElementById('bookOpen').style.display = 'none';
@@ -997,25 +880,13 @@ function flipInit(titulo, nombre) {
   document.getElementById('flipbookSection').scrollIntoView({behavior:'smooth'});
 }
 
-function flipShowCover(url, titulo) {
-  document.getElementById('coverSkeleton').style.display = 'none';
-  const img = document.getElementById('coverPreviewImg');
-  img.src = url; img.style.display = 'block';
-  document.getElementById('coverTitleText').textContent = titulo || '';
-  document.getElementById('coverTitlePanel').style.display = 'block';
-  document.getElementById('btnOpenBook').style.display = 'inline-block';
-  // Guardar portada en rawPages
-  rawPages.push({ tipo:'portada', url, titulo });
-}
-
 function flipComplete() {
+  flipPages.push({ tipo:'final'         });
+  flipPages.push({ tipo:'contraportada' });
   document.getElementById('flipCta').style.display = 'block';
-  // Si ya está abierto, reconstruir spreads con fin y contraportada
   if (flipIsOpen) {
-    buildSpreads();
-    const isMobile = window.innerWidth <= 640;
-    if (isMobile) renderMobileSpread(mobileIdx);
-    else initPageFlip();
+    if (flipBook) initPageFlip();
+    else renderMobilePage(mobileIdx);
   }
   setTimeout(() => document.getElementById('flipCta').scrollIntoView({behavior:'smooth', block:'nearest'}), 400);
 }
