@@ -88,50 +88,111 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
 .btn-nuevo:hover{background:var(--purple-l);transform:translateY(-2px);}
 
 /* ── FLIPBOOK ─────────────────────────────────────────── */
-#flipbookSection{display:none;padding:40px 16px 80px;background:linear-gradient(160deg,#0d0820,#1a0840,#0d0820);}
-.flipbook-title{text-align:center;font-family:'Fraunces',serif;font-size:clamp(22px,4vw,38px);font-weight:900;color:white;margin-bottom:6px;}
-.flipbook-subtitle{text-align:center;font-size:14px;color:rgba(255,255,255,.45);margin-bottom:32px;letter-spacing:1px;}
-.book-3d{position:relative;max-width:780px;margin:0 auto 32px;perspective:1200px;}
-.book-spread{display:grid;grid-template-columns:1fr 1fr;gap:0;border-radius:16px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06);}
-.book-page-left,.book-page-right{position:relative;background:#111;overflow:hidden;min-height:480px;}
-.book-page-left{border-right:4px solid rgba(0,0,0,.6);box-shadow:inset -10px 0 24px rgba(0,0,0,.4);}
-.book-page-right{box-shadow:inset 10px 0 24px rgba(0,0,0,.4);}
-.book-single{display:none;position:relative;max-width:400px;margin:0 auto;border-radius:16px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.5);}
+#flipbookSection{display:none;padding:40px 16px 80px;background:radial-gradient(ellipse at 50% 0%,#1a0840 0%,#080318 60%);}
+.flipbook-title{text-align:center;font-family:'Fraunces',serif;font-size:clamp(20px,4vw,36px);font-weight:900;color:white;margin-bottom:4px;}
+.flipbook-subtitle{text-align:center;font-size:13px;color:rgba(255,255,255,.38);margin-bottom:28px;letter-spacing:1px;}
+
+/* Escenario del libro */
+.book-stage{position:relative;max-width:820px;margin:0 auto 28px;perspective:1400px;perspective-origin:50% 45%;}
+
+/* ── PORTADA CERRADA ── */
+.book-closed{position:relative;max-width:340px;margin:0 auto;transform:rotateY(-8deg) rotateX(3deg);transform-style:preserve-3d;transition:transform .6s ease;cursor:pointer;}
+.book-closed:hover{transform:rotateY(-4deg) rotateX(1deg) scale(1.02);}
+.book-closed-img{width:100%;border-radius:4px 14px 14px 4px;display:block;box-shadow:-8px 12px 40px rgba(0,0,0,.7),4px 0 12px rgba(0,0,0,.4),inset -3px 0 8px rgba(0,0,0,.3);}
+/* Lomo */
+.book-closed::before{content:'';position:absolute;left:-14px;top:3px;bottom:3px;width:14px;background:linear-gradient(90deg,#0a0520,#1a0840,#0a0520);border-radius:3px 0 0 3px;transform:rotateY(-90deg) translateZ(7px);box-shadow:-4px 0 12px rgba(0,0,0,.5);}
+/* Sombra suelo */
+.book-closed::after{content:'';position:absolute;bottom:-20px;left:5%;right:5%;height:24px;background:radial-gradient(ellipse,rgba(0,0,0,.5) 0%,transparent 70%);filter:blur(8px);}
+.book-closed-overlay{position:absolute;inset:0;border-radius:4px 14px 14px 4px;background:linear-gradient(160deg,rgba(255,255,255,.06) 0%,transparent 40%,rgba(0,0,0,.2) 100%);}
+.watermark-overlay{position:absolute;inset:0;pointer-events:none;z-index:10;overflow:hidden;border-radius:inherit;}
+.watermark-overlay::before{content:'PREVIEW · El Cole Mágico · PREVIEW · El Cole Mágico';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);font-family:'Fraunces',serif;font-size:clamp(12px,2vw,18px);font-weight:900;color:rgba(255,255,255,0.16);letter-spacing:3px;white-space:nowrap;user-select:none;width:200%;text-align:center;}
+.watermark-overlay::after{content:'🦉 storyowl.com';position:absolute;bottom:10px;right:14px;font-size:10px;color:rgba(255,255,255,.25);font-weight:700;user-select:none;}
+
+/* Botón abrir libro */
+.btn-open-book{display:block;margin:20px auto 0;background:linear-gradient(135deg,#f7c94b,#e5a800);color:#1a0840;font-family:'Fraunces',serif;font-weight:900;font-size:16px;padding:13px 36px;border-radius:50px;border:none;cursor:pointer;box-shadow:0 6px 24px rgba(247,201,75,.35);transition:all .25s;animation:pulse-cta 2s ease-in-out infinite;}
+@keyframes pulse-cta{0%,100%{box-shadow:0 6px 24px rgba(247,201,75,.35)}50%{box-shadow:0 8px 32px rgba(247,201,75,.6)}}
+.btn-open-book:hover{transform:translateY(-3px);}
+
+/* ── LIBRO ABIERTO ── */
+.book-open{display:none;position:relative;}
+/* Animación de apertura */
+.book-open.opening{animation:openBook .6s cubic-bezier(.4,0,.2,1) forwards;}
+@keyframes openBook{0%{opacity:0;transform:scale(.92) rotateX(8deg)}100%{opacity:1;transform:scale(1) rotateX(0deg)}}
+
+/* Spread desktop */
+.book-spread{display:grid;grid-template-columns:1fr 6px 1fr;gap:0;border-radius:10px 14px 14px 10px;overflow:visible;box-shadow:0 50px 100px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.05);}
+.book-spine{background:linear-gradient(90deg,#12062a,#2a1060,#12062a);box-shadow:-2px 0 8px rgba(0,0,0,.5),2px 0 8px rgba(0,0,0,.5);}
+.book-page-left,.book-page-right{position:relative;background:#0d0820;overflow:hidden;min-height:480px;}
+.book-page-left{border-radius:10px 0 0 10px;box-shadow:inset -12px 0 28px rgba(0,0,0,.45);}
+.book-page-right{border-radius:0 14px 14px 0;box-shadow:inset 12px 0 28px rgba(0,0,0,.45);}
+/* Curvatura de páginas */
+.book-page-left::after,.book-page-right::before{content:'';position:absolute;top:0;bottom:0;width:30px;pointer-events:none;z-index:6;}
+.book-page-left::after{right:0;background:linear-gradient(90deg,transparent,rgba(0,0,0,.18));}
+.book-page-right::before{left:0;background:linear-gradient(270deg,transparent,rgba(0,0,0,.18));}
+
+/* Libro móvil */
+.book-single{display:none;position:relative;max-width:380px;margin:0 auto;border-radius:10px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.6);}
+
+/* Imágenes */
 .flip-img-wrap{position:relative;width:100%;height:100%;}
-.flip-img{width:100%;height:100%;object-fit:cover;display:block;min-height:400px;}
-.flip-img-wrap.flipping{animation:flipAnim .35s ease-in-out;}
-@keyframes flipAnim{0%{opacity:1;transform:scale(1) rotateY(0deg)}50%{opacity:0;transform:scale(.96) rotateY(8deg)}100%{opacity:1;transform:scale(1) rotateY(0deg)}}
-.watermark-overlay{position:absolute;inset:0;pointer-events:none;z-index:10;overflow:hidden;}
-.watermark-overlay::before{content:'PREVIEW · El Cole Mágico · PREVIEW · El Cole Mágico · PREVIEW · El Cole Mágico';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);font-family:'Fraunces',serif;font-size:clamp(14px,2.5vw,22px);font-weight:900;color:rgba(255,255,255,0.18);letter-spacing:3px;white-space:nowrap;user-select:none;text-shadow:0 1px 4px rgba(0,0,0,.4);width:200%;text-align:center;}
-.watermark-overlay::after{content:'🦉 El Cole Mágico · storyowl.com';position:absolute;bottom:12px;right:16px;font-size:11px;color:rgba(255,255,255,.3);font-weight:700;letter-spacing:1px;user-select:none;}
-.flip-text-panel{position:absolute;bottom:0;left:0;right:0;padding:14px 18px 18px;background:linear-gradient(0deg,rgba(8,3,20,.97) 0%,rgba(8,3,20,.82) 55%,transparent 100%);z-index:5;}
+.flip-img{width:100%;height:100%;object-fit:cover;display:block;min-height:420px;}
+.flip-img-wrap.flipping{animation:flipAnim .38s cubic-bezier(.4,0,.2,1);}
+@keyframes flipAnim{0%{opacity:1;transform:scale(1)}40%{opacity:0;transform:scale(.96) rotateY(6deg)}100%{opacity:1;transform:scale(1) rotateY(0deg)}}
+
+/* Paneles de texto */
+.flip-text-panel{position:absolute;bottom:0;left:0;right:0;padding:14px 18px 18px;background:linear-gradient(0deg,rgba(6,2,16,.98) 0%,rgba(6,2,16,.85) 50%,transparent 100%);z-index:5;}
 .flip-page-num{font-size:9px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#b88000;margin-bottom:3px;}
-.flip-page-title{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(12px,1.8vw,16px);color:#c084fc;margin-bottom:5px;line-height:1.2;}
-.flip-page-text{font-size:clamp(11px,1.4vw,13px);color:rgba(255,255,255,.75);line-height:1.55;overflow:hidden;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;}
-.flip-cover-panel{position:absolute;bottom:0;left:0;right:0;padding:20px;background:linear-gradient(0deg,rgba(8,3,20,.98) 0%,rgba(8,3,20,.65) 70%,transparent 100%);z-index:5;text-align:center;}
-.flip-cover-title{font-family:'Fraunces',serif;font-size:clamp(14px,2vw,20px);font-weight:900;color:white;text-shadow:0 2px 12px rgba(0,0,0,.8);line-height:1.2;}
-.flip-cover-brand{font-size:11px;color:rgba(247,201,75,.65);margin-top:5px;font-weight:700;letter-spacing:2px;}
-.flip-skeleton{width:100%;min-height:400px;background:linear-gradient(90deg,#1a0840 25%,#2a1060 50%,#1a0840 75%);background-size:200% 100%;animation:skelshimmer 1.5s infinite;}
+.flip-page-title{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(11px,1.6vw,15px);color:#c084fc;margin-bottom:4px;line-height:1.2;}
+.flip-page-text{font-size:clamp(10px,1.3vw,13px);color:rgba(255,255,255,.72);line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;}
+.flip-cover-panel{position:absolute;bottom:0;left:0;right:0;padding:18px;background:linear-gradient(0deg,rgba(6,2,16,.98) 0%,rgba(6,2,16,.6) 70%,transparent 100%);z-index:5;text-align:center;}
+.flip-cover-title{font-family:'Fraunces',serif;font-size:clamp(13px,1.8vw,18px);font-weight:900;color:white;text-shadow:0 2px 12px rgba(0,0,0,.8);line-height:1.2;}
+.flip-cover-brand{font-size:10px;color:rgba(247,201,75,.6);margin-top:4px;font-weight:700;letter-spacing:2px;}
+/* Contraportada */
+.flip-back-panel{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,#0d0820,#1a0840);z-index:5;padding:24px;}
+.flip-back-stars{font-size:28px;margin-bottom:16px;opacity:.7;}
+.flip-back-phrase{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(14px,2vw,18px);color:rgba(255,255,255,.8);text-align:center;line-height:1.6;margin-bottom:20px;max-width:220px;}
+.flip-back-logo{font-size:13px;color:rgba(247,201,75,.6);font-weight:700;letter-spacing:2px;}
+/* Página FIN */
+.flip-end-panel{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,#0d0820,#160a35);z-index:5;padding:24px;}
+.flip-end-icon{font-size:52px;margin-bottom:14px;}
+.flip-end-text{font-family:'Fraunces',serif;font-size:clamp(16px,2.5vw,22px);color:white;margin-bottom:8px;}
+.flip-end-sub{font-size:13px;color:rgba(255,255,255,.45);text-align:center;}
+
+/* Skeleton */
+.flip-skeleton{width:100%;min-height:420px;background:linear-gradient(90deg,#0d0820 25%,#1a0840 50%,#0d0820 75%);background-size:200% 100%;animation:skelshimmer 1.5s infinite;}
 @keyframes skelshimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.flipbook-controls{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:28px;}
-.flip-btn{width:50px;height:50px;border-radius:50%;border:2px solid rgba(255,255,255,.2);background:rgba(255,255,255,.07);color:white;font-size:22px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);}
-.flip-btn:hover:not(:disabled){background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.4);transform:scale(1.1);}
-.flip-btn:disabled{opacity:.25;cursor:not-allowed;}
-.flip-counter{font-family:'Fraunces',serif;font-size:15px;color:rgba(255,255,255,.55);min-width:90px;text-align:center;}
-.flip-dots{display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:300px;}
-.flip-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.2);transition:all .3s;cursor:pointer;flex-shrink:0;}
-.flip-dot.active{background:#f7c94b;transform:scale(1.5);}
+
+/* Controles */
+.flipbook-controls{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:24px;}
+.flip-btn{width:50px;height:50px;border-radius:50%;border:2px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:white;font-size:22px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);}
+.flip-btn:hover:not(:disabled){background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.38);transform:scale(1.1);}
+.flip-btn:disabled{opacity:.2;cursor:not-allowed;}
+.flip-counter{font-family:'Fraunces',serif;font-size:14px;color:rgba(255,255,255,.5);min-width:80px;text-align:center;}
+.flip-dots{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:280px;}
+.flip-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.18);transition:all .3s;cursor:pointer;flex-shrink:0;}
+.flip-dot.active{background:#f7c94b;transform:scale(1.6);}
+
+/* CTA */
 .flipbook-cta{text-align:center;padding:0 16px;}
-.flipbook-cta-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:36px 28px;max-width:480px;margin:0 auto;backdrop-filter:blur(12px);}
-.flipbook-cta-icon{font-size:48px;margin-bottom:14px;}
-.flipbook-cta-title{font-family:'Fraunces',serif;font-size:26px;color:white;margin-bottom:8px;}
-.flipbook-cta-sub{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:28px;line-height:1.65;}
-.btn-comprar{background:linear-gradient(135deg,#f7c94b,#e5a800);color:#1a0840;font-family:'Fraunces',serif;font-weight:900;font-size:20px;padding:18px 52px;border-radius:50px;border:none;cursor:pointer;box-shadow:0 8px 32px rgba(247,201,75,.35);transition:all .25s;display:inline-block;}
+.flipbook-cta-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:24px;padding:36px 28px;max-width:460px;margin:0 auto;backdrop-filter:blur(12px);}
+.flipbook-cta-icon{font-size:46px;margin-bottom:12px;}
+.flipbook-cta-title{font-family:'Fraunces',serif;font-size:24px;color:white;margin-bottom:8px;}
+.flipbook-cta-sub{font-size:14px;color:rgba(255,255,255,.45);margin-bottom:26px;line-height:1.6;}
+.btn-comprar{background:linear-gradient(135deg,#f7c94b,#e5a800);color:#1a0840;font-family:'Fraunces',serif;font-weight:900;font-size:19px;padding:17px 50px;border-radius:50px;border:none;cursor:pointer;box-shadow:0 8px 32px rgba(247,201,75,.35);transition:all .25s;display:inline-block;}
 .btn-comprar:hover{transform:translateY(-3px);box-shadow:0 14px 44px rgba(247,201,75,.5);}
-.btn-crear-otro{display:block;background:transparent;color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.12);font-size:14px;padding:12px 28px;border-radius:50px;cursor:pointer;margin:14px auto 0;transition:all .2s;font-family:'Nunito',sans-serif;}
-.btn-crear-otro:hover{color:white;border-color:rgba(255,255,255,.3);}
-@media(max-width:640px){.book-spread{display:none!important;}.book-single{display:block!important;}.flip-page-text{-webkit-line-clamp:3;}}
-@media(min-width:641px){.book-single{display:none!important;}.book-spread{display:grid!important;}}
+.btn-crear-otro{display:block;background:transparent;color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.1);font-size:14px;padding:11px 28px;border-radius:50px;cursor:pointer;margin:12px auto 0;transition:all .2s;font-family:'Nunito',sans-serif;}
+.btn-crear-otro:hover{color:white;border-color:rgba(255,255,255,.28);}
+
+@media(max-width:640px){
+  .book-spread{display:none!important;}
+  .book-single{display:block!important;}
+  .book-closed{transform:rotateY(0deg) rotateX(0deg);}
+  .flip-page-text{-webkit-line-clamp:3;}
+}
+@media(min-width:641px){
+  .book-single{display:none!important;}
+  .book-spread{display:grid!important;}
+}
 
 /* Status */
 .generating-indicator{display:flex;align-items:center;gap:10px;padding:14px 18px;background:rgba(14,165,160,.06);border-radius:12px;margin-bottom:14px;font-size:14px;color:var(--muted);border:1px solid rgba(14,165,160,.12);}
@@ -306,29 +367,47 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
   <h2 class="flipbook-title" id="flipTitle"></h2>
   <p class="flipbook-subtitle">Vista previa · Las páginas finales tendrán mayor resolución</p>
 
-  <!-- Controles top -->
-  <div class="flipbook-controls">
-    <button class="flip-btn" id="flipPrev" onclick="flipPage(-1)" disabled>&#8592;</button>
-    <div class="flip-dots" id="flipDots"></div>
-    <span class="flip-counter" id="flipCounter">1 / 1</span>
-    <button class="flip-btn" id="flipNext" onclick="flipPage(1)">&#8594;</button>
-  </div>
+  <!-- Escenario del libro -->
+  <div class="book-stage">
 
-  <!-- Libro desktop (2 páginas) -->
-  <div class="book-3d">
-    <div class="book-spread" id="bookSpread">
-      <div class="book-page-left" id="pageLeft">
-        <div class="flip-skeleton"></div>
+    <!-- PORTADA CERRADA -->
+    <div id="bookClosed" style="text-align:center">
+      <div class="book-closed" onclick="abrirLibro()">
+        <img class="book-closed-img" id="coverPreviewImg" src="" alt="Portada" oncontextmenu="return false" ondragstart="return false"/>
+        <div class="book-closed-overlay"></div>
+        <div class="watermark-overlay"></div>
+        <div class="flip-cover-panel" id="coverTitlePanel">
+          <div class="flip-cover-title" id="coverTitleText"></div>
+          <div class="flip-cover-brand">🦉 El Cole Mágico</div>
+        </div>
+        <div class="flip-skeleton" id="coverSkeleton" style="min-height:460px;border-radius:4px 14px 14px 4px;"></div>
       </div>
-      <div class="book-page-right" id="pageRight">
-        <div class="flip-skeleton"></div>
-      </div>
+      <button class="btn-open-book" id="btnOpenBook" onclick="abrirLibro()" style="display:none">📖 Abrir libro</button>
     </div>
-    <!-- Libro móvil (1 página) -->
-    <div class="book-single" id="bookSingle">
-      <div id="pageSingle">
-        <div class="flip-skeleton"></div>
+
+    <!-- LIBRO ABIERTO -->
+    <div class="book-open" id="bookOpen">
+
+      <!-- Controles -->
+      <div class="flipbook-controls">
+        <button class="flip-btn" id="flipPrev" onclick="flipPage(-1)" disabled>&#8592;</button>
+        <div class="flip-dots" id="flipDots"></div>
+        <span class="flip-counter" id="flipCounter">1 / 1</span>
+        <button class="flip-btn" id="flipNext" onclick="flipPage(1)">&#8594;</button>
       </div>
+
+      <!-- Desktop: spread -->
+      <div class="book-spread" id="bookSpread">
+        <div class="book-page-left" id="pageLeft"><div class="flip-skeleton"></div></div>
+        <div class="book-spine"></div>
+        <div class="book-page-right" id="pageRight"><div class="flip-skeleton"></div></div>
+      </div>
+
+      <!-- Móvil: página única -->
+      <div class="book-single" id="bookSingle">
+        <div id="pageSingle"><div class="flip-skeleton"></div></div>
+      </div>
+
     </div>
   </div>
 
@@ -477,10 +556,10 @@ function procesarEvento(data){
     actualizarProgreso(1, TOTAL); mostrarIndicador(1, TOTAL);
 
   } else if(data.tipo === 'imagen'){
-    // Portada: guardar en hidden img + añadir al flipbook
+    // Portada: guardar en hidden img + mostrar en libro cerrado
     const img = document.getElementById('coverImg');
     img.src = data.url; img.style.display = 'block';
-    flipAddPage({ tipo:'portada', url: data.url, titulo: document.getElementById('bookTitle').textContent });
+    flipShowCover(data.url, document.getElementById('bookTitle').textContent);
     actualizarProgreso(2, TOTAL);
 
   } else if(data.tipo === 'pagina'){
@@ -526,37 +605,51 @@ function procesarEvento(data){
 
 
 // ═══════════════════════════════════════════════════════════
-// FLIPBOOK ENGINE
+// FLIPBOOK ENGINE v2 — libro cerrado → apertura → navegación
 // ═══════════════════════════════════════════════════════════
-let flipPages = [];
-let flipSpreadIndex = 0;
+let flipPages = [];      // páginas interiores (sin portada)
+let flipSpreadIndex = 0; // spread actual (0 = pág 1+2, 1 = pág 3+4...)
+let flipIsOpen = false;
 
+// Renderiza una página en un contenedor
 function flipRenderPage(container, pageData) {
   if (!pageData) {
-    container.innerHTML = '<div style="background:#0d0820;width:100%;height:100%;min-height:400px;display:flex;align-items:center;justify-content:center;"><span style="color:rgba(255,255,255,.12);font-size:48px;">🦉</span></div>';
+    container.innerHTML = `<div style="background:#080318;width:100%;height:100%;min-height:420px;
+      display:flex;align-items:center;justify-content:center;">
+      <span style="color:rgba(255,255,255,.08);font-size:52px;">🦉</span></div>`;
     return;
   }
-  const isCover = pageData.tipo === 'portada';
+  if (pageData.tipo === 'fin') {
+    container.innerHTML = `<div class="flip-end-panel">
+      <div class="flip-end-icon">✨</div>
+      <div class="flip-end-text">¡FIN!</div>
+      <div class="flip-end-sub">Una historia única, igual que tú.</div>
+    </div>`;
+    return;
+  }
+  if (pageData.tipo === 'contraportada') {
+    container.innerHTML = `<div class="flip-back-panel">
+      <div class="flip-back-stars">🦉 ✦ 🌙</div>
+      <div class="flip-back-phrase">Que la magia de las historias te acompañe siempre.</div>
+      <div class="flip-back-logo">El Cole Mágico · storyowl.com</div>
+    </div>`;
+    return;
+  }
   container.innerHTML = `
     <div class="flip-img-wrap">
       <img class="flip-img" src="${pageData.url}" alt="${pageData.titulo||''}" loading="lazy"
            oncontextmenu="return false" ondragstart="return false"/>
       <div class="watermark-overlay"></div>
-      ${isCover ? `
-        <div class="flip-cover-panel">
-          <div class="flip-cover-title">${pageData.titulo||''}</div>
-          <div class="flip-cover-brand">🦉 El Cole Mágico</div>
-        </div>` : `
-        <div class="flip-text-panel">
-          <div class="flip-page-num">Página ${pageData.numero||''}</div>
-          <div class="flip-page-title">${pageData.titulo||''}</div>
-          <div class="flip-page-text">${pageData.texto||''}</div>
-        </div>`}
+      <div class="flip-text-panel">
+        <div class="flip-page-num">Página ${pageData.numero||''}</div>
+        <div class="flip-page-title">${pageData.titulo||''}</div>
+        <div class="flip-page-text">${pageData.texto||''}</div>
+      </div>
     </div>`;
 }
 
 function flipAnimate(container) {
-  const wrap = container.querySelector('.flip-img-wrap');
+  const wrap = container.querySelector('.flip-img-wrap,.flip-end-panel,.flip-back-panel');
   if (!wrap) return;
   wrap.classList.remove('flipping'); void wrap.offsetWidth; wrap.classList.add('flipping');
 }
@@ -572,10 +665,8 @@ function flipUpdateSpread() {
   const total = Math.ceil(flipPages.length / 2);
   const ctr = document.getElementById('flipCounter');
   if (ctr) ctr.textContent = `${flipSpreadIndex+1} / ${total}`;
-  const prev = document.getElementById('flipPrev');
-  const next = document.getElementById('flipNext');
-  if (prev) prev.disabled = flipSpreadIndex === 0;
-  if (next) next.disabled = flipSpreadIndex >= total - 1;
+  document.getElementById('flipPrev').disabled = flipSpreadIndex === 0;
+  document.getElementById('flipNext').disabled = flipSpreadIndex >= total - 1;
   flipUpdateDots(total);
 }
 
@@ -583,7 +674,8 @@ function flipUpdateDots(total) {
   const dots = document.getElementById('flipDots');
   if (!dots) return;
   dots.innerHTML = '';
-  for (let i = 0; i < Math.min(total, 12); i++) {
+  const max = Math.min(total, 12);
+  for (let i = 0; i < max; i++) {
     const d = document.createElement('div');
     d.className = 'flip-dot' + (i === flipSpreadIndex ? ' active' : '');
     d.onclick = () => { flipSpreadIndex = i; flipUpdateSpread(); };
@@ -597,16 +689,46 @@ function flipPage(dir) {
   flipUpdateSpread();
 }
 
+// Abre el libro con animación cinematográfica
+function abrirLibro() {
+  if (flipIsOpen) return;
+  flipIsOpen = true;
+  const closed = document.getElementById('bookClosed');
+  const open   = document.getElementById('bookOpen');
+  // Animar salida del libro cerrado
+  closed.style.transition = 'opacity .4s, transform .5s';
+  closed.style.opacity = '0';
+  closed.style.transform = 'scale(.92) rotateY(-15deg)';
+  setTimeout(() => {
+    closed.style.display = 'none';
+    open.style.display = 'block';
+    open.classList.add('opening');
+    flipSpreadIndex = 0;
+    flipUpdateSpread();
+  }, 420);
+}
+
 function flipAddPage(pageData) {
   flipPages.push(pageData);
-  if (flipPages.length <= 2) flipUpdateSpread();
+  // Actualizar spread si el libro está abierto y es el primer spread
+  if (flipIsOpen && flipPages.length <= 2) flipUpdateSpread();
 }
 
 function flipInit(titulo) {
-  flipPages = []; flipSpreadIndex = 0;
+  flipPages = []; flipSpreadIndex = 0; flipIsOpen = false;
   document.getElementById('flipbookSection').style.display = 'block';
   document.getElementById('flipTitle').textContent = titulo || '';
   document.getElementById('flipCta').style.display = 'none';
+  // Resetear portada cerrada
+  const closed = document.getElementById('bookClosed');
+  closed.style.display = 'block'; closed.style.opacity = '1'; closed.style.transform = '';
+  document.getElementById('bookOpen').style.display = 'none';
+  document.getElementById('bookOpen').classList.remove('opening');
+  // Skeletons
+  document.getElementById('coverSkeleton').style.display = 'block';
+  document.getElementById('coverPreviewImg').style.display = 'none';
+  document.getElementById('coverTitlePanel').style.display = 'none';
+  document.getElementById('btnOpenBook').style.display = 'none';
   ['pageLeft','pageRight','pageSingle'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = '<div class="flip-skeleton"></div>';
@@ -614,10 +736,22 @@ function flipInit(titulo) {
   document.getElementById('flipbookSection').scrollIntoView({behavior:'smooth'});
 }
 
+function flipShowCover(url, titulo) {
+  document.getElementById('coverSkeleton').style.display = 'none';
+  const img = document.getElementById('coverPreviewImg');
+  img.src = url; img.style.display = 'block';
+  document.getElementById('coverTitleText').textContent = titulo || '';
+  document.getElementById('coverTitlePanel').style.display = 'block';
+  document.getElementById('btnOpenBook').style.display = 'inline-block';
+}
+
 function flipComplete() {
-  flipUpdateSpread();
+  // Añadir página FIN y contraportada
+  flipPages.push({ tipo: 'fin' });
+  flipPages.push({ tipo: 'contraportada' });
+  if (flipIsOpen) flipUpdateSpread();
   document.getElementById('flipCta').style.display = 'block';
-  setTimeout(() => document.getElementById('flipCta').scrollIntoView({behavior:'smooth', block:'nearest'}), 300);
+  setTimeout(() => document.getElementById('flipCta').scrollIntoView({behavior:'smooth', block:'nearest'}), 400);
 }
 
 // ── PDF Premium ─────────────────────────────────────────
