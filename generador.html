@@ -165,12 +165,19 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
 .fp-page{position:relative;width:100%;background:#080318;}
 .fp-page img{width:100%;height:auto;display:block;object-fit:contain;max-height:none;}
 .fp-wm{position:absolute;inset:0;pointer-events:none;z-index:8;overflow:hidden;}
-.fp-wm::before{content:'PREVIEW · StoryOwl · PREVIEW · StoryOwl';
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);
-  font-family:'Fraunces',serif;font-size:clamp(9px,1.5vw,14px);font-weight:900;
-  color:rgba(255,255,255,0.12);letter-spacing:3px;white-space:nowrap;user-select:none;width:200%;text-align:center;}
-.fp-wm::after{content:'🦉 storyowl.com';position:absolute;bottom:8px;right:12px;
-  font-size:10px;color:rgba(255,255,255,.2);font-weight:700;user-select:none;}
+.fp-wm::before{
+  content:'Vista previa · StoryOwl · Vista previa · StoryOwl · Vista previa · StoryOwl';
+  position:absolute;top:40%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);
+  font-family:'Fraunces',serif;font-size:clamp(11px,1.8vw,17px);font-weight:900;
+  color:rgba(255,255,255,0.22);letter-spacing:4px;white-space:nowrap;
+  user-select:none;width:220%;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.4);}
+.fp-wm::after{
+  content:'🦉 storyowl.com · Vista previa · 🦉 storyowl.com · Vista previa · 🦉';
+  position:absolute;bottom:0;left:0;right:0;
+  padding:6px 0;text-align:center;
+  font-size:clamp(9px,1.2vw,13px);color:rgba(255,255,255,.28);
+  font-weight:800;letter-spacing:2px;user-select:none;
+  background:linear-gradient(0deg,rgba(0,0,0,.35) 0%,transparent 100%);}
 .fp-text{position:absolute;bottom:0;left:0;right:0;
   padding:8px 14px 14px;
   background:linear-gradient(0deg,rgba(4,1,12,.97) 0%,rgba(4,1,12,.75) 50%,transparent 100%);z-index:6;}
@@ -197,9 +204,9 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
   color:white;text-shadow:0 2px 10px rgba(0,0,0,.9);line-height:1.2;}
 .fp-cover-brand{font-size:9px;color:rgba(247,201,75,.65);font-weight:700;letter-spacing:2px;margin-top:4px;}
 
-/* Páginas especiales FIN / contraportada — sin altura fija */
-.fp-special{width:100%;aspect-ratio:2/3;display:flex;align-items:center;
-  justify-content:center;text-align:center;padding:32px;}
+/* Páginas especiales FIN / contraportada — página completa como las demás */
+.fp-special{width:100%;min-height:420px;display:flex;align-items:center;
+  justify-content:center;text-align:center;padding:40px;box-sizing:border-box;}
 .fp-fin{background:linear-gradient(160deg,#0d0820,#160a35);}
 .fp-fin-icon{font-size:48px;margin-bottom:14px;}
 .fp-fin-title{font-family:'Fraunces',serif;font-size:clamp(26px,4vw,44px);font-weight:900;color:white;margin-bottom:10px;}
@@ -231,7 +238,7 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
   .book-double{display:none!important;}
   .book-single{display:block!important;}
   .fp-body{-webkit-line-clamp:3;}
-  .fp-special{aspect-ratio:3/4;}
+  .fp-special{min-height:320px;}
 }
 @media(min-width:641px){
   .book-double{display:flex!important;}
@@ -967,38 +974,40 @@ async function componerPaginaInterior(imgUrl, numero, titulo, texto) {
   ctx.fillStyle = gFade;
   ctx.fillRect(0, panY - 120, PX, panH + 120);
 
-  // Panel translúcido redondeado — oscuro con ligera transparencia
+  // Panel translúcido redondeado — oscuro suave, imagen visible por detrás
   ctx.save();
   roundRect(ctx, pX, panY, pW, panH, 28);
-  ctx.fillStyle = 'rgba(8,3,24,0.78)';
-  ctx.shadowColor = 'rgba(0,0,0,0.4)'; ctx.shadowBlur = 20;
+  ctx.fillStyle = 'rgba(8,3,24,0.45)';
+  ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 24;
   ctx.fill(); ctx.restore();
 
   // Línea dorada fina (acento visual)
   ctx.strokeStyle = 'rgba(247,201,75,0.55)'; ctx.lineWidth = 2;
   ctx.beginPath(); ctx.moveTo(pX + 44, panY + 5); ctx.lineTo(pX + pW - 44, panY + 5); ctx.stroke();
 
-  let cy = panY + 48;
-
-  // Número de página — color dorado suave
+  // Número de página — dorado con sombra para legibilidad
   ctx.font = `800 ${szNum}px Arial,sans-serif`;
-  ctx.fillStyle = 'rgba(184,128,0,0.9)'; ctx.textAlign = 'left';
+  ctx.fillStyle = 'rgba(247,185,0,1)'; ctx.textAlign = 'left';
+  ctx.shadowColor = 'rgba(0,0,0,0.7)'; ctx.shadowBlur = 6;
   ctx.fillText(`PÁGINA ${numero}`, pX + 52, cy + szNum); cy += hNum;
 
-  // Título — cursiva, color lila claro (como .fp-title)
+  // Título — cursiva lila con sombra
   ctx.font = `italic bold ${szT}px Georgia,serif`;
-  ctx.fillStyle = 'rgba(192,132,252,0.95)';
+  ctx.fillStyle = 'rgba(210,150,255,1)';
+  ctx.shadowColor = 'rgba(0,0,0,0.7)'; ctx.shadowBlur = 5;
   const lhT = Math.round(szT * 1.38);
   for (const l of lT) { ctx.fillText(l, pX + 52, cy + lhT); cy += lhT; } cy += 20;
 
-  // Texto cuerpo — blanco suave legible (como .fp-body)
+  // Texto cuerpo — blanco puro con sombra fuerte
   ctx.font = `${szB}px Georgia,serif`;
-  ctx.fillStyle = 'rgba(255,255,255,0.88)';
+  ctx.fillStyle = 'rgba(255,255,255,1)';
+  ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 7;
   for (const l of lB) { ctx.fillText(l, pX + 52, cy + lhB); cy += lhB; }
 
-  // Logo discreto
+  // Logo discreto sin sombra
+  ctx.shadowBlur = 0;
   ctx.font = 'bold 22px Arial,sans-serif';
-  ctx.fillStyle = 'rgba(247,201,75,0.3)';
+  ctx.fillStyle = 'rgba(247,201,75,0.35)';
   ctx.textAlign = 'right';
   ctx.fillText('🦉 storyowl.com', pX + pW - 44, panY + panH - 18);
   ctx.textAlign = 'left';
@@ -1178,28 +1187,86 @@ async function descargarPDF() {
       i++;
     }
 
-    // ── Pág 19: Colofón ─────────────────────────────────
-    btn.textContent = '⏳ Componiendo colofón...';
+    // ── Pág 19: Página final (FIN) ─────────────────────────
+    btn.textContent = '⏳ Componiendo página final...';
     pdf.addPage();
-    pdf.addImage(await componerColofonPagina(nombreFinal, fechaFinal), 'JPEG', 0, 0, W, H);
+    {
+      const cvFin = document.createElement('canvas');
+      cvFin.width = PX; cvFin.height = PY;
+      const ctxFin = cvFin.getContext('2d');
+      // Fondo degradado oscuro
+      const bgFin = ctxFin.createLinearGradient(0, 0, 0, PY);
+      bgFin.addColorStop(0, '#0d0820'); bgFin.addColorStop(1, '#160a35');
+      ctxFin.fillStyle = bgFin; ctxFin.fillRect(0, 0, PX, PY);
+      // Estrellas decorativas
+      ctxFin.fillStyle = 'rgba(255,255,255,0.15)';
+      for (let s = 0; s < 60; s++) {
+        const sx = Math.random()*PX, sy = Math.random()*PY*0.6;
+        const sr = Math.random()*3+1;
+        ctxFin.beginPath(); ctxFin.arc(sx,sy,sr,0,Math.PI*2); ctxFin.fill();
+      }
+      // Línea dorada central
+      ctxFin.strokeStyle = 'rgba(247,201,75,0.4)'; ctxFin.lineWidth = 2;
+      ctxFin.beginPath(); ctxFin.moveTo(PX*0.2, PY*0.42); ctxFin.lineTo(PX*0.8, PY*0.42); ctxFin.stroke();
+      // ✨ FIN ✨
+      ctxFin.textAlign = 'center';
+      ctxFin.font = 'bold 260px Arial,sans-serif';
+      ctxFin.fillStyle = 'rgba(247,201,75,0.18)';
+      ctxFin.fillText('✨', PX/2, PY*0.38);
+      ctxFin.font = 'italic bold 180px Georgia,serif';
+      ctxFin.fillStyle = 'rgba(255,255,255,0.95)';
+      ctxFin.shadowColor = 'rgba(107,63,168,0.6)'; ctxFin.shadowBlur = 40;
+      ctxFin.fillText('¡FIN!', PX/2, PY*0.55);
+      ctxFin.shadowBlur = 0;
+      // Nombre del protagonista
+      if (nombreFinal) {
+        ctxFin.font = 'italic 60px Georgia,serif';
+        ctxFin.fillStyle = 'rgba(255,255,255,0.5)';
+        ctxFin.fillText('Un cuento creado para', PX/2, PY*0.64);
+        ctxFin.font = 'bold 80px Georgia,serif';
+        ctxFin.fillStyle = 'rgba(192,132,252,0.9)';
+        ctxFin.fillText(nombreFinal, PX/2, PY*0.72);
+      }
+      // Línea dorada inferior
+      ctxFin.strokeStyle = 'rgba(247,201,75,0.3)'; ctxFin.lineWidth = 2;
+      ctxFin.beginPath(); ctxFin.moveTo(PX*0.25, PY*0.8); ctxFin.lineTo(PX*0.75, PY*0.8); ctxFin.stroke();
+      ctxFin.font = 'bold 36px Arial,sans-serif'; ctxFin.fillStyle = 'rgba(247,201,75,0.35)';
+      ctxFin.fillText('🦉 storyowl.com', PX/2, PY*0.88);
+      pdf.addImage(cvFin.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, W, H);
+    }
 
-    // ── Pág 20: Contraportada ───────────────────────────
+    // ── Pág 20: Contraportada ───────────────────────────────
     btn.textContent = '⏳ Componiendo contraportada...';
     pdf.addPage();
-    const cvBack = document.createElement('canvas'); cvBack.width = PX; cvBack.height = PY;
-    const ctxBack = cvBack.getContext('2d');
-    const bgBack = ctxBack.createLinearGradient(0, 0, 0, PY);
-    bgBack.addColorStop(0, '#0d0820'); bgBack.addColorStop(1, '#1a0840');
-    ctxBack.fillStyle = bgBack; ctxBack.fillRect(0, 0, PX, PY);
-    ctxBack.textAlign = 'center';
-    ctxBack.font = 'bold 52px Arial,sans-serif'; ctxBack.fillStyle = 'rgba(247,201,75,0.7)';
-    ctxBack.fillText('🦉', PX/2, PY/2 - 40);
-    ctxBack.font = 'italic bold 38px Georgia,serif'; ctxBack.fillStyle = 'rgba(255,255,255,0.6)';
-    ctxBack.fillText('Que la magia de las historias', PX/2, PY/2 + 30);
-    ctxBack.fillText('te acompañe siempre.', PX/2, PY/2 + 80);
-    ctxBack.font = 'bold 24px Arial,sans-serif'; ctxBack.fillStyle = 'rgba(247,201,75,0.4)';
-    ctxBack.fillText('storyowl.com', PX/2, PY - 80);
-    pdf.addImage(cvBack.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, W, H);
+    {
+      const cvBack = document.createElement('canvas');
+      cvBack.width = PX; cvBack.height = PY;
+      const ctxBack = cvBack.getContext('2d');
+      // Fondo degradado oscuro suave
+      const bgBack = cvBack.getContext('2d').createLinearGradient(0, 0, 0, PY);
+      bgBack.addColorStop(0, '#080318'); bgBack.addColorStop(0.5, '#1a0840'); bgBack.addColorStop(1, '#080318');
+      ctxBack.fillStyle = bgBack; ctxBack.fillRect(0, 0, PX, PY);
+      // Círculo decorativo central
+      const radGrad = ctxBack.createRadialGradient(PX/2, PY/2, 0, PX/2, PY/2, PX*0.45);
+      radGrad.addColorStop(0, 'rgba(107,63,168,0.18)'); radGrad.addColorStop(1, 'rgba(107,63,168,0)');
+      ctxBack.fillStyle = radGrad; ctxBack.fillRect(0, 0, PX, PY);
+      // Contenido centrado
+      ctxBack.textAlign = 'center';
+      ctxBack.font = 'bold 200px Arial,sans-serif'; ctxBack.fillStyle = 'rgba(247,201,75,0.55)';
+      ctxBack.fillText('🦉', PX/2, PY*0.38);
+      ctxBack.strokeStyle = 'rgba(247,201,75,0.25)'; ctxBack.lineWidth = 2;
+      ctxBack.beginPath(); ctxBack.moveTo(PX*0.2, PY*0.42); ctxBack.lineTo(PX*0.8, PY*0.42); ctxBack.stroke();
+      ctxBack.font = 'italic bold 72px Georgia,serif'; ctxBack.fillStyle = 'rgba(255,255,255,0.7)';
+      ctxBack.shadowColor = 'rgba(0,0,0,0.4)'; ctxBack.shadowBlur = 10;
+      ctxBack.fillText('Que la magia de las historias', PX/2, PY*0.52);
+      ctxBack.fillText('te acompañe siempre.', PX/2, PY*0.60);
+      ctxBack.shadowBlur = 0;
+      ctxBack.strokeStyle = 'rgba(247,201,75,0.2)'; ctxBack.lineWidth = 2;
+      ctxBack.beginPath(); ctxBack.moveTo(PX*0.25, PY*0.67); ctxBack.lineTo(PX*0.75, PY*0.67); ctxBack.stroke();
+      ctxBack.font = 'bold 48px Arial,sans-serif'; ctxBack.fillStyle = 'rgba(247,201,75,0.5)';
+      ctxBack.fillText('StoryOwl · storyowl.com', PX/2, PY*0.75);
+      pdf.addImage(cvBack.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, W, H);
+    }
 
     pdf.save((titulo || 'mi-cuento') + '.pdf');
 
