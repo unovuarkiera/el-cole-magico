@@ -610,8 +610,8 @@ function procesarEvento(data){
     actualizarProgreso(2, TOTAL);
 
   } else if(data.tipo === 'pagina'){
+    // Compatibilidad con colecciones antiguas que aún usen pagina
     quitarIndicador();
-    // Guardar en pagesContainer (para PDF)
     const container = document.getElementById('pagesContainer');
     const page = document.createElement('div'); page.className = 'page';
     page.innerHTML = `
@@ -622,10 +622,23 @@ function procesarEvento(data){
         <p class="page-text">${data.texto}</p>
       </div>`;
     container.appendChild(page);
-    // Añadir al flipbook
     flipAddPage({ tipo:'pagina', url: data.url, numero: data.numero, titulo: data.titulo, texto: data.texto });
     actualizarProgreso(data.numero+2, TOTAL);
     if(data.numero < TOTAL) mostrarIndicador(data.numero+1, TOTAL);
+
+  } else if(data.tipo === 'spread'){
+    quitarIndicador();
+    // Guardar spread en pagesContainer (para PDF)
+    const container = document.getElementById('pagesContainer');
+    const sp = document.createElement('div'); sp.className = 'spread-block';
+    sp.dataset.spreadUrl = data.url;
+    sp.dataset.pagIzq = JSON.stringify(data.pagIzq);
+    sp.dataset.pagDer = JSON.stringify(data.pagDer);
+    container.appendChild(sp);
+    // Añadir al flipbook como spread
+    rawPages.push({ tipo:'spread', url: data.url, pagIzq: data.pagIzq, pagDer: data.pagDer });
+    actualizarProgreso(data.spread + 2, 10);
+    if(data.spread < 8) mostrarIndicador(data.spread + 1, 8);
 
   } else if(data.tipo === 'completado'){
     quitarIndicador();
@@ -663,29 +676,32 @@ let flipIsOpen  = false;
 let flipNombre  = '';
 let mobileIdx   = 0;
 
-// ── Agrupa 16 páginas en 8 spreads ────────────────────────
+// ── Construye spreads para el flipbook ────────────────────
 function buildSpreads() {
   spreads = [];
 
-  // Portada sola (página de cubierta)
+  // Portada sola (cubierta)
   const portada = rawPages.find(p => p.tipo === 'portada');
   if (portada) spreads.push({ tipo:'cover', izq: portada, der: null });
 
-  // Páginas interiores de 2 en 2
-  const interior = rawPages.filter(p => p.tipo === 'pagina');
-  for (let i = 0; i < interior.length; i += 2) {
-    spreads.push({
-      tipo: 'interior',
-      izq: interior[i],
-      der: interior[i+1] || null
+  // Si el servidor manda 'spread' (nuevo sistema 8 spreads dobles)
+  const rawSpreads = rawPages.filter(p => p.tipo === 'spread');
+  if (rawSpreads.length > 0) {
+    rawSpreads.forEach(sp => {
+      spreads.push({ tipo:'interior', url: sp.url, izq: sp.pagIzq, der: sp.pagDer });
     });
+  } else {
+    // Compatibilidad: páginas individuales agrupadas de 2 en 2
+    const interior = rawPages.filter(p => p.tipo === 'pagina');
+    for (let i = 0; i < interior.length; i += 2) {
+      spreads.push({ tipo:'interior', url: interior[i].url, izq: interior[i], der: interior[i+1] || null });
+    }
   }
 
-  // Página final
-  spreads.push({ tipo:'final', izq: null, der: null });
-
+  // Página FIN
+  spreads.push({ tipo:'final' });
   // Contraportada
-  spreads.push({ tipo:'back', izq: null, der: null });
+  spreads.push({ tipo:'back' });
 }
 
 // ── HTML de media página (izquierda o derecha) ─────────────
@@ -775,10 +791,11 @@ function makeSpreadPageHTML(spread, pageW, pageH) {
       </div>`;
 
   } else {
-    // Spread interior: imagen panorámica a pantalla completa
-    // Texto izquierda abajo, texto derecha abajo
+    // Spread interior: imagen panorámica 1792x1024 a pantalla completa
     const L = spread.izq, R = spread.der;
-    const imgUrl = L?.url || '';
+    // spread.url = imagen panorámica del servidor (nuevo sistema)
+    // L?.url = imagen individual (compatibilidad)
+    const imgUrl = spread.url || L?.url || '';
 
     div.innerHTML = `
       <img src="${imgUrl}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;"

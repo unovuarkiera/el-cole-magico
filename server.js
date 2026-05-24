@@ -93,26 +93,18 @@ Crea un cuento mágico con estas características:
 - Tema: ${tema}
 - Tono y nivel: ${tonoEdad}
 
-El cuento debe tener una estructura narrativa completa con introducción, desarrollo y desenlace en 16 páginas.
+El cuento tiene estructura completa en 8 spreads (páginas dobles). Cada spread tiene 2 páginas narrativas y UNA escena visual panorámica que abarca las dos páginas juntas.
 
 RESPONDE SOLO JSON sin texto antes ni después, sin backticks:
-{"titulo":"titulo poetico","dedicatoria":"dedicatoria emotiva para ${nombre}","paginas":[
-{"numero":1,"titulo":"titulo pagina","texto":"texto adaptado a la edad","escena":"detailed scene in English for image generation"},
-{"numero":2,"titulo":"titulo","texto":"texto","escena":"scene"},
-{"numero":3,"titulo":"titulo","texto":"texto","escena":"scene"},
-{"numero":4,"titulo":"titulo","texto":"texto","escena":"scene"},
-{"numero":5,"titulo":"titulo","texto":"texto","escena":"scene"},
-{"numero":6,"titulo":"titulo","texto":"texto","escena":"scene"},
-{"numero":7,"titulo":"titulo","texto":"texto","escena":"scene"},
-{"numero":8,"titulo":"titulo","texto":"texto","escena":"scene"},
-{"numero":9,"titulo":"titulo","texto":"texto","escena":"scene"},
-{"numero":10,"titulo":"titulo","texto":"texto","escena":"scene"},
-{"numero":11,"titulo":"titulo","texto":"texto","escena":"scene"},
-{"numero":12,"titulo":"titulo","texto":"texto","escena":"scene"},
-{"numero":13,"titulo":"titulo","texto":"texto","escena":"scene"},
-{"numero":14,"titulo":"titulo","texto":"texto","escena":"scene"},
-{"numero":15,"titulo":"titulo","texto":"texto","escena":"scene"},
-{"numero":16,"titulo":"titulo","texto":"texto","escena":"scene"}
+{"titulo":"titulo poetico","dedicatoria":"dedicatoria emotiva para ${nombre}","spreads":[
+{"spread":1,"pagIzq":{"numero":1,"titulo":"titulo","texto":"texto adaptado a la edad"},"pagDer":{"numero":2,"titulo":"titulo","texto":"texto"},"escena":"detailed panoramic scene in English covering both pages, wide cinematic composition, left side shows [action of page 1], right side shows [action of page 2], seamlessly connected"},
+{"spread":2,"pagIzq":{"numero":3,"titulo":"titulo","texto":"texto"},"pagDer":{"numero":4,"titulo":"titulo","texto":"texto"},"escena":"panoramic scene"},
+{"spread":3,"pagIzq":{"numero":5,"titulo":"titulo","texto":"texto"},"pagDer":{"numero":6,"titulo":"titulo","texto":"texto"},"escena":"panoramic scene"},
+{"spread":4,"pagIzq":{"numero":7,"titulo":"titulo","texto":"texto"},"pagDer":{"numero":8,"titulo":"titulo","texto":"texto"},"escena":"panoramic scene"},
+{"spread":5,"pagIzq":{"numero":9,"titulo":"titulo","texto":"texto"},"pagDer":{"numero":10,"titulo":"titulo","texto":"texto"},"escena":"panoramic scene"},
+{"spread":6,"pagIzq":{"numero":11,"titulo":"titulo","texto":"texto"},"pagDer":{"numero":12,"titulo":"titulo","texto":"texto"},"escena":"panoramic scene"},
+{"spread":7,"pagIzq":{"numero":13,"titulo":"titulo","texto":"texto"},"pagDer":{"numero":14,"titulo":"titulo","texto":"texto"},"escena":"panoramic scene"},
+{"spread":8,"pagIzq":{"numero":15,"titulo":"titulo","texto":"texto"},"pagDer":{"numero":16,"titulo":"titulo","texto":"texto"},"escena":"panoramic scene"}
 ]}` }]
     });
 
@@ -123,7 +115,7 @@ RESPONDE SOLO JSON sin texto antes ni después, sin backticks:
 
     send({ tipo: 'cuento', titulo: cuento.titulo, dedicatoria: cuento.dedicatoria });
 
-    // PASO 3: Portada — vertical, personaje y secundario con descripciones fijas
+    // PASO 3: Portada — vertical 1024x1536
     send({ tipo: 'estado', mensaje: '🎨 Generando portada...' });
     try {
       const portadaUrl = await generarImagen(
@@ -137,20 +129,20 @@ RESPONDE SOLO JSON sin texto antes ni después, sin backticks:
       send({ tipo: 'imagen', url: '' });
     }
 
-    // PASO 4: Páginas — todas verticales, personajes con descripciones fijas
-    for (const pag of cuento.paginas) {
-      send({ tipo: 'estado', mensaje: `🎨 Generando ilustración página ${pag.numero} de ${cuento.paginas.length}...` });
+    // PASO 4: 8 spreads panorámicos 1792x1024
+    for (const sp of cuento.spreads) {
+      send({ tipo: 'estado', mensaje: `🎨 Generando spread ${sp.spread} de 8...` });
       let imgUrl = '';
       try {
         imgUrl = await generarImagen(
-          `${estiloBase}. ${protagonistaDesc} and ${personajeDesc}. Scene: ${pag.escena}. Wide panoramic composition, landscape format, main action centered, left and right sides with space for text overlay, magical atmosphere, consistent character design throughout the book.`,
-          '1536x1024',
-          `pag_${id}_${pag.numero}.png`
+          `${estiloBase}. ${protagonistaDesc} and ${personajeDesc}. ${sp.escena}. Double page spread, ultra-wide panoramic 16:9, cinematic composition, seamless left-right visual flow, consistent character design, magical atmosphere.`,
+          '1792x1024',
+          `spread_${id}_${sp.spread}.png`
         );
       } catch (e) {
-        console.error(`Error imagen página ${pag.numero}:`, e.message);
+        console.error(`Error spread ${sp.spread}:`, e.message);
       }
-      send({ tipo: 'pagina', numero: pag.numero, titulo: pag.titulo, texto: pag.texto, url: imgUrl });
+      send({ tipo: 'spread', spread: sp.spread, url: imgUrl, pagIzq: sp.pagIzq, pagDer: sp.pagDer });
     }
 
     send({ tipo: 'completado', dedicatoriaPersonal: dedicatoriaPersonal || '', nombre, fecha: new Date().toLocaleDateString('es-ES', {day:'numeric', month:'long', year:'numeric'}) });
@@ -169,23 +161,41 @@ app.listen(3000, () => console.log('🦉 El Cole Mágico corriendo en http://loc
 // Historia fija de 16 páginas, solo cambian los personajes
 // =============================================
 
-const ESCENAS_CUMPLE = [
-  { numero:1, titulo:"El gran día ha llegado", texto_base:"[NOMBRE] se despierta con una sonrisa enorme. ¡Hoy es su cumpleaños! Se levanta de un salto y corre a la ventana — el sol brilla especialmente para [NOMBRE] hoy.", escena:"A child waking up in a cozy bedroom decorated with birthday balloons, sunlight streaming through curtains, excited expression, looking out the window at a sunny day" },
-  { numero:2, titulo:"Nadie lo recuerda", texto_base:"En el cole, [NOMBRE] espera que alguien le diga algo... pero sus amigos hablan de otras cosas. La maestra tampoco dice nada. ¡Qué raro! Quizás todos han olvidado su cumpleaños.", escena:"A child sitting alone in a classroom looking sad and confused, other children playing and talking nearby, nobody paying attention to the birthday child, bittersweet expression" },
-  { numero:3, titulo:"Un día muy largo", texto_base:"Las horas pasan lentas. [NOMBRE] mira el reloj una y otra vez. Al final suena el timbre. Con los hombros caídos, [NOMBRE] sale del cole pensando que este es el peor cumpleaños del mundo.", escena:"A child walking out of school alone looking disappointed, head slightly down, carrying a backpack, afternoon sunlight, empty schoolyard" },
-  { numero:4, titulo:"¡Aparece el amigo especial!", texto_base:"De repente, [PERSONAJE] aparece en la esquina con una enorme sonrisa. ¡Le estaba esperando! \"¡Ven conmigo!\" dice [PERSONAJE] misteriosamente. \"Tengo algo que mostrarte.\"", escena:"A magical friend character appearing cheerfully around a street corner, waving excitedly at the sad child, mysterious and happy expression, magical sparkles around them" },
-  { numero:5, titulo:"El camino a casa", texto_base:"[PERSONAJE] lleva a [NOMBRE] de vuelta a casa. Por el camino, [NOMBRE] nota que [PERSONAJE] no para de sonreír. \"¿Qué pasa?\" pregunta [NOMBRE]. \"¡Ya verás!\" responde [PERSONAJE] con picardía.", escena:"The special character and child walking together toward a house, character looking playfully secretive, child curious and confused, warm afternoon light, colorful street" },
-  { numero:6, titulo:"¡SORPRESA!", texto_base:"[NOMBRE] abre la puerta y... ¡SORPRESA! Todos sus amigos y familiares saltan de detrás de los muebles. Globos de colores llenan el salón. ¡Nadie había olvidado el cumpleaños!", escena:"A living room FULL of colorful balloons, streamers, and decorations, many friends and family jumping out and yelling surprise, the birthday child at the door with a shocked and delighted expression, confetti in the air" },
-  { numero:7, titulo:"Lágrimas de alegría", texto_base:"[NOMBRE] se queda con la boca abierta. ¡Qué sorpresa tan grande! Los ojos se le llenan de lágrimas de felicidad. [PERSONAJE] le da un abrazo enorme. \"¿Lo sabías todo el tiempo?\", pregunta [NOMBRE] riendo.", escena:"The birthday child crying happy tears, being hugged by the special character, surrounded by loving family and friends, warm and emotional atmosphere, everyone smiling" },
-  { numero:8, titulo:"¡Empieza la fiesta!", texto_base:"¡La música empieza a sonar! Todo el salón está decorado con sus colores favoritos. Hay globos, serpentinas y carteles que dicen \"¡Feliz Cumpleaños [NOMBRE]!\". ¡Es la fiesta más espectacular del mundo!", escena:"A spectacular birthday party in full swing, colorful decorations everywhere, happy birthday banners, balloons and streamers, music notes floating in the air, everyone dancing and celebrating" },
-  { numero:9, titulo:"Los juegos locos", texto_base:"¡Llegan los juegos! [PERSONAJE] organiza una carrera de sacos que acaba con todos rodando por el suelo de risa. [NOMBRE] gana la carrera y todos aplauden y celebran.", escena:"Children playing party games, a sack race with everyone laughing and falling, the birthday child winning, the special character cheering and organizing the games, pure joy and laughter" },
-  { numero:10, titulo:"El baile más divertido", texto_base:"Suena la canción favorita de [NOMBRE] y todo el mundo sale a bailar. [PERSONAJE] tiene los mejores pasos de baile que nadie ha visto jamás. ¡[NOMBRE] y [PERSONAJE] bailan juntos en el centro!", escena:"Everyone dancing at the birthday party, the birthday child and special character dancing together in the center, funny dance moves, everyone laughing and clapping, colorful disco lights" },
-  { numero:11, titulo:"La canción más especial", texto_base:"De repente, la música para. Todos se colocan en círculo alrededor de [NOMBRE]. Empiezan a cantar \"¡Cumpleaños Feliz!\" a todo pulmón. [NOMBRE] se sonroja de la emoción.", escena:"Everyone gathered in a circle singing Happy Birthday, the birthday child in the center blushing happily, everyone clapping and smiling, warm candlelight, festive atmosphere" },
-  { numero:12, titulo:"La tarta mágica", texto_base:"[PERSONAJE] trae la tarta más impresionante que [NOMBRE] ha visto jamás. Tiene [EDAD] velas encendidas que brillan como estrellas. \"¡[EDAD] añitos!\" gritan todos.", escena:`A spectacular birthday cake being brought in with exactly [EDAD] lit candles glowing brightly, the birthday child's amazed face illuminated by candlelight, everyone gathered around, the special character carrying the cake proudly` },
-  { numero:13, titulo:"El deseo secreto", texto_base:"[NOMBRE] cierra los ojos con fuerza y piensa en su deseo más especial. El silencio llena la habitación. Todos esperan con la respiración contenida. ¡Este deseo tiene que hacerse realidad!", escena:"The birthday child closing their eyes tightly to make a wish, candles glowing on the cake, everyone watching in silence with hopeful expressions, magical sparkles around the child, intimate and magical moment" },
-  { numero:14, titulo:"¡A soplar!", texto_base:"[NOMBRE] coge aire... y ¡SOPLA! Las [EDAD] velas se apagan de golpe. ¡Todos aplauden y gritan de alegría! [PERSONAJE] da saltos de felicidad. \"¡El deseo se cumplirá!\", dice [PERSONAJE].", escena:"The birthday child blowing out all the candles at once, smoke rising from the extinguished candles, everyone cheering and clapping with joy, the special character jumping with happiness, confetti raining down" },
-  { numero:15, titulo:"Los regalos", texto_base:"Llega el momento de los regalos. [PERSONAJE] le entrega a [NOMBRE] un paquete envuelto en papel dorado con un lazo enorme. \"Este es de mi parte\", dice [PERSONAJE] con ternura. Dentro hay exactamente lo que [NOMBRE] había deseado.", escena:"Opening birthday presents, the special character giving a beautifully wrapped gold present with a big bow, the birthday child opening it with excitement, warm lighting, gift wrapping paper scattered around, love and tenderness in the scene" },
-  { numero:16, titulo:"El mejor día del mundo", texto_base:"Por la noche, [NOMBRE] se mete en la cama feliz y cansado. \"Fue el mejor cumpleaños del mundo\", susurra abrazando su almohada. [PERSONAJE] le guiña un ojo desde la ventana. \"¡Hasta el año que viene!\"", escena:"The birthday child lying happily in bed, cozy bedroom with birthday decorations still visible, the special character waving goodbye from the window, peaceful and warm evening light, a smile on the child's face, balloons floating around" }
+const SPREADS_CUMPLE = [
+  { spread:1,
+    pagIzq:{ numero:1, titulo:"El gran día ha llegado", texto_base:"[NOMBRE] se despierta con una sonrisa enorme. ¡Hoy es su cumpleaños! Se levanta de un salto y corre a la ventana — el sol brilla especialmente para [NOMBRE] hoy." },
+    pagDer:{ numero:2, titulo:"Nadie lo recuerda", texto_base:"En el cole, [NOMBRE] espera que alguien le diga algo... pero sus amigos hablan de otras cosas. La maestra tampoco dice nada. ¡Qué raro! Quizás todos han olvidado su cumpleaños." },
+    escena:"Left side: a child waking up joyfully in a birthday-decorated bedroom with balloons and morning sunlight. Right side: same child sitting sadly in a classroom while others ignore them. Wide panoramic, seamlessly connected background." },
+  { spread:2,
+    pagIzq:{ numero:3, titulo:"Un día muy largo", texto_base:"Las horas pasan lentas. [NOMBRE] mira el reloj una y otra vez. Al final suena el timbre. Con los hombros caídos, [NOMBRE] sale del cole pensando que este es el peor cumpleaños del mundo." },
+    pagDer:{ numero:4, titulo:"¡Aparece el amigo especial!", texto_base:"De repente, [PERSONAJE] aparece en la esquina con una enorme sonrisa. ¡Le estaba esperando! '¡Ven conmigo!' dice [PERSONAJE] misteriosamente." },
+    escena:"Left side: a child walking out of school alone looking disappointed. Right side: a magical friend character appearing cheerfully at a street corner with sparkles. Wide panoramic street scene connecting both moments." },
+  { spread:3,
+    pagIzq:{ numero:5, titulo:"El camino a casa", texto_base:"[PERSONAJE] lleva a [NOMBRE] de vuelta a casa. Por el camino, [NOMBRE] nota que [PERSONAJE] no para de sonreír. '¿Qué pasa?' pregunta [NOMBRE]. '¡Ya verás!' responde [PERSONAJE] con picardía." },
+    pagDer:{ numero:6, titulo:"¡SORPRESA!", texto_base:"[NOMBRE] abre la puerta y... ¡SORPRESA! Todos sus amigos y familiares saltan de detrás de los muebles. Globos de colores llenan el salón. ¡Nadie había olvidado el cumpleaños!" },
+    escena:"Left side: child and magical friend walking home on a colorful street, friend smiling secretively. Right side: a living room explosion of balloons, confetti and surprise faces as the door opens. Panoramic joyful scene." },
+  { spread:4,
+    pagIzq:{ numero:7, titulo:"Lágrimas de alegría", texto_base:"[NOMBRE] se queda con la boca abierta. Los ojos se le llenan de lágrimas de felicidad. [PERSONAJE] le da un abrazo enorme. '¿Lo sabías todo el tiempo?', pregunta [NOMBRE] riendo." },
+    pagDer:{ numero:8, titulo:"¡Empieza la fiesta!", texto_base:"¡La música empieza a sonar! Todo el salón está decorado con sus colores favoritos. Hay globos, serpentinas y carteles. ¡Es la fiesta más espectacular del mundo!" },
+    escena:"Left side: emotional hug between child and magical friend, happy tears, warm golden light. Right side: spectacular birthday party in full swing with music, dancing, colorful decorations. Panoramic festive indoor scene." },
+  { spread:5,
+    pagIzq:{ numero:9, titulo:"Los juegos locos", texto_base:"¡Llegan los juegos! [PERSONAJE] organiza una carrera de sacos que acaba con todos rodando por el suelo de risa. [NOMBRE] gana y todos aplauden y celebran." },
+    pagDer:{ numero:10, titulo:"El baile más divertido", texto_base:"Suena la canción favorita de [NOMBRE] y todo el mundo sale a bailar. [PERSONAJE] tiene los mejores pasos de baile. ¡[NOMBRE] y [PERSONAJE] bailan juntos en el centro!" },
+    escena:"Left side: children playing sack race games, everyone laughing and falling. Right side: everyone dancing wildly at the party, child and magical friend dancing together in the center spotlight. Panoramic celebration." },
+  { spread:6,
+    pagIzq:{ numero:11, titulo:"La canción más especial", texto_base:"De repente, la música para. Todos se colocan en círculo alrededor de [NOMBRE]. Empiezan a cantar '¡Cumpleaños Feliz!' a todo pulmón. [NOMBRE] se sonroja de la emoción." },
+    pagDer:{ numero:12, titulo:"La tarta mágica", texto_base:"[PERSONAJE] trae la tarta más impresionante que [NOMBRE] ha visto jamás. Tiene [EDAD] velas encendidas que brillan como estrellas. '¡[EDAD] añitos!' gritan todos." },
+    escena:"Left side: everyone singing Happy Birthday in a circle around the glowing child, candlelight warmth. Right side: spectacular birthday cake with glowing candles being brought in, amazed faces illuminated by candlelight. Panoramic warm scene." },
+  { spread:7,
+    pagIzq:{ numero:13, titulo:"El deseo secreto", texto_base:"[NOMBRE] cierra los ojos con fuerza y piensa en su deseo más especial. El silencio llena la habitación. Todos esperan con la respiración contenida." },
+    pagDer:{ numero:14, titulo:"¡A soplar!", texto_base:"[NOMBRE] coge aire... y ¡SOPLA! Las [EDAD] velas se apagan de golpe. ¡Todos aplauden y gritan de alegría! [PERSONAJE] da saltos de felicidad." },
+    escena:"Left side: child closing eyes tightly to make a wish, magical sparkles floating around, everyone watching in hopeful silence. Right side: child blowing out all candles, smoke rising, everyone cheering with confetti raining. Panoramic magical moment." },
+  { spread:8,
+    pagIzq:{ numero:15, titulo:"Los regalos", texto_base:"Llega el momento de los regalos. [PERSONAJE] le entrega a [NOMBRE] un paquete envuelto en papel dorado. Dentro hay exactamente lo que [NOMBRE] había deseado." },
+    pagDer:{ numero:16, titulo:"El mejor día del mundo", texto_base:"Por la noche, [NOMBRE] se mete en la cama feliz y cansado. 'Fue el mejor cumpleaños del mundo', susurra. [PERSONAJE] le guiña un ojo desde la ventana. '¡Hasta el año que viene!'" },
+    escena:"Left side: child opening a beautiful golden wrapped present with magical friend watching lovingly, gift wrapping paper everywhere. Right side: child peacefully in bed smiling, birthday decorations visible, magical friend waving from window under starlight. Panoramic warm ending." }
+];
+
 ];
 
 app.post('/generar-cumple', async (req, res) => {
@@ -251,33 +261,27 @@ Responde SOLO JSON sin backticks: {"titulo":"...","dedicatoria":"..."}` }]
       send({ tipo: 'imagen', url: '' });
     }
 
-    // 16 páginas con historia fija, solo cambian los personajes
-    for (const escena of ESCENAS_CUMPLE) {
-      send({ tipo: 'estado', mensaje: `🎨 Generando página ${escena.numero} de 16...` });
+    // 8 spreads panorámicos
+    for (const sp of SPREADS_CUMPLE) {
+      send({ tipo: 'estado', mensaje: `🎨 Generando spread ${sp.spread} de 8...` });
 
-      // Personalizar texto con nombre, personaje y edad
-      const texto = escena.texto_base
-        .replace(/\[NOMBRE\]/g, nombre)
-        .replace(/\[PERSONAJE\]/g, personaje)
-        .replace(/\[EDAD\]/g, edad);
-
-      const escenaImg = escena.escena
-        .replace(/\[EDAD\]/g, edad)
-        .replace(/the birthday child/g, protagonistaDesc)
-        .replace(/the special character/g, personajeDesc);
+      const textoIzq = sp.pagIzq.texto_base.replace(/\[NOMBRE\]/g, nombre).replace(/\[PERSONAJE\]/g, personaje).replace(/\[EDAD\]/g, String(edad));
+      const textoDer = sp.pagDer.texto_base.replace(/\[NOMBRE\]/g, nombre).replace(/\[PERSONAJE\]/g, personaje).replace(/\[EDAD\]/g, String(edad));
 
       let imgUrl = '';
       try {
         imgUrl = await generarImagen(
-          `${estiloBase}. ${escenaImg}. Characters: ${protagonistaDesc} and ${personajeDesc}. Wide panoramic composition, landscape format, main action centered, left and right margins with space for text overlay, consistent character design throughout the book.`,
-          '1536x1024',
-          `cumple_${id}_${escena.numero}.png`
+          `${estiloBase}. ${protagonistaDesc} and ${personajeDesc}. ${sp.escena}. Double page spread, ultra-wide panoramic 16:9, seamless left-right visual flow, consistent character design, festive birthday atmosphere.`,
+          '1792x1024',
+          `cumple_spread_${id}_${sp.spread}.png`
         );
       } catch(e) {
-        console.error(`Error página ${escena.numero}:`, e.message);
+        console.error(`Error spread ${sp.spread}:`, e.message);
       }
 
-      send({ tipo: 'pagina', numero: escena.numero, titulo: escena.titulo, texto, url: imgUrl });
+      send({ tipo: 'spread', spread: sp.spread, url: imgUrl,
+             pagIzq: { numero: sp.pagIzq.numero, titulo: sp.pagIzq.titulo, texto: textoIzq },
+             pagDer: { numero: sp.pagDer.numero, titulo: sp.pagDer.titulo, texto: textoDer } });
     }
 
     send({ tipo: 'completado', dedicatoriaPersonal: dedicatoriaPersonal || '', nombre, fecha: new Date().toLocaleDateString('es-ES', {day:'numeric', month:'long', year:'numeric'}) });
@@ -293,23 +297,41 @@ Responde SOLO JSON sin backticks: {"titulo":"...","dedicatoria":"..."}` }]
 // COLECCIÓN ESPECIAL: SE ME CAYÓ UN DIENTE
 // =============================================
 
-const ESCENAS_DIENTE = [
-  { numero:1, titulo:"El diente que baila", texto_base:"Hace días que [NOMBRE] nota algo raro. Su diente de delante se mueve un poquito. Lo toca con la lengua una y otra vez. ¡Se mueve de verdad!", escena:"A child touching a wobbly tooth with their tongue, looking at themselves in a mirror with a funny expression, cozy bathroom setting, morning light" },
-  { numero:2, titulo:"¡Qué miedo!", texto_base:"[NOMBRE] tiene un poco de miedo. ¿Dolerá cuando se caiga? ¿Quedará un hueco feo? Su amigo [PERSONAJE_NOMBRE] le dice que no pasa nada, que a todos les caen los dientes.", escena:"A child looking worried at their wobbly tooth in a mirror, a friend nearby reassuring them with a smile, warm cozy setting, gentle expressions" },
-  { numero:3, titulo:"¡Se cae!", texto_base:"Al morder una manzana... ¡CRAC! [NOMBRE] se lleva la mano a la boca. ¡El diente se ha caído! Lo mira en la palma de su mano — es pequeñito y brillante.", escena:"A child biting an apple and suddenly looking surprised, holding a tiny tooth in their palm, eyes wide with amazement and excitement, kitchen or garden setting" },
-  { numero:4, titulo:"¡Hay un hueco!", texto_base:"[NOMBRE] corre al espejo. Abre la boca muy grande y... ¡hay un hueco! La lengua no para de meterse ahí. Es rarísimo pero también graciosísimo.", escena:"A child opening their mouth wide in front of a mirror, pointing at the gap where the tooth was, laughing and surprised, funny and cute expression" },
-  { numero:5, titulo:"La noticia del cole", texto_base:"Al día siguiente, [NOMBRE] llega al cole con una gran noticia. \"¡Se me cayó un diente!\", anuncia a sus amigos. Todos quieren ver el hueco. ¡[NOMBRE] es el más famoso de la clase!", escena:"A child proudly showing their gap tooth to classmates at school, everyone gathering around with curious and happy faces, classroom setting, cheerful atmosphere" },
-  { numero:6, titulo:"El diente más limpio del mundo", texto_base:"En casa, [NOMBRE] lava el diente con mucho cuidado. Con agua, con jabón, con un trapito suave. Tiene que estar perfectamente limpio para esta noche.", escena:"A child carefully washing a tiny tooth in the sink, being very gentle and careful, determined and cute expression, bathroom setting with warm lighting" },
-  { numero:7, titulo:"La cajita especial", texto_base:"Mamá saca una cajita muy especial. [NOMBRE] pone el diente dentro con mucho cuidado. Esta noche la cajita irá bajo la almohada. ¡El visitante mágico vendrá!", escena:"A child placing a tiny tooth carefully in a small special box, parent watching lovingly, magical sparkles around the box, cozy bedroom setting" },
-  { numero:8, titulo:"¡Esta noche viene!", texto_base:"[NOMBRE] se mete en la cama muy emocionado. Pone la cajita bajo la almohada. \"¿Y si me quedo despierto para verle?\", pregunta. \"Viene solo cuando los niños duermen\", dice mamá.", escena:"A child lying in bed very excited, peeking under their pillow where the small box is, parent smiling from the doorway, cozy night bedroom with soft lamp light" },
-  { numero:9, titulo:"Las estrellas vigilan", texto_base:"[NOMBRE] intenta dormir pero está muy emocionado. Las estrellas brillan por la ventana. Los ojos se van cerrando poco a poco... poco a poco... hasta que se queda dormido.", escena:"A child slowly falling asleep in bed, stars visible through the bedroom window, peaceful and cozy atmosphere, soft moonlight entering the room, toys nearby" },
-  { numero:10, titulo:"El visitante de medianoche", texto_base:"A medianoche, cuando todo está en silencio, [VISITANTE_NOMBRE] aparece. Se mueve sin hacer ningún ruido. Levanta la almohada con mucho cuidado para no despertar a [NOMBRE].", escena:"[VISITANTE_DESC] sneaking into a moonlit bedroom at midnight, very quietly lifting a pillow, magical glowing light around them, the sleeping child visible in bed, magical and enchanting night scene" },
-  { numero:11, titulo:"El intercambio mágico", texto_base:"[VISITANTE_NOMBRE] coge la cajita con el diente y deja en su lugar una moneda que brilla como una estrella. También deja un papelito doblado. Todo con mucho amor y cuidado.", escena:"[VISITANTE_DESC] carefully replacing a small box with a glowing magical coin and a tiny folded note, magical sparkles and soft glow, moonlit bedroom, delicate and magical moment" },
-  { numero:12, titulo:"¡Buenos días!", texto_base:"Por la mañana, [NOMBRE] se despierta de golpe. ¡La almohada! Mete la mano corriendo y... ¡nota algo diferente! Saca la mano muy despacio...", escena:"A child waking up with sudden excitement, reaching under their pillow very carefully, eyes wide with anticipation, morning sunlight in a cozy bedroom" },
-  { numero:13, titulo:"La moneda mágica", texto_base:"¡Una moneda que brilla! [NOMBRE] la pone al sol y brilla con todos los colores del arcoíris. \"¡Vino! ¡Vino de verdad!\", grita [NOMBRE] corriendo por la casa.", escena:"A child holding up a magical glowing coin that shimmers with rainbow colors in the sunlight, running excitedly through the house, pure joy and amazement, morning light" },
-  { numero:14, titulo:"El mensaje secreto", texto_base:"[NOMBRE] también encuentra el papelito. Lo desdobla con cuidado. Dice: \"Tu diente era tan valiente como tú. Cuida bien los nuevos. Con cariño, [VISITANTE_NOMBRE].\"", escena:"A child carefully unfolding and reading a tiny magical letter, eyes wide with wonder, sitting on their bed in morning light, magical sparkles around the letter, emotional and sweet moment" },
-  { numero:15, titulo:"El hueco tiene nombre", texto_base:"[NOMBRE] corre al espejo. Abre la boca y mira el hueco. Ya no da miedo. Es la prueba de que está creciendo. \"Mi hueco mágico\", dice [NOMBRE] muy orgulloso.", escena:"A child smiling proudly at their reflection showing their gap tooth, no longer scared but proud, pointing at the gap happily, bright bathroom morning light, confident and happy expression" },
-  { numero:16, titulo:"Crecer es mágico", texto_base:"Esa noche, [NOMBRE] se duerme sonriendo. El hueco es como una medalla. Una medalla que dice: \"Soy valiente, estoy creciendo y la magia existe de verdad.\"", escena:"A child sleeping peacefully with a happy smile, the magical coin and tiny note visible on the bedside table, moonlight through the window, cozy and magical atmosphere, stars outside" }
+const SPREADS_DIENTE = [
+  { spread:1,
+    pagIzq:{ numero:1, titulo:"El diente que baila", texto_base:"Hace días que [NOMBRE] nota algo raro. Su diente de delante se mueve un poquito. Lo toca con la lengua una y otra vez. ¡Se mueve de verdad!" },
+    pagDer:{ numero:2, titulo:"¡Qué miedo!", texto_base:"[NOMBRE] tiene un poco de miedo. ¿Dolerá cuando se caiga? ¿Quedará un hueco feo? [VISITANTE_NOMBRE] le dice que no pasa nada, que a todos les caen los dientes." },
+    escena:"Left side: a child touching a wobbly tooth with their tongue, looking in a mirror with a funny expression, cozy bathroom. Right side: same child looking worried while a reassuring friend smiles at them. Warm home setting panoramic." },
+  { spread:2,
+    pagIzq:{ numero:3, titulo:"¡Se cae!", texto_base:"Al morder una manzana... ¡CRAC! [NOMBRE] se lleva la mano a la boca. ¡El diente se ha caído! Lo mira en la palma de su mano — es pequeñito y brillante." },
+    pagDer:{ numero:4, titulo:"¡Hay un hueco!", texto_base:"[NOMBRE] corre al espejo. Abre la boca muy grande y... ¡hay un hueco! La lengua no para de meterse ahí. Es rarísimo pero también graciosísimo." },
+    escena:"Left side: child biting an apple, surprised, holding a tiny tooth in their palm. Right side: same child opening mouth wide in front of a mirror, pointing and laughing at the gap. Panoramic fun home scene." },
+  { spread:3,
+    pagIzq:{ numero:5, titulo:"La noticia del cole", texto_base:"Al día siguiente, [NOMBRE] llega al cole con una gran noticia. '¡Se me cayó un diente!', anuncia a sus amigos. Todos quieren ver el hueco. ¡[NOMBRE] es el más famoso de la clase!" },
+    pagDer:{ numero:6, titulo:"El diente más limpio del mundo", texto_base:"En casa, [NOMBRE] lava el diente con mucho cuidado. Con agua, con jabón, con un trapito suave. Tiene que estar perfectamente limpio para esta noche." },
+    escena:"Left side: child proudly showing gap tooth to excited classmates in a sunny classroom. Right side: child carefully washing the tiny tooth in the bathroom sink with great concentration. Panoramic warm scene." },
+  { spread:4,
+    pagIzq:{ numero:7, titulo:"La cajita especial", texto_base:"Mamá saca una cajita muy especial. [NOMBRE] pone el diente dentro con mucho cuidado. Esta noche la cajita irá bajo la almohada. ¡El visitante mágico vendrá!" },
+    pagDer:{ numero:8, titulo:"¡Esta noche viene!", texto_base:"[NOMBRE] se mete en la cama muy emocionado. Pone la cajita bajo la almohada. '¿Y si me quedo despierto para verle?', pregunta. 'Viene solo cuando los niños duermen', dice mamá." },
+    escena:"Left side: child placing tiny tooth carefully in a magical small box, parent watching lovingly, warm bedroom. Right side: child lying excitedly in bed, peeking under pillow, soft night lamp light. Panoramic cozy night scene." },
+  { spread:5,
+    pagIzq:{ numero:9, titulo:"Las estrellas vigilan", texto_base:"[NOMBRE] intenta dormir pero está muy emocionado. Las estrellas brillan por la ventana. Los ojos se van cerrando poco a poco... hasta que se queda dormido." },
+    pagDer:{ numero:10, titulo:"El visitante de medianoche", texto_base:"A medianoche, cuando todo está en silencio, [VISITANTE_NOMBRE] aparece. Se mueve sin hacer ningún ruido. Levanta la almohada con mucho cuidado para no despertar a [NOMBRE]." },
+    escena:"Left side: child peacefully falling asleep with stars visible through window, moonlight. Right side: magical visitor tiptoeing into the moonlit bedroom, lifting the pillow with a soft magical glow. Panoramic enchanting night scene." },
+  { spread:6,
+    pagIzq:{ numero:11, titulo:"El intercambio mágico", texto_base:"[VISITANTE_NOMBRE] coge la cajita con el diente y deja en su lugar una moneda que brilla como una estrella. También deja un papelito doblado. Todo con mucho amor y cuidado." },
+    pagDer:{ numero:12, titulo:"¡Buenos días!", texto_base:"Por la mañana, [NOMBRE] se despierta de golpe. ¡La almohada! Mete la mano corriendo y... ¡nota algo diferente! Saca la mano muy despacio..." },
+    escena:"Left side: magical visitor carefully replacing box with a glowing magical coin and tiny note, sparkles everywhere. Right side: child waking up excitedly, reaching under pillow with wide hopeful eyes, morning sunlight. Panoramic magical scene." },
+  { spread:7,
+    pagIzq:{ numero:13, titulo:"La moneda mágica", texto_base:"¡Una moneda que brilla! [NOMBRE] la pone al sol y brilla con todos los colores del arcoíris. '¡Vino de verdad!', grita [NOMBRE] corriendo por la casa." },
+    pagDer:{ numero:14, titulo:"El mensaje secreto", texto_base:"[NOMBRE] también encuentra el papelito. Lo desdobla con cuidado. Dice: 'Tu diente era tan valiente como tú. Cuida bien los nuevos. Con cariño, [VISITANTE_NOMBRE].'" },
+    escena:"Left side: child holding magical rainbow-shimmering coin up to sunlight, running joyfully. Right side: child carefully reading a tiny magical letter with sparkling eyes, sitting on bed in morning light. Panoramic magical morning scene." },
+  { spread:8,
+    pagIzq:{ numero:15, titulo:"El hueco tiene nombre", texto_base:"[NOMBRE] corre al espejo. Abre la boca y mira el hueco. Ya no da miedo. Es la prueba de que está creciendo. 'Mi hueco mágico', dice [NOMBRE] muy orgulloso." },
+    pagDer:{ numero:16, titulo:"Crecer es mágico", texto_base:"Esa noche, [NOMBRE] se duerme sonriendo. El hueco es como una medalla. Una medalla que dice: 'Soy valiente, estoy creciendo y la magia existe de verdad.'" },
+    escena:"Left side: child smiling proudly at their reflection showing the gap tooth, confident and happy. Right side: child sleeping peacefully with a happy smile, magical coin on bedside table, moonlight through window. Panoramic warm ending." }
+];
+
 ];
 
 app.post('/generar-diente', async (req, res) => {
@@ -364,33 +386,28 @@ Responde SOLO JSON sin backticks: {"titulo":"...","dedicatoria":"..."}` }]
       send({ tipo: 'imagen', url: '' });
     }
 
-    // 16 páginas
-    for (const escena of ESCENAS_DIENTE) {
-      send({ tipo: 'estado', mensaje: `🎨 Generando página ${escena.numero} de 16...` });
+    // 8 spreads panorámicos
+    for (const sp of SPREADS_DIENTE) {
+      send({ tipo: 'estado', mensaje: `🎨 Generando spread ${sp.spread} de 8...` });
 
-      const texto = escena.texto_base
-        .replace(/\[NOMBRE\]/g, nombre)
-        .replace(/\[VISITANTE_NOMBRE\]/g, visitanteNombre)
-        .replace(/\[PERSONAJE_NOMBRE\]/g, visitanteNombre);
-
-      const escenaImg = escena.escena
-        .replace(/\[VISITANTE_DESC\]/g, visitanteDesc)
-        .replace(/the child/g, protagonistaDesc)
-        .replace(/A child/g, protagonistaDesc.charAt(0).toUpperCase() + protagonistaDesc.slice(1))
-        .replace(/\[NOMBRE\]/g, nombre);
+      const textoIzq = sp.pagIzq.texto_base.replace(/\[NOMBRE\]/g, nombre).replace(/\[VISITANTE_NOMBRE\]/g, visitanteNombre).replace(/\[PERSONAJE_NOMBRE\]/g, visitanteNombre);
+      const textoDer = sp.pagDer.texto_base.replace(/\[NOMBRE\]/g, nombre).replace(/\[VISITANTE_NOMBRE\]/g, visitanteNombre).replace(/\[PERSONAJE_NOMBRE\]/g, visitanteNombre);
+      const escenaImg = sp.escena.replace(/\[VISITANTE_DESC\]/g, visitanteDesc);
 
       let imgUrl = '';
       try {
         imgUrl = await generarImagen(
-          `${estiloBase}. ${escenaImg}. Main character: ${protagonistaDesc}. Wide panoramic composition, landscape format, main action centered, left and right margins with space for text overlay, consistent character design, magical and warm atmosphere.`,
-          '1536x1024',
-          `diente_${id}_${escena.numero}.png`
+          `${estiloBase}. ${protagonistaDesc} and ${visitanteDesc}. ${escenaImg}. Double page spread, ultra-wide panoramic 16:9, seamless left-right visual flow, consistent character design, magical warm atmosphere.`,
+          '1792x1024',
+          `diente_spread_${id}_${sp.spread}.png`
         );
       } catch(e) {
-        console.error(`Error página ${escena.numero}:`, e.message);
+        console.error(`Error spread ${sp.spread}:`, e.message);
       }
 
-      send({ tipo: 'pagina', numero: escena.numero, titulo: escena.titulo, texto, url: imgUrl });
+      send({ tipo: 'spread', spread: sp.spread, url: imgUrl,
+             pagIzq: { numero: sp.pagIzq.numero, titulo: sp.pagIzq.titulo, texto: textoIzq },
+             pagDer: { numero: sp.pagDer.numero, titulo: sp.pagDer.titulo, texto: textoDer } });
     }
 
     send({ tipo: 'completado', dedicatoriaPersonal: dedicatoriaPersonal || '', nombre, fecha: new Date().toLocaleDateString('es-ES', {day:'numeric', month:'long', year:'numeric'}) });
@@ -406,23 +423,41 @@ Responde SOLO JSON sin backticks: {"titulo":"...","dedicatoria":"..."}` }]
 // COLECCIÓN ESPECIAL: VACACIONES DE VERANO
 // =============================================
 
-const ESCENAS_VERANO = [
-  { numero:1, titulo:"¡Por fin vacaciones!", texto_base:"Suena el timbre por última vez. [NOMBRE] sale corriendo del cole con los brazos en alto. ¡Han llegado las vacaciones! [PERSONAJE] le espera en la puerta con una gran sonrisa.", escena:"A child running out of school on the last day, arms raised in celebration, backpack bouncing, sunny summer day, colorful school building, friends cheering around" },
-  { numero:2, titulo:"Haciendo las maletas", texto_base:"En casa, [NOMBRE] y [PERSONAJE] hacen las maletas juntos. [NOMBRE] mete el bañador, las gafas de sol y su juguete favorito. ¡Que no falte nada para la gran aventura!", escena:"A child and their companion happily packing a colorful suitcase together, throwing in swimwear, sunglasses, toys, sunny bedroom, excited expressions, summer clothes everywhere" },
-  { numero:3, titulo:"El viaje", texto_base:"En el coche, [NOMBRE] y [PERSONAJE] cantan canciones y juegan a los animales. El paisaje va cambiando por la ventana. \"¡Ya casi llegamos!\", dice papá.", escena:"A child and companion looking excitedly out of a car window during a road trip, singing and playing games, changing landscape outside, sunny day, happy family road trip" },
-  { numero:4, titulo:"¡El primer vistazo!", texto_base:"De repente, [NOMBRE] ve [DESTINO] por primera vez. Se le abren los ojos como platos. \"¡WOW!\", grita tan fuerte que todos se ríen. [PERSONAJE] le da un abrazo enorme.", escena:"A child seeing [DESTINO_DESC] for the first time, eyes wide with amazement and joy, mouth open in wonder, companion hugging them from behind, golden summer light, breathtaking view" },
-  { numero:5, titulo:"La primera aventura", texto_base:"Sin perder un minuto, [NOMBRE] y [PERSONAJE] se lanzan a explorar. Corren, saltan y descubren cada rincón. ¡El verano ha empezado de verdad!", escena:"A child and companion running and exploring [DESTINO_DESC], laughing and discovering every corner, summer adventure, golden light, pure joy and excitement" },
-  { numero:6, titulo:"El helado más grande", texto_base:"Después de tanto correr, [NOMBRE] pide el helado más grande que ha visto en su vida. Tres bolas de colores que casi no puede sujetar. [PERSONAJE] le ayuda antes de que caiga.", escena:"A child holding a giant colorful ice cream cone with three scoops, struggling to hold it, companion helping catch it before it falls, sunny [DESTINO_DESC] background, hot summer day, everyone laughing" },
-  { numero:7, titulo:"Un momento de susto", texto_base:"De repente, algo inesperado asusta a [NOMBRE]. El corazón le late muy fuerte. Pero [PERSONAJE] está ahí. \"No pasa nada\", dice [PERSONAJE]. Y [NOMBRE] respira y se siente valiente.", escena:"A child looking momentarily scared or surprised at [DESTINO_DESC], companion immediately beside them with a reassuring hand, child taking a brave breath, overcoming the fear, supportive and warm moment" },
-  { numero:8, titulo:"El atardecer mágico", texto_base:"Por la tarde, [NOMBRE] y [PERSONAJE] se sientan juntos a ver el atardecer. El cielo se pinta de naranja, rosa y morado. \"Es el más bonito del mundo\", susurra [NOMBRE].", escena:"A child and companion sitting together watching a spectacular sunset at [DESTINO_DESC], sky painted in orange pink and purple, peaceful and magical moment, silhouettes against the colorful sky, serene and beautiful" },
-  { numero:9, titulo:"Noche de estrellas", texto_base:"Por la noche, [NOMBRE] y [PERSONAJE] buscan constelaciones en el cielo. [PERSONAJE] señala la Osa Mayor. [NOMBRE] cierra un ojo y la sigue con el dedo. \"¡La veo, la veo!\"", escena:"A child and companion lying on the ground looking up at a spectacular starry sky at night, pointing at constellations, flashlight beam, magical night atmosphere, milky way visible, wonder and amazement" },
-  { numero:10, titulo:"El día de lluvia", texto_base:"Un día llueve y no se puede salir. ¡Pero [NOMBRE] y [PERSONAJE] inventan los juegos más divertidos del mundo! Construyen una cabaña con mantas y juegan hasta cansarse.", escena:"A child and companion building a cozy blanket fort inside, rainy day visible through the window, flashlight inside the fort, board games and books around, cozy and fun indoor adventure" },
-  { numero:11, titulo:"El tesoro escondido", texto_base:"[NOMBRE] y [PERSONAJE] deciden buscar tesoros. Con un palito, dibujan un mapa. Después de mucho buscar... ¡encuentran algo brillante! Es pequeño pero perfecto para guardar como recuerdo.", escena:"A child and companion searching for treasures at [DESTINO_DESC], hand-drawn map, digging or searching excitedly, finding something small and shiny, adventurous treasure hunt atmosphere" },
-  { numero:12, titulo:"Una tarde en familia", texto_base:"Una tarde, toda la familia se reúne. Comen juntos, ríen y cuentan historias. [NOMBRE] mira a su alrededor y piensa que este es el mejor momento del verano.", escena:"A happy family gathering at [DESTINO_DESC], eating together outdoors, laughing and telling stories, warm golden afternoon light, child looking around with gratitude and happiness, wholesome family moment" },
-  { numero:13, titulo:"La noche más mágica", texto_base:"La última noche, el cielo se llena de luces de colores. [NOMBRE] y [PERSONAJE] los miran con la boca abierta. Luego [NOMBRE] pide un deseo secreto.", escena:"Spectacular fireworks or meteor shower lighting up the night sky at [DESTINO_DESC], child and companion watching with open mouths, colorful lights reflecting in their eyes, magical and unforgettable night moment" },
-  { numero:14, titulo:"El último día", texto_base:"Ha llegado el último día. [NOMBRE] quiere guardarlo todo en la memoria. Hace una foto con [PERSONAJE] en su rincón favorito. \"¡Hasta el año que viene!\", dice [NOMBRE] con la voz entre contenta y triste.", escena:"A child and companion taking a final photo at their favorite spot at [DESTINO_DESC], bittersweet smiles, capturing the memory, golden afternoon light, summer ending atmosphere, nostalgic but happy" },
-  { numero:15, titulo:"El viaje de vuelta", texto_base:"En el coche de regreso, [NOMBRE] va callado mirando por la ventana. Piensa en todo lo vivido. [PERSONAJE] le aprieta la mano. \"Ha sido el mejor verano\", dice [NOMBRE] sonriendo.", escena:"A child looking pensively out of a car window on the way home, companion holding their hand, reflecting on summer memories, warm late afternoon light, peaceful and content expression, journey home" },
-  { numero:16, titulo:"El verano guardado en el corazón", texto_base:"En la cama, [NOMBRE] abraza su recuerdo favorito del verano. Cierra los ojos y sonríe. El mejor verano de su vida ya vive para siempre en su corazón. Y el próximo... ¡será incluso mejor!", escena:"A child lying peacefully in bed with a happy smile, summer souvenirs and photos visible nearby, warm bedroom lamp, eyes closed contentedly, dreaming of summer memories, peaceful and happy ending" }
+const SPREADS_VERANO = [
+  { spread:1,
+    pagIzq:{ numero:1, titulo:"¡Por fin vacaciones!", texto_base:"Suena el timbre por última vez. [NOMBRE] sale corriendo del cole con los brazos en alto. ¡Han llegado las vacaciones! [PERSONAJE] le espera en la puerta con una gran sonrisa." },
+    pagDer:{ numero:2, titulo:"Haciendo las maletas", texto_base:"En casa, [NOMBRE] y [PERSONAJE] hacen las maletas juntos. [NOMBRE] mete el bañador, las gafas de sol y su juguete favorito. ¡Que no falte nada para la gran aventura!" },
+    escena:"Left side: a child running out of school on last day, arms raised in celebration, sunny summer day. Right side: child and companion happily packing a colorful suitcase together in a bright bedroom. Wide panoramic joyful scene." },
+  { spread:2,
+    pagIzq:{ numero:3, titulo:"El viaje", texto_base:"En el coche, [NOMBRE] y [PERSONAJE] cantan canciones y juegan. El paisaje va cambiando por la ventana. '¡Ya casi llegamos!', dice papá." },
+    pagDer:{ numero:4, titulo:"¡El primer vistazo!", texto_base:"De repente, [NOMBRE] ve [DESTINO] por primera vez. Se le abren los ojos como platos. '¡WOW!', grita tan fuerte que todos se ríen. [PERSONAJE] le da un abrazo enorme." },
+    escena:"Left side: child and companion looking excitedly out of a car window during road trip, singing and playing. Right side: child seeing [DESTINO_DESC] for the first time, eyes wide with amazement, being hugged by companion. Panoramic travel adventure scene." },
+  { spread:3,
+    pagIzq:{ numero:5, titulo:"La primera aventura", texto_base:"Sin perder un minuto, [NOMBRE] y [PERSONAJE] se lanzan a explorar. Corren, saltan y descubren cada rincón. ¡El verano ha empezado de verdad!" },
+    pagDer:{ numero:6, titulo:"El helado más grande", texto_base:"Después de tanto correr, [NOMBRE] pide el helado más grande que ha visto en su vida. Tres bolas de colores que casi no puede sujetar. [PERSONAJE] le ayuda antes de que caiga." },
+    escena:"Left side: child and companion running and exploring [DESTINO_DESC] with pure joy. Right side: child holding a giant colorful ice cream about to fall, companion catching it, both laughing. Wide panoramic summer scene." },
+  { spread:4,
+    pagIzq:{ numero:7, titulo:"Un momento de susto", texto_base:"De repente, algo inesperado asusta a [NOMBRE]. El corazón le late muy fuerte. Pero [PERSONAJE] está ahí. 'No pasa nada', dice [PERSONAJE]. Y [NOMBRE] respira y se siente valiente." },
+    pagDer:{ numero:8, titulo:"El atardecer mágico", texto_base:"Por la tarde, [NOMBRE] y [PERSONAJE] se sientan juntos a ver el atardecer. El cielo se pinta de naranja, rosa y morado. 'Es el más bonito del mundo', susurra [NOMBRE]." },
+    escena:"Left side: child looking momentarily scared at [DESTINO_DESC], companion reassuring them with a warm hand on shoulder. Right side: both sitting together watching a spectacular sunset, sky in orange pink purple. Panoramic golden hour scene." },
+  { spread:5,
+    pagIzq:{ numero:9, titulo:"Noche de estrellas", texto_base:"Por la noche, [NOMBRE] y [PERSONAJE] buscan constelaciones en el cielo. [PERSONAJE] señala la Osa Mayor. [NOMBRE] cierra un ojo y la sigue con el dedo. '¡La veo, la veo!'" },
+    pagDer:{ numero:10, titulo:"El día de lluvia", texto_base:"Un día llueve y no se puede salir. ¡Pero [NOMBRE] y [PERSONAJE] inventan los juegos más divertidos del mundo! Construyen una cabaña con mantas y juegan hasta cansarse." },
+    escena:"Left side: child and companion lying on grass looking at spectacular starry night sky, pointing at constellations. Right side: cozy blanket fort inside with rainy window visible, flashlight, board games, warm and fun. Panoramic contrasting scene." },
+  { spread:6,
+    pagIzq:{ numero:11, titulo:"El tesoro escondido", texto_base:"[NOMBRE] y [PERSONAJE] deciden buscar tesoros. Con un palito, dibujan un mapa. Después de mucho buscar... ¡encuentran algo brillante! Es pequeño pero perfecto para guardar como recuerdo." },
+    pagDer:{ numero:12, titulo:"Una tarde en familia", texto_base:"Una tarde, toda la familia se reúne. Comen juntos, ríen y cuentan historias. [NOMBRE] mira a su alrededor y piensa que este es el mejor momento del verano." },
+    escena:"Left side: child and companion on a treasure hunt at [DESTINO_DESC], finding something small and shiny, excited. Right side: happy family gathering outdoors eating together, golden afternoon light, child looking around gratefully. Panoramic warm scene." },
+  { spread:7,
+    pagIzq:{ numero:13, titulo:"La noche más mágica", texto_base:"La última noche, el cielo se llena de luces de colores. [NOMBRE] y [PERSONAJE] los miran con la boca abierta. Luego [NOMBRE] pide un deseo secreto." },
+    pagDer:{ numero:14, titulo:"El último día", texto_base:"Ha llegado el último día. [NOMBRE] quiere guardarlo todo en la memoria. Hace una foto con [PERSONAJE] en su rincón favorito. '¡Hasta el año que viene!', dice [NOMBRE]." },
+    escena:"Left side: spectacular fireworks lighting up the night sky at [DESTINO_DESC], child and companion watching in awe. Right side: child and companion taking a final photo at their favorite spot, bittersweet smiles, golden summer light. Panoramic emotional ending." },
+  { spread:8,
+    pagIzq:{ numero:15, titulo:"El viaje de vuelta", texto_base:"En el coche de regreso, [NOMBRE] va callado mirando por la ventana. Piensa en todo lo vivido. [PERSONAJE] le aprieta la mano. 'Ha sido el mejor verano', dice [NOMBRE] sonriendo." },
+    pagDer:{ numero:16, titulo:"El verano guardado en el corazón", texto_base:"En la cama, [NOMBRE] abraza su recuerdo favorito del verano. Cierra los ojos y sonríe. El mejor verano de su vida ya vive para siempre en su corazón." },
+    escena:"Left side: child looking pensively out of car window on the way home, companion holding their hand, warm afternoon light. Right side: child sleeping peacefully in bed with a happy smile, summer souvenirs nearby, cozy bedroom lamp. Panoramic peaceful ending." }
+];
+
 ];
 
 app.post('/generar-verano', async (req, res) => {
@@ -482,29 +517,27 @@ app.post('/generar-verano', async (req, res) => {
       send({ tipo: 'imagen', url: '' });
     }
 
-    // 16 páginas
-    for (const escena of ESCENAS_VERANO) {
-      send({ tipo: 'estado', mensaje: `🎨 Generando página ${escena.numero} de 16...` });
+    // 8 spreads panorámicos
+    for (const sp of SPREADS_VERANO) {
+      send({ tipo: 'estado', mensaje: `🎨 Generando spread ${sp.spread} de 8...` });
 
-      const texto = escena.texto_base
-        .replace(/\[NOMBRE\]/g, nombre)
-        .replace(/\[PERSONAJE\]/g, personaje);
-
-      const escenaImg = escena.escena
-        .replace(/\[DESTINO_DESC\]/g, destinoDesc)
-        .replace(/\[DESTINO\]/g, destinoNombre);
+      const textoIzq = sp.pagIzq.texto_base.replace(/\[NOMBRE\]/g, nombre).replace(/\[PERSONAJE\]/g, personaje);
+      const textoDer = sp.pagDer.texto_base.replace(/\[NOMBRE\]/g, nombre).replace(/\[PERSONAJE\]/g, personaje);
+      const escenaImg = sp.escena.replace(/\[DESTINO_DESC\]/g, destinoDesc).replace(/\[DESTINO\]/g, destinoNombre);
 
       let imgUrl = '';
       try {
         imgUrl = await generarImagen(
-          `${estiloBase}. ${escenaImg}. Main character: ${protagonistaDesc}. Companion: ${personajeDesc}. Wide panoramic composition, landscape format, main action centered, left and right margins with space for text overlay, consistent character design, bright summer colors.`,
-          '1536x1024', `verano_${id}_${escena.numero}.png`
+          `${estiloBase}. ${protagonistaDesc} and ${personajeDesc}. ${escenaImg}. Double page spread, ultra-wide panoramic 16:9, seamless left-right visual flow, consistent character design, bright summer colors.`,
+          '1792x1024', `verano_spread_${id}_${sp.spread}.png`
         );
       } catch(e) {
-        console.error(`Error página ${escena.numero}:`, e.message);
+        console.error(`Error spread ${sp.spread}:`, e.message);
       }
 
-      send({ tipo: 'pagina', numero: escena.numero, titulo: escena.titulo, texto, url: imgUrl });
+      send({ tipo: 'spread', spread: sp.spread, url: imgUrl,
+             pagIzq: { numero: sp.pagIzq.numero, titulo: sp.pagIzq.titulo, texto: textoIzq },
+             pagDer: { numero: sp.pagDer.numero, titulo: sp.pagDer.titulo, texto: textoDer } });
     }
 
     send({ tipo: 'completado', dedicatoriaPersonal: dedicatoriaPersonal || '', nombre, fecha: new Date().toLocaleDateString('es-ES', {day:'numeric', month:'long', year:'numeric'}) });
