@@ -155,8 +155,8 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
 .book-single{display:none;position:relative;background:#080318;border-radius:8px;}
 
 /* Página individual: imagen + texto */
-.fp-page{position:relative;width:100%;overflow:hidden;background:#080318;}
-.fp-page img{width:100%;display:block;object-fit:cover;max-height:520px;}
+.fp-page{position:relative;width:100%;background:#080318;}
+.fp-page img{width:100%;height:auto;display:block;object-fit:contain;max-height:none;}
 .fp-wm{position:absolute;inset:0;pointer-events:none;z-index:8;overflow:hidden;}
 .fp-wm::before{content:'PREVIEW · StoryOwl · PREVIEW · StoryOwl';
   position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);
@@ -172,6 +172,15 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
   color:#c084fc;margin-bottom:3px;line-height:1.2;}
 .fp-body{font-size:clamp(8px,1.1vw,12px);color:rgba(255,255,255,.75);line-height:1.5;
   overflow:hidden;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;}
+
+/* Dedicatoria en visor */
+.fp-ded{width:100%;background:linear-gradient(160deg,#fff9f0,#fdf4ff);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 24px;text-align:center;min-height:300px;}
+.fp-ded-para{font-family:'Fraunces',serif;font-size:clamp(16px,2vw,22px);font-style:italic;color:#9b6fd8;margin-bottom:8px;}
+.fp-ded-nombre{font-family:'Fraunces',serif;font-size:clamp(22px,3.5vw,38px);font-weight:900;color:#3a2070;margin-bottom:16px;}
+.fp-ded-texto{font-size:clamp(12px,1.4vw,15px);color:#5a3880;font-style:italic;line-height:1.8;max-width:260px;}
+.fp-ded-line{width:50px;height:2px;background:rgba(247,201,75,.5);margin:18px auto 0;}
 
 /* Página portada */
 .fp-cover-panel{position:absolute;bottom:0;left:0;right:0;padding:16px;
@@ -214,7 +223,6 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
   .book-double{display:none!important;}
   .book-single{display:block!important;}
   .fp-body{-webkit-line-clamp:3;}
-  .fp-page img{max-height:360px;}
   .fp-special{min-height:280px;}
 }
 @media(min-width:641px){
@@ -594,6 +602,7 @@ function procesarEvento(data){
   } else if(data.tipo === 'cuento'){
     document.getElementById('bookTitle').textContent = data.titulo;
     document.getElementById('bookDed').textContent = data.dedicatoria;
+    flipDed = data.dedicatoria || '';
     flipInit(data.titulo, document.getElementById('nombre')?.value || '');
     actualizarProgreso(1, TOTAL_PAGS);
     mostrarIndicador(1, TOTAL_PAGS);
@@ -647,147 +656,128 @@ function procesarEvento(data){
 
 
 // ═══════════════════════════════════════════════════════════
-// FLIPBOOK ENGINE — páginas verticales individuales
-// Desktop: muestra 2 páginas juntas (izq + der)
-// Móvil: muestra 1 página
+// FLIPBOOK ENGINE
+// flipPages[] orden exacto — 20 entradas:
+//   [0]     portada
+//   [1]     dedicatoria
+//   [2..17] páginas 1-16
+//   [18]    fin
+//   [19]    contraportada
 //
-// flipPages[] contiene objetos:
-//   { tipo:'portada', url, titulo }
-//   { tipo:'pagina', url, numero, titulo, texto }
-//   { tipo:'fin' }
-//   { tipo:'contraportada' }
+// Desktop: abre en flipIdx=1 → izq=dedicatoria, der=pág1
+// Contador: muestra número de página real 1-20
 // ═══════════════════════════════════════════════════════════
 
-let flipPages  = [];
-let flipIdx    = 0;   // siempre apunta a página izquierda (par) en desktop
-let flipIsOpen = false;
-let flipNombre = '';
+let flipPages   = [];
+let flipIdx     = 0;
+let flipIsOpen  = false;
+let flipNombre  = '';
+let flipDed     = '';   // texto dedicatoria, se llena en 'cuento'
 
-// ── Construye el HTML de UNA página ───────────────────────
-function buildPage(p, side) {
-  if (!p) {
-    return `<div style="width:100%;min-height:380px;background:#080318;display:flex;align-items:center;
-      justify-content:center;"><span style="color:rgba(255,255,255,.06);font-size:48px;">🦉</span></div>`;
-  }
+// ── HTML de una página ────────────────────────────────────
+function buildPage(p) {
+  if (!p) return `<div style="width:100%;aspect-ratio:2/3;background:#080318;
+    display:flex;align-items:center;justify-content:center;">
+    <span style="color:rgba(255,255,255,.06);font-size:48px;">🦉</span></div>`;
 
-  if (p.tipo === 'portada') {
-    return `<div class="fp-page">
+  if (p.tipo === 'portada') return `
+    <div class="fp-page">
       <img src="${p.url}" alt="Portada" oncontextmenu="return false" ondragstart="return false"/>
       <div class="fp-wm"></div>
       <div class="fp-cover-panel">
-        <div class="fp-cover-title">${escapeHtml(p.titulo||'')}</div>
+        <div class="fp-cover-title">${esc(p.titulo)}</div>
         <div class="fp-cover-brand">🦉 StoryOwl</div>
       </div>
     </div>`;
-  }
 
-  if (p.tipo === 'pagina') {
-    return `<div class="fp-page">
+  if (p.tipo === 'dedicatoria') return `
+    <div class="fp-ded">
+      <div class="fp-ded-para">Para</div>
+      <div class="fp-ded-nombre">${esc(p.nombre)}</div>
+      ${p.texto ? `<div class="fp-ded-texto">${esc(p.texto)}</div>` : ''}
+      <div class="fp-ded-line"></div>
+    </div>`;
+
+  if (p.tipo === 'pagina') return `
+    <div class="fp-page">
       <img src="${p.url||''}" alt="Página ${p.numero}" loading="lazy"
            oncontextmenu="return false" ondragstart="return false"/>
       <div class="fp-wm"></div>
       <div class="fp-text">
         <div class="fp-num">Página ${p.numero}</div>
-        <div class="fp-title">${escapeHtml(p.titulo||'')}</div>
-        <div class="fp-body">${escapeHtml(p.texto||'')}</div>
+        <div class="fp-title">${esc(p.titulo)}</div>
+        <div class="fp-body">${esc(p.texto)}</div>
       </div>
     </div>`;
-  }
 
-  if (p.tipo === 'fin') {
-    return `<div class="fp-special fp-fin">
-      <div>
-        <div class="fp-fin-icon">✨</div>
-        <div class="fp-fin-title">¡FIN!</div>
-        <div class="fp-fin-sub">Un cuento creado especialmente para<br>
-          <strong style="color:rgba(255,255,255,.85);font-size:15px;">${escapeHtml(flipNombre)}</strong>
-        </div>
+  if (p.tipo === 'fin') return `
+    <div class="fp-special fp-fin"><div>
+      <div class="fp-fin-icon">✨</div>
+      <div class="fp-fin-title">¡FIN!</div>
+      <div class="fp-fin-sub">Un cuento creado especialmente para<br>
+        <strong style="color:rgba(255,255,255,.85);font-size:15px;">${esc(flipNombre)}</strong>
       </div>
-    </div>`;
-  }
+    </div></div>`;
 
-  if (p.tipo === 'contraportada') {
-    return `<div class="fp-special fp-back">
-      <div>
-        <div class="fp-back-icon">🦉</div>
-        <div class="fp-back-phrase">Que la magia de las historias<br>te acompañe siempre.</div>
-        <div class="fp-back-line"></div>
-        <div class="fp-back-brand">StoryOwl · storyowl.com</div>
-      </div>
-    </div>`;
-  }
+  if (p.tipo === 'contraportada') return `
+    <div class="fp-special fp-back"><div>
+      <div class="fp-back-icon">🦉</div>
+      <div class="fp-back-phrase">Que la magia de las historias<br>te acompañe siempre.</div>
+      <div class="fp-back-line"></div>
+      <div class="fp-back-brand">StoryOwl · storyowl.com</div>
+    </div></div>`;
 
   return '';
 }
 
-function escapeHtml(s) {
-  return String(s)
+function esc(s) {
+  return String(s||'')
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
-// ── Renderiza el viewer completo ──────────────────────────
+// ── Render ────────────────────────────────────────────────
 function flipRender(animate) {
   const isMob = window.innerWidth <= 640;
 
   if (isMob) {
-    const p = flipPages[flipIdx];
     const el = document.getElementById('pageSingle');
     if (!el) return;
-    if (animate) {
-      el.classList.remove('fp-flip'); void el.offsetWidth;
-      el.classList.add('fp-flip');
-      setTimeout(() => el.classList.remove('fp-flip'), 420);
-    }
-    el.innerHTML = buildPage(p);
+    if (animate) { el.classList.remove('fp-flip'); void el.offsetWidth; el.classList.add('fp-flip'); setTimeout(()=>el.classList.remove('fp-flip'),400); }
+    el.innerHTML = buildPage(flipPages[flipIdx]);
   } else {
-    // Desktop: flipIdx es la página izquierda, flipIdx+1 la derecha
-    // flipIdx siempre par para mantener paridad visual
-    const pL = flipPages[flipIdx];
-    const pR = flipPages[flipIdx + 1] || null;
     const elL = document.getElementById('pageLeft');
     const elR = document.getElementById('pageRight');
-    if (!elL || !elR) return;
+    if (!elL||!elR) return;
     if (animate) {
-      [elL, elR].forEach(el => {
-        el.classList.remove('fp-flip'); void el.offsetWidth;
-        el.classList.add('fp-flip');
-        setTimeout(() => el.classList.remove('fp-flip'), 420);
-      });
+      [elL,elR].forEach(el=>{ el.classList.remove('fp-flip'); void el.offsetWidth; el.classList.add('fp-flip'); setTimeout(()=>el.classList.remove('fp-flip'),400); });
     }
-    elL.innerHTML = buildPage(pL, 'left');
-    elR.innerHTML = buildPage(pR, 'right');
+    elL.innerHTML = buildPage(flipPages[flipIdx]   || null);
+    elR.innerHTML = buildPage(flipPages[flipIdx+1] || null);
   }
 
-  // Controles
-  const isMobCtrl = window.innerWidth <= 640;
-  const step  = isMobCtrl ? 1 : 2;
-  const total = flipPages.length;
-  const pg    = Math.floor(flipIdx / step) + 1;
-  const tots  = Math.ceil(total / step);
-  const ctr   = document.getElementById('flipCounter');
-  if (ctr) ctr.textContent = `${pg} / ${tots}`;
-  document.getElementById('flipPrev').disabled = flipIdx === 0;
-  document.getElementById('flipNext').disabled = flipIdx + step >= total;
-  flipUpdateDots(tots, pg - 1);
-}
+  // Contador: página real 1-20
+  const TOTAL = 20;
+  const pgNum = flipIdx + 1; // portada=1, dedicatoria=2, pág1=3 …
+  document.getElementById('flipCounter').textContent = `${pgNum} / ${TOTAL}`;
 
-function flipUpdateDots(total, current) {
+  // Prev/Next
+  const step = isMob ? 1 : 2;
+  document.getElementById('flipPrev').disabled = flipIdx <= 0;
+  document.getElementById('flipNext').disabled = flipIdx + step >= flipPages.length;
+
+  // Dots — uno por spread visible (10 en desktop, 20 en móvil)
   const dots = document.getElementById('flipDots');
-  if (!dots) return;
-  dots.innerHTML = '';
-  for (let i = 0; i < Math.min(total, 14); i++) {
-    const d = document.createElement('div');
-    d.className = 'flip-dot' + (i === current ? ' active' : '');
-    d.onclick = () => {
-      const isMob = window.innerWidth <= 640;
-      flipIdx = i * (isMob ? 1 : 2);
-      flipIdx = Math.min(flipIdx, flipPages.length - 1);
-      // En desktop asegurar que flipIdx sea par
-      if (!isMob && flipIdx % 2 !== 0) flipIdx = Math.max(0, flipIdx - 1);
-      flipRender(true);
-    };
-    dots.appendChild(d);
+  if (dots) {
+    const numDots = isMob ? Math.min(flipPages.length, 20) : Math.min(Math.ceil(flipPages.length/2), 12);
+    const current = isMob ? flipIdx : Math.floor(flipIdx/2);
+    dots.innerHTML = '';
+    for (let i=0;i<numDots;i++) {
+      const d = document.createElement('div');
+      d.className = 'flip-dot'+(i===current?' active':'');
+      d.onclick = ()=>{ flipIdx = isMob ? i : Math.min(i*2, flipPages.length-2); flipRender(true); };
+      dots.appendChild(d);
+    }
   }
 }
 
@@ -795,23 +785,23 @@ function flipUpdateDots(total, current) {
 function flipPage(dir) {
   const isMob = window.innerWidth <= 640;
   const step  = isMob ? 1 : 2;
-  const newIdx = flipIdx + dir * step;
-  if (newIdx < 0 || newIdx >= flipPages.length) return;
-  flipIdx = newIdx;
+  const n = flipIdx + dir * step;
+  if (n < 0 || n >= flipPages.length) return;
+  flipIdx = n;
   flipRender(true);
 }
 
 // ── Abrir libro ────────────────────────────────────────
+// Arranca en flipIdx=1: izq=dedicatoria, der=pág1
 function abrirLibro() {
-  if (flipIsOpen || flipPages.length === 0) return;
+  if (flipIsOpen || flipPages.length < 2) return;
   flipIsOpen = true;
-  flipIdx = 0;
+  flipIdx = 1; // dedicatoria izq + pág1 der
 
   const closed = document.getElementById('bookClosed');
   closed.style.transition = 'opacity .4s, transform .5s';
   closed.style.opacity = '0';
   closed.style.transform = 'scale(.92)';
-
   setTimeout(() => {
     closed.style.display = 'none';
     const open = document.getElementById('bookOpen');
@@ -823,7 +813,10 @@ function abrirLibro() {
 
 // ── API pública ────────────────────────────────────────
 function flipAddPage(p) {
-  flipPages.push(p);
+  // Insertar antes de fin/contraportada si ya existen al final
+  const finIdx = flipPages.findIndex(x => x.tipo==='fin');
+  if (finIdx !== -1) flipPages.splice(finIdx, 0, p);
+  else flipPages.push(p);
   if (flipIsOpen) flipRender(false);
 }
 
@@ -834,17 +827,23 @@ function flipShowCover(url, titulo) {
   document.getElementById('coverTitleText').textContent = titulo || '';
   document.getElementById('coverTitlePanel').style.display = 'block';
   document.getElementById('btnOpenBook').style.display = 'inline-block';
-  flipPages.unshift({ tipo: 'portada', url, titulo });
+  // [0] portada, [1] dedicatoria (placeholder hasta que llegue 'cuento')
+  if (!flipPages[0] || flipPages[0].tipo !== 'portada') {
+    flipPages.unshift({ tipo: 'portada', url, titulo });
+  }
+  // Asegurar que la dedicatoria ocupa índice 1
+  if (!flipPages[1] || flipPages[1].tipo !== 'dedicatoria') {
+    flipPages.splice(1, 0, { tipo: 'dedicatoria', nombre: flipNombre, texto: flipDed });
+  }
 }
 
 function flipInit(titulo, nombre) {
   flipPages = []; flipIdx = 0; flipIsOpen = false;
-  flipNombre = nombre || '';
+  flipNombre = nombre || ''; flipDed = '';
   document.getElementById('flipbookSection').style.display = 'block';
   document.getElementById('flipTitle').textContent = titulo || '';
   document.getElementById('flipCta').style.display = 'none';
-  const closed = document.getElementById('bookClosed');
-  closed.style.cssText = 'text-align:center;padding-bottom:8px;';
+  document.getElementById('bookClosed').style.cssText = 'text-align:center;padding-bottom:8px;';
   document.getElementById('bookOpen').style.display = 'none';
   document.getElementById('coverSkeleton').style.display = 'block';
   document.getElementById('coverPreviewImg').style.display = 'none';
@@ -854,11 +853,14 @@ function flipInit(titulo, nombre) {
 }
 
 function flipComplete() {
+  // Actualizar dedicatoria con texto real si ya llegó
+  const dedIdx = flipPages.findIndex(x => x.tipo==='dedicatoria');
+  if (dedIdx !== -1) flipPages[dedIdx].texto = flipDed;
   flipPages.push({ tipo: 'fin' });
   flipPages.push({ tipo: 'contraportada' });
   document.getElementById('flipCta').style.display = 'block';
   if (flipIsOpen) flipRender(false);
-  setTimeout(() => document.getElementById('flipCta').scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 400);
+  setTimeout(()=>document.getElementById('flipCta').scrollIntoView({behavior:'smooth',block:'nearest'}),400);
 }
 
 

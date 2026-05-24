@@ -40,12 +40,48 @@ async function generarImagen(prompt, nombreArchivo) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// PROMPT de página interior — portrait, una escena por página
+// CHARACTER BIBLE — descripción fija exhaustiva del protagonista
+// Garantiza identidad visual consistente en TODAS las páginas.
 // ─────────────────────────────────────────────────────────────
-function paginaPrompt(estiloBase, protagonistaDesc, personajeDesc, escena) {
-  return `${estiloBase}. Portrait format children's book illustration. ` +
-    `${protagonistaDesc} and ${personajeDesc}. Scene: ${escena}. ` +
-    `Consistent character design, warm lighting, rich colors, professional children's book quality.`;
+function buildProtagonistaBible(nombre, edad, genero, piel, pelo, tipopelo, ojos, gafas, pecas, ropa) {
+  const hairDesc  = `${tipopelo} ${pelo} hair — exact same length, volume and style in every image`;
+  const eyeDesc   = `${ojos} eyes — same size, shape and color in every image`;
+  const skinDesc  = `${piel} skin tone — unchanged across all images`;
+  const glassDesc = (gafas && gafas !== 'without glasses') ? `, ${gafas} — always present, same frame` : ', no glasses';
+  const freckDesc = pecas ? `, ${pecas} — always visible on nose` : '';
+  const ropaDesc  = ropa || 'bright yellow t-shirt and blue denim dungarees/overalls — same outfit every page';
+  return (
+    `PROTAGONIST (must look IDENTICAL in every single illustration — same child, same face, same body): ` +
+    `${edad}-year-old ${genero} named ${nombre}. ` +
+    `Hair: ${hairDesc}. Eyes: ${eyeDesc}. Skin: ${skinDesc}${glassDesc}${freckDesc}. ` +
+    `Outfit: ${ropaDesc}. ` +
+    `Same face proportions, same apparent age, same body size in every image. ` +
+    `NEVER change any physical feature between illustrations.`
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// CHARACTER BIBLE — personaje secundario
+// ─────────────────────────────────────────────────────────────
+function buildPersonajeBible(nombre, desc) {
+  return (
+    `COMPANION CHARACTER (must look IDENTICAL in every single illustration): ` +
+    `${nombre}. Fixed visual description: ${desc}. ` +
+    `Same design, same colors, same proportions in every image. Do NOT reinvent this character.`
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// PROMPT de página — character bible completo en cada llamada
+// ─────────────────────────────────────────────────────────────
+function paginaPrompt(estiloBase, protagonistaBible, personajeBible, escena) {
+  return (
+    `${estiloBase}. Portrait format children's book illustration. ` +
+    `${protagonistaBible} ` +
+    `${personajeBible} ` +
+    `Scene: ${escena}. ` +
+    `Warm lighting, rich colors, professional children's book quality.`
+  );
 }
 
 
@@ -73,7 +109,7 @@ app.post('/generar-cuento', async (req, res) => {
     const pecas             = opciones?.pecas    || '';
     const estiloIlustracion = estilo || 'Pixar CGI quality, 3D animation style, vibrant and detailed';
     const estiloBase = `${estiloIlustracion}, family-friendly children's book illustration, cheerful and safe for children, warm lighting`;
-    const protagonistaDesc  = `a ${edad}-year-old ${genero} named ${nombre} with ${tipopelo} ${pelo} hair, ${ojos} eyes, ${piel}, ${gafas}${pecas ? ', ' + pecas : ''}, always wearing a yellow t-shirt and blue dungarees`;
+    const protagonistaBible = buildProtagonistaBible(nombre, edad, genero, piel, pelo, tipopelo, ojos, gafas, pecas);
 
     const tonoEdad = edad <= 5  ? 'muy sencillo, frases cortas, vocabulario básico, máximo 2 frases por página' :
                      edad <= 8  ? 'sencillo, frases cortas, aventuras y humor, 3-4 frases por página' :
@@ -84,12 +120,13 @@ app.post('/generar-cuento', async (req, res) => {
 
     const anthropic = new Anthropic({ apiKey: ANTHROPIC_KEY });
 
-    // PASO 1: Descripción visual del personaje secundario
+    // PASO 1: Descripción visual exhaustiva del personaje secundario
     const msgPersonaje = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5', max_tokens: 300,
-      messages: [{ role: 'user', content: `Genera una descripción visual detallada y consistente en inglés para este personaje de cuento infantil: "${personaje}". Incluye colores exactos, ropa o características físicas fijas, rasgos distintivos. Máximo 40 palabras. Solo la descripción.` }]
+      model: 'claude-sonnet-4-5', max_tokens: 400,
+      messages: [{ role: 'user', content: `Genera una descripción visual MUY detallada y específica en inglés para este personaje de cuento infantil: "${personaje}". Incluye: colores EXACTOS (no aproximados), ropa con detalles, forma exacta de ojos/cara/cuerpo, rasgos únicos y distintivos, proporciones. La descripción debe ser tan precisa que el personaje quede IDÉNTICO en todas las ilustraciones. Máximo 60 palabras. Solo la descripción, sin explicaciones.` }]
     });
     const personajeDesc = msgPersonaje.content[0].text.trim();
+    const personajeBible = buildPersonajeBible(personaje, personajeDesc);
 
     send({ tipo: 'estado', mensaje: '🦉 El búho está escribiendo el cuento...' });
 
@@ -138,7 +175,7 @@ RESPONDE SOLO JSON sin texto antes ni después, sin backticks:
     send({ tipo: 'estado', mensaje: '🎨 Generando portada...' });
     try {
       const portadaUrl = await generarImagen(
-        `${estiloBase}. Book cover portrait format: ${protagonistaDesc} with ${personajeDesc} in a magical glowing scene. Epic adventure mood. Spanish title: "${cuento.titulo}". Professional children's book cover.`,
+        `${estiloBase}. Book cover portrait format. ${protagonistaBible} ${personajeBible} Magical glowing scene, epic adventure mood. Spanish title: "${cuento.titulo}". Professional children's book cover.`,
         `portada_${id}.png`
       );
       send({ tipo: 'imagen', url: portadaUrl });
@@ -153,7 +190,7 @@ RESPONDE SOLO JSON sin texto antes ni después, sin backticks:
       let imgUrl = '';
       try {
         imgUrl = await generarImagen(
-          paginaPrompt(estiloBase, protagonistaDesc, personajeDesc, pag.escena),
+          paginaPrompt(estiloBase, protagonistaBible, personajeBible, pag.escena),
           `pag_${id}_${pag.numero}.png`
         );
       } catch(e) {
@@ -230,17 +267,18 @@ app.post('/generar-cumple', async (req, res) => {
     const pecas             = opciones?.pecas    || '';
     const estiloIlustracion = estilo || 'Pixar CGI quality, 3D animation style, vibrant and detailed';
     const estiloBase = `${estiloIlustracion}, family-friendly children's book illustration, cheerful and safe for children, warm lighting`;
-    const protagonistaDesc  = `a ${edad}-year-old ${genero} named ${nombre} with ${tipopelo} ${pelo} hair, ${ojos} eyes, ${piel}, ${gafas}${pecas ? ', ' + pecas : ''}, always wearing a yellow t-shirt and blue dungarees`;
+    const protagonistaBible = buildProtagonistaBible(nombre, edad, genero, piel, pelo, tipopelo, ojos, gafas, pecas);
 
     send({ tipo: 'estado', mensaje: '🎂 Creando los personajes de la fiesta...' });
 
     const anthropic = new Anthropic({ apiKey: ANTHROPIC_KEY });
 
     const msgPersonaje = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5', max_tokens: 300,
-      messages: [{ role: 'user', content: `Genera una descripción visual detallada y consistente en inglés para este personaje de cuento infantil: "${personaje}". Incluye colores exactos, características físicas fijas, rasgos distintivos. Máximo 40 palabras. Solo la descripción.` }]
+      model: 'claude-sonnet-4-5', max_tokens: 400,
+      messages: [{ role: 'user', content: `Genera una descripción visual MUY detallada y específica en inglés para este personaje de cuento infantil: "${personaje}". Incluye colores EXACTOS, ropa con detalles, forma exacta de cara/ojos/cuerpo, rasgos únicos. La descripción debe ser tan precisa que el personaje quede IDÉNTICO en todas las ilustraciones. Máximo 60 palabras. Solo la descripción.` }]
     });
     const personajeDesc = msgPersonaje.content[0].text.trim();
+    const personajeBible = buildPersonajeBible(personaje, personajeDesc);
 
     send({ tipo: 'estado', mensaje: '🎂 Escribiendo la historia...' });
     const msgTitulo = await anthropic.messages.create({
@@ -254,7 +292,7 @@ app.post('/generar-cumple', async (req, res) => {
     send({ tipo: 'estado', mensaje: '🎨 Generando portada...' });
     try {
       const portadaUrl = await generarImagen(
-        `${estiloBase}. Birthday book cover portrait: ${protagonistaDesc} with ${personajeDesc} surrounded by colorful balloons and confetti. Festive magical atmosphere. Spanish title: "${tituloData.titulo}".`,
+        `${estiloBase}. Birthday book cover portrait. ${protagonistaBible} ${personajeBible} Surrounded by colorful balloons and confetti, festive magical atmosphere. Spanish title: "${tituloData.titulo}".`,
         `cumple_portada_${id}.png`
       );
       send({ tipo: 'imagen', url: portadaUrl });
@@ -269,7 +307,7 @@ app.post('/generar-cumple', async (req, res) => {
       let imgUrl = '';
       try {
         imgUrl = await generarImagen(
-          paginaPrompt(estiloBase, protagonistaDesc, personajeDesc, pag.escena),
+          paginaPrompt(estiloBase, protagonistaBible, personajeBible, pag.escena),
           `cumple_${id}_${pag.numero}.png`
         );
       } catch(e) { console.error(`Error pág ${pag.numero}:`, e.message); }
@@ -340,7 +378,8 @@ app.post('/generar-diente', async (req, res) => {
     const pecas             = opciones?.pecas    || '';
     const estiloIlustracion = estilo || 'Pixar CGI quality, 3D animation style, vibrant and detailed';
     const estiloBase = `${estiloIlustracion}, family-friendly children's book illustration, cheerful and safe for children, warm lighting`;
-    const protagonistaDesc  = `a ${genero} named ${nombre} with ${tipopelo} ${pelo} hair, ${ojos} eyes, ${piel}, ${gafas}${pecas ? ', ' + pecas : ''}, always wearing a yellow t-shirt and blue dungarees`;
+    const protagonistaBible = buildProtagonistaBible(nombre, null, genero, piel, pelo, tipopelo, ojos, gafas, pecas);
+    const visitanteBible = buildPersonajeBible(visitanteNombre, visitanteDesc);
 
     send({ tipo: 'estado', mensaje: '🦷 Preparando la historia del diente...' });
 
@@ -357,7 +396,7 @@ app.post('/generar-diente', async (req, res) => {
     send({ tipo: 'estado', mensaje: '🎨 Generando portada...' });
     try {
       const portadaUrl = await generarImagen(
-        `${estiloBase}. Book cover portrait: ${protagonistaDesc} holding a tiny glowing tooth, with ${visitanteDesc} appearing magically nearby with sparkles. Nighttime magical atmosphere. Spanish title: "${tituloData.titulo}".`,
+        `${estiloBase}. Book cover portrait. ${protagonistaBible} ${visitanteBible} Child holding a tiny glowing tooth, magical visitor appearing nearby with sparkles. Nighttime magical atmosphere. Spanish title: "${tituloData.titulo}".`,
         `diente_portada_${id}.png`
       );
       send({ tipo: 'imagen', url: portadaUrl });
@@ -371,7 +410,7 @@ app.post('/generar-diente', async (req, res) => {
       let imgUrl = '';
       try {
         imgUrl = await generarImagen(
-          paginaPrompt(estiloBase, protagonistaDesc, visitanteDesc, pag.escena),
+          paginaPrompt(estiloBase, protagonistaBible, visitanteBible, pag.escena),
           `diente_${id}_${pag.numero}.png`
         );
       } catch(e) { console.error(`Error pág ${pag.numero}:`, e.message); }
@@ -442,17 +481,18 @@ app.post('/generar-verano', async (req, res) => {
     const pecas             = opciones?.pecas    || '';
     const estiloIlustracion = estilo || 'Pixar CGI quality, 3D animation style, vibrant and detailed';
     const estiloBase = `${estiloIlustracion}, family-friendly children's book illustration, cheerful and safe for children, warm summer lighting`;
-    const protagonistaDesc  = `a ${genero} named ${nombre} with ${tipopelo} ${pelo} hair, ${ojos} eyes, ${piel}, ${gafas}${pecas ? ', ' + pecas : ''}, wearing a summer outfit`;
+    const protagonistaBible = buildProtagonistaBible(nombre, null, genero, piel, pelo, tipopelo, ojos, gafas, pecas, 'a bright summer outfit — same clothing every page');
 
     send({ tipo: 'estado', mensaje: '☀️ Preparando la aventura de verano...' });
 
     const anthropic = new Anthropic({ apiKey: ANTHROPIC_KEY });
 
     const msgPersonaje = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5', max_tokens: 300,
-      messages: [{ role: 'user', content: `Genera una descripción visual detallada y consistente en inglés para este personaje: "${personaje}". Colores exactos, características fijas, rasgos distintivos. Máximo 40 palabras. Solo la descripción.` }]
+      model: 'claude-sonnet-4-5', max_tokens: 400,
+      messages: [{ role: 'user', content: `Genera una descripción visual MUY detallada y específica en inglés para este personaje: "${personaje}". Colores EXACTOS, ropa con detalles, forma de cara/ojos/cuerpo, rasgos únicos. Tan precisa que el personaje quede IDÉNTICO en todas las ilustraciones. Máximo 60 palabras. Solo la descripción.` }]
     });
     const personajeDesc = msgPersonaje.content[0].text.trim();
+    const personajeBible = buildPersonajeBible(personaje, personajeDesc);
 
     const msgTitulo = await anthropic.messages.create({
       model: 'claude-sonnet-4-5', max_tokens: 300,
@@ -465,7 +505,7 @@ app.post('/generar-verano', async (req, res) => {
     send({ tipo: 'estado', mensaje: '🎨 Generando portada...' });
     try {
       const portadaUrl = await generarImagen(
-        `${estiloBase}. Summer book cover portrait: ${protagonistaDesc} with ${personajeDesc} having fun at ${destinoNombre}, ${destinoDesc}. Bright summer colors, joyful atmosphere. Spanish title: "${tituloData.titulo}".`,
+        `${estiloBase}. Summer book cover portrait. ${protagonistaBible} ${personajeBible} Having fun at ${destinoNombre}, ${destinoDesc}. Bright summer colors, joyful atmosphere. Spanish title: "${tituloData.titulo}".`,
         `verano_portada_${id}.png`
       );
       send({ tipo: 'imagen', url: portadaUrl });
@@ -483,7 +523,7 @@ app.post('/generar-verano', async (req, res) => {
       let imgUrl = '';
       try {
         imgUrl = await generarImagen(
-          paginaPrompt(estiloBase, protagonistaDesc, personajeDesc, escena),
+          paginaPrompt(estiloBase, protagonistaBible, personajeBible, escena),
           `verano_${id}_${pag.numero}.png`
         );
       } catch(e) { console.error(`Error pág ${pag.numero}:`, e.message); }
