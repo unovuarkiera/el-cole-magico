@@ -45,11 +45,11 @@ async function generarImagen(prompt, size, nombreArchivo) {
 // lomo implícito en el centro y ligera curvatura de página.
 // ─────────────────────────────────────────────────────────────
 function spreadPrompt(estiloBase, protagonistaDesc, personajeDesc, escenaIzq, escenaDer) {
-  return `${estiloBase}. Open children's book double-page spread, landscape format. ` +
-    `Seamless panoramic illustration with natural spine shadow in the center and subtle page curl at edges. ` +
-    `LEFT PAGE: ${escenaIzq}. RIGHT PAGE: ${escenaDer}. ` +
+  return `${estiloBase}. Wide panoramic scene, landscape orientation. ` +
+    `IMPORTANT: flat 2D illustration only, absolutely NO book effect, NO open book shape, NO curved pages, NO page curl, NO spine, NO 3D book, NO book perspective, NO bent pages, NO book binding. Just a flat wide illustration. ` +
+    `Left side of image: ${escenaIzq}. Right side of image: ${escenaDer}. ` +
     `Characters: ${protagonistaDesc} and ${personajeDesc}. ` +
-    `Consistent character design across both pages. Warm lighting, rich colors, professional children's book quality.`;
+    `Consistent character design. Warm lighting, rich colors, professional children's book illustration style.`;
 }
 
 
