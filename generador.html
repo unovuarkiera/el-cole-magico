@@ -985,6 +985,8 @@ async function componerPaginaInterior(imgUrl, numero, titulo, texto) {
   ctx.strokeStyle = 'rgba(247,201,75,0.55)'; ctx.lineWidth = 2;
   ctx.beginPath(); ctx.moveTo(pX + 44, panY + 5); ctx.lineTo(pX + pW - 44, panY + 5); ctx.stroke();
 
+  let cy = panY + 48;
+
   // Número de página — dorado con sombra para legibilidad
   ctx.font = `800 ${szNum}px Arial,sans-serif`;
   ctx.fillStyle = 'rgba(247,185,0,1)'; ctx.textAlign = 'left';
