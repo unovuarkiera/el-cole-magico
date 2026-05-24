@@ -133,16 +133,23 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
 .flip-btn:hover:not(:disabled){background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.38);transform:scale(1.1);}
 .flip-btn:disabled{opacity:.2;cursor:not-allowed;}
 .flip-counter{font-family:'Fraunces',serif;font-size:14px;color:rgba(255,255,255,.5);min-width:80px;text-align:center;}
-.flip-dots{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:320px;}
-.flip-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.18);transition:all .3s;cursor:pointer;flex-shrink:0;}
-.flip-dot.active{background:#f7c94b;transform:scale(1.6);}
 
 /* ── BOOK VIEWER — doble página en desktop, simple en móvil ── */
 
-/* Contenedor general del viewer */
-.book-viewer{position:relative;max-width:860px;margin:0 auto;
+/* Contenedor general: flex column para que dots queden pegados al libro */
+.book-viewer-wrap{display:flex;flex-direction:column;align-items:center;max-width:860px;margin:0 auto;}
+
+/* El libro en sí */
+.book-viewer{position:relative;width:100%;
   box-shadow:0 40px 80px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.05);
   border-radius:8px 14px 14px 8px;overflow:hidden;}
+
+/* Dots: siempre centrados debajo del libro, mismo ancho */
+.flip-dots{display:flex;gap:6px;align-items:center;flex-wrap:wrap;
+  justify-content:center;width:100%;margin:14px 0 20px;padding:0;}
+.flip-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.18);
+  transition:all .3s;cursor:pointer;flex-shrink:0;}
+.flip-dot.active{background:#f7c94b;transform:scale(1.6);}
 
 /* Vista doble — desktop */
 .book-double{display:flex;gap:0;width:100%;}
@@ -190,8 +197,9 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
   color:white;text-shadow:0 2px 10px rgba(0,0,0,.9);line-height:1.2;}
 .fp-cover-brand{font-size:9px;color:rgba(247,201,75,.65);font-weight:700;letter-spacing:2px;margin-top:4px;}
 
-/* Páginas especiales FIN / contraportada */
-.fp-special{width:100%;min-height:380px;display:flex;align-items:center;justify-content:center;text-align:center;padding:32px;}
+/* Páginas especiales FIN / contraportada — sin altura fija */
+.fp-special{width:100%;aspect-ratio:2/3;display:flex;align-items:center;
+  justify-content:center;text-align:center;padding:32px;}
 .fp-fin{background:linear-gradient(160deg,#0d0820,#160a35);}
 .fp-fin-icon{font-size:48px;margin-bottom:14px;}
 .fp-fin-title{font-family:'Fraunces',serif;font-size:clamp(26px,4vw,44px);font-weight:900;color:white;margin-bottom:10px;}
@@ -223,7 +231,7 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
   .book-double{display:none!important;}
   .book-single{display:block!important;}
   .fp-body{-webkit-line-clamp:3;}
-  .fp-special{min-height:280px;}
+  .fp-special{aspect-ratio:3/4;}
 }
 @media(min-width:641px){
   .book-double{display:flex!important;}
@@ -454,22 +462,22 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
       <button class="flip-btn" id="flipNext" onclick="flipPage(1)">&#8594;</button>
     </div>
 
-    <div class="book-viewer" id="bookViewer">
-      <!-- Desktop: doble página -->
-      <div class="book-double" id="bookDouble">
-        <div class="book-page-left"  id="pageLeft"></div>
-        <div class="book-spine"></div>
-        <div class="book-page-right" id="pageRight"></div>
+    <div class="book-viewer-wrap">
+      <div class="book-viewer" id="bookViewer">
+        <!-- Desktop: doble página -->
+        <div class="book-double" id="bookDouble">
+          <div class="book-page-left"  id="pageLeft"></div>
+          <div class="book-spine"></div>
+          <div class="book-page-right" id="pageRight"></div>
+        </div>
+        <!-- Móvil: página única -->
+        <div class="book-single" id="bookSingle">
+          <div id="pageSingle"></div>
+        </div>
       </div>
-      <!-- Móvil: página única -->
-      <div class="book-single" id="bookSingle">
-        <div id="pageSingle"></div>
-      </div>
+      <!-- Dots justo debajo del libro, centrados -->
+      <div class="flip-dots" id="flipDots"></div>
     </div>
-
-    <!-- Dots -->
-    <div class="flip-dots" id="flipDots"
-         style="justify-content:center;display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 24px;"></div>
   </div>
 
   <!-- CTA comprar -->
@@ -756,12 +764,12 @@ function flipRender(animate) {
     elR.innerHTML = buildPage(flipPages[flipIdx+1] || null);
   }
 
-  // Contador: página real 1-20
+  // Contador: página real de la izquierda (1-based, max 20)
   const TOTAL = 20;
-  const pgNum = flipIdx + 1; // portada=1, dedicatoria=2, pág1=3 …
+  const pgNum = Math.min(flipIdx + 1, TOTAL);
   document.getElementById('flipCounter').textContent = `${pgNum} / ${TOTAL}`;
 
-  // Prev/Next
+  // Prev/Next — Prev activo hasta flipIdx=0 (portada)
   const step = isMob ? 1 : 2;
   document.getElementById('flipPrev').disabled = flipIdx <= 0;
   document.getElementById('flipNext').disabled = flipIdx + step >= flipPages.length;
@@ -792,11 +800,13 @@ function flipPage(dir) {
 }
 
 // ── Abrir libro ────────────────────────────────────────
-// Arranca en flipIdx=1: izq=dedicatoria, der=pág1
+// Arranca en flipIdx=0 → portada visible en izquierda
+// En desktop: izq=portada, der=dedicatoria
+// Así el usuario puede navegar ← para volver a portada
 function abrirLibro() {
   if (flipIsOpen || flipPages.length < 2) return;
   flipIsOpen = true;
-  flipIdx = 1; // dedicatoria izq + pág1 der
+  flipIdx = 0; // empieza en portada, siempre accesible
 
   const closed = document.getElementById('bookClosed');
   closed.style.transition = 'opacity .4s, transform .5s';
@@ -927,7 +937,7 @@ async function componerPaginaInterior(imgUrl, numero, titulo, texto) {
   const ctx = cv.getContext('2d');
   ctx.fillStyle = '#1a0840'; ctx.fillRect(0, 0, PX, PY);
 
-  // Imagen a sangre completa (object-fit: cover)
+  // Imagen a sangre completa
   if (imgUrl) {
     try {
       const img = await cargarImagen(imgUrl);
@@ -937,46 +947,60 @@ async function componerPaginaInterior(imgUrl, numero, titulo, texto) {
     }
   }
 
-  // Panel texto
-  const pX = 60, pW = PX - 120, tW = pW - PH * 2;
-  const szNum = 28, hNum = szNum + 20;
-  const {sz:szT, lines:lT} = fitFontSize(ctx, titulo||'', 'italic bold SIZEpx Georgia,serif', tW, 2, 28, 52);
-  const hT = lT.length * Math.round(szT * 1.35) + 18;
-  const {sz:szB, lines:lB} = fitFontSize(ctx, texto||'', 'SIZEpx Georgia,serif', tW, 4, 24, 38);
-  const lhB = Math.round(szB * 1.58);
+  // ── Panel translúcido — mismo estilo que la preview ──────
+  // Medidas tipográficas
+  const pX = 52, pW = PX - 104, tW = pW - 80;
+  const szNum = 26, hNum = szNum + 22;
+  const {sz:szT, lines:lT} = fitFontSize(ctx, titulo||'', 'italic bold SIZEpx Georgia,serif', tW, 2, 30, 54);
+  const hT = lT.length * Math.round(szT * 1.38) + 20;
+  const {sz:szB, lines:lB} = fitFontSize(ctx, texto||'', 'SIZEpx Georgia,serif', tW, 4, 28, 40);
+  const lhB = Math.round(szB * 1.65);
   const hB  = lB.length * lhB;
-  const panH = PV + hNum + hT + hB + PV + 10;
+  const panH = 48 + hNum + hT + hB + 48;
   const panY = PY - panH;
 
-  // Degradado suave antes del panel
-  const g = ctx.createLinearGradient(0, panY - 80, 0, panY + 20);
-  g.addColorStop(0, 'rgba(8,3,18,0)'); g.addColorStop(1, 'rgba(8,3,18,0.5)');
-  ctx.fillStyle = g; ctx.fillRect(0, panY - 80, PX, 100);
+  // Degradado oscuro sobre la imagen (igual que .fp-text en preview)
+  const gFade = ctx.createLinearGradient(0, panY - 120, 0, panY + panH);
+  gFade.addColorStop(0, 'rgba(4,1,12,0)');
+  gFade.addColorStop(0.35, 'rgba(4,1,12,0.55)');
+  gFade.addColorStop(1,    'rgba(4,1,12,0.92)');
+  ctx.fillStyle = gFade;
+  ctx.fillRect(0, panY - 120, PX, panH + 120);
 
-  // Panel blanco redondeado
+  // Panel translúcido redondeado — oscuro con ligera transparencia
   ctx.save();
-  roundRect(ctx, pX, panY, pW, panH, 32);
-  ctx.fillStyle = 'rgba(255,253,250,0.97)';
-  ctx.shadowColor = 'rgba(50,20,100,0.13)'; ctx.shadowBlur = 28; ctx.shadowOffsetY = -3;
+  roundRect(ctx, pX, panY, pW, panH, 28);
+  ctx.fillStyle = 'rgba(8,3,24,0.78)';
+  ctx.shadowColor = 'rgba(0,0,0,0.4)'; ctx.shadowBlur = 20;
   ctx.fill(); ctx.restore();
 
-  // Línea dorada
-  ctx.strokeStyle = '#f7c94b'; ctx.lineWidth = 3;
-  ctx.beginPath(); ctx.moveTo(pX + 50, panY + 3); ctx.lineTo(pX + pW - 50, panY + 3); ctx.stroke();
+  // Línea dorada fina (acento visual)
+  ctx.strokeStyle = 'rgba(247,201,75,0.55)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(pX + 44, panY + 5); ctx.lineTo(pX + pW - 44, panY + 5); ctx.stroke();
 
-  let cy = panY + PV;
-  ctx.font = `bold ${szNum}px Arial,sans-serif`; ctx.fillStyle = '#b88000'; ctx.textAlign = 'left';
-  ctx.fillText(`PÁGINA ${numero}`, pX + PH, cy + szNum); cy += hNum;
+  let cy = panY + 48;
 
-  ctx.font = `italic bold ${szT}px Georgia,serif`; ctx.fillStyle = '#3a1070';
-  const lhT = Math.round(szT * 1.35);
-  for (const l of lT) { ctx.fillText(l, pX + PH, cy + lhT); cy += lhT; } cy += 18;
+  // Número de página — color dorado suave
+  ctx.font = `800 ${szNum}px Arial,sans-serif`;
+  ctx.fillStyle = 'rgba(184,128,0,0.9)'; ctx.textAlign = 'left';
+  ctx.fillText(`PÁGINA ${numero}`, pX + 52, cy + szNum); cy += hNum;
 
-  ctx.font = `${szB}px Georgia,serif`; ctx.fillStyle = '#2a1a40';
-  for (const l of lB) { ctx.fillText(l, pX + PH, cy + lhB); cy += lhB; }
+  // Título — cursiva, color lila claro (como .fp-title)
+  ctx.font = `italic bold ${szT}px Georgia,serif`;
+  ctx.fillStyle = 'rgba(192,132,252,0.95)';
+  const lhT = Math.round(szT * 1.38);
+  for (const l of lT) { ctx.fillText(l, pX + 52, cy + lhT); cy += lhT; } cy += 20;
 
-  ctx.font = 'bold 22px Arial,sans-serif'; ctx.fillStyle = 'rgba(107,63,168,0.38)';
-  ctx.textAlign = 'right'; ctx.fillText('🦉 StoryOwl', pX + pW - PH, panY + panH - 18);
+  // Texto cuerpo — blanco suave legible (como .fp-body)
+  ctx.font = `${szB}px Georgia,serif`;
+  ctx.fillStyle = 'rgba(255,255,255,0.88)';
+  for (const l of lB) { ctx.fillText(l, pX + 52, cy + lhB); cy += lhB; }
+
+  // Logo discreto
+  ctx.font = 'bold 22px Arial,sans-serif';
+  ctx.fillStyle = 'rgba(247,201,75,0.3)';
+  ctx.textAlign = 'right';
+  ctx.fillText('🦉 storyowl.com', pX + pW - 44, panY + panH - 18);
   ctx.textAlign = 'left';
 
   return cv.toDataURL('image/jpeg', 0.92);
