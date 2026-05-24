@@ -143,8 +143,8 @@ RESPONDE SOLO JSON sin texto antes ni después, sin backticks:
       let imgUrl = '';
       try {
         imgUrl = await generarImagen(
-          `${estiloBase}. ${protagonistaDesc} and ${personajeDesc}. Scene: ${pag.escena}. Portrait format, magical atmosphere, consistent character design throughout the book.`,
-          '1024x1536',
+          `${estiloBase}. ${protagonistaDesc} and ${personajeDesc}. Scene: ${pag.escena}. Wide panoramic composition, landscape format, main action centered, left and right sides with space for text overlay, magical atmosphere, consistent character design throughout the book.`,
+          '1536x1024',
           `pag_${id}_${pag.numero}.png`
         );
       } catch (e) {
@@ -269,8 +269,8 @@ Responde SOLO JSON sin backticks: {"titulo":"...","dedicatoria":"..."}` }]
       let imgUrl = '';
       try {
         imgUrl = await generarImagen(
-          `${estiloBase}. ${escenaImg}. Characters: ${protagonistaDesc} and ${personajeDesc}. Portrait format, consistent character design throughout the book.`,
-          '1024x1536',
+          `${estiloBase}. ${escenaImg}. Characters: ${protagonistaDesc} and ${personajeDesc}. Wide panoramic composition, landscape format, main action centered, left and right margins with space for text overlay, consistent character design throughout the book.`,
+          '1536x1024',
           `cumple_${id}_${escena.numero}.png`
         );
       } catch(e) {
@@ -382,8 +382,8 @@ Responde SOLO JSON sin backticks: {"titulo":"...","dedicatoria":"..."}` }]
       let imgUrl = '';
       try {
         imgUrl = await generarImagen(
-          `${estiloBase}. ${escenaImg}. Main character: ${protagonistaDesc}. Portrait format, consistent character design throughout the book, magical and warm atmosphere.`,
-          '1024x1536',
+          `${estiloBase}. ${escenaImg}. Main character: ${protagonistaDesc}. Wide panoramic composition, landscape format, main action centered, left and right margins with space for text overlay, consistent character design, magical and warm atmosphere.`,
+          '1536x1024',
           `diente_${id}_${escena.numero}.png`
         );
       } catch(e) {
@@ -497,8 +497,8 @@ app.post('/generar-verano', async (req, res) => {
       let imgUrl = '';
       try {
         imgUrl = await generarImagen(
-          `${estiloBase}. ${escenaImg}. Main character: ${protagonistaDesc}. Companion: ${personajeDesc}. Portrait format, consistent character design, bright summer colors.`,
-          '1024x1536', `verano_${id}_${escena.numero}.png`
+          `${estiloBase}. ${escenaImg}. Main character: ${protagonistaDesc}. Companion: ${personajeDesc}. Wide panoramic composition, landscape format, main action centered, left and right margins with space for text overlay, consistent character design, bright summer colors.`,
+          '1536x1024', `verano_${id}_${escena.numero}.png`
         );
       } catch(e) {
         console.error(`Error página ${escena.numero}:`, e.message);

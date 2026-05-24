@@ -668,7 +668,8 @@ function makePageHTML(p) {
       </div>
     </div>`;
 
-  // Página interior normal
+  // Página interior — imagen panorámica, texto en panel inferior
+  const esDerecha = (p.numero % 2 === 0);
   return `
     <div class="fp-page fp-interior">
       <img src="${p.url}" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"
