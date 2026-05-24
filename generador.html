@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>StoryOwl — Crear cuento personalizado</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://unpkg.com/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -729,8 +729,21 @@ function makePageEl(p, w, h) {
 // ── Inicializa PageFlip ───────────────────────────────────
 function initPageFlip() {
   const container = document.getElementById('flipBook');
-  if (!container || typeof PageFlip === 'undefined') {
-    console.warn('PageFlip no disponible');
+  if (!container) return;
+  if (typeof PageFlip === 'undefined') {
+    // Fallback: mostrar páginas en scroll si PageFlip no carga
+    console.warn('PageFlip no disponible, usando fallback scroll');
+    container.innerHTML = '';
+    const stageW = Math.min(window.innerWidth - 32, 860);
+    const pageW  = Math.floor(stageW / 2);
+    const pageH  = Math.floor(pageW * 1.42);
+    container.style.cssText = `display:grid;grid-template-columns:1fr 1fr;gap:4px;max-width:${stageW}px;margin:0 auto;`;
+    flipPages.forEach(p => {
+      const el = makePageEl(p, pageW, pageH);
+      el.style.width = '100%'; el.style.height = pageH + 'px';
+      container.appendChild(el);
+    });
+    flipSyncControls(0, flipPages.length);
     return;
   }
 
