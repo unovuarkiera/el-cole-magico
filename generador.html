@@ -897,67 +897,99 @@ function roundRect(ctx, x, y, w, h, r) {
 // Constantes A4 a 150dpi
 const PX = 1240, PY = 1754, PH = 88, PV = 52;
 
-// ── Página interior: imagen del spread + texto de UNA página ──
-// Usamos la misma imagen panorámica pero mostramos solo la mitad relevante
-async function componerPaginaInterior(imgUrl, numero, titulo, texto, lado) {
+// ── splitSpreadImage ────────────────────────────────────────
+// Divide el spread 1536x1024 exactamente por el centro (50/50).
+// Devuelve { izq: dataUrl, der: dataUrl } — cada mitad en canvas propio.
+// El canvas resultante mantiene las proporciones originales de cada mitad
+// (768x1024) que es casi exactamente A4 portrait → se escala limpio.
+async function splitSpreadImage(imgUrl) {
+  const img = await cargarImagen(imgUrl);
+  const halfW = Math.floor(img.width / 2);
+  const h     = img.height;
+
+  // Mitad izquierda
+  const cvL = document.createElement('canvas');
+  cvL.width = halfW; cvL.height = h;
+  cvL.getContext('2d').drawImage(img, 0, 0, halfW, h, 0, 0, halfW, h);
+
+  // Mitad derecha
+  const cvR = document.createElement('canvas');
+  cvR.width = halfW; cvR.height = h;
+  cvR.getContext('2d').drawImage(img, halfW, 0, halfW, h, 0, 0, halfW, h);
+
+  return {
+    izq: cvL.toDataURL('image/jpeg', 0.95),
+    der: cvR.toDataURL('image/jpeg', 0.95)
+  };
+}
+
+// ── componerPaginaInterior ──────────────────────────────────
+// Recibe la mitad ya recortada (dataUrl de 768x1024 aprox) y
+// compone la página A4 con panel de texto en la zona inferior.
+// NO hace ningún crop adicional — usa la imagen entera a sangre.
+async function componerPaginaInterior(mitadDataUrl, numero, titulo, texto) {
   const cv = document.createElement('canvas'); cv.width = PX; cv.height = PY;
   const ctx = cv.getContext('2d');
-  ctx.fillStyle = '#f5f0ff'; ctx.fillRect(0, 0, PX, PY);
+  ctx.fillStyle = '#1a0840'; ctx.fillRect(0, 0, PX, PY);
 
-  // La imagen del spread es 1536x1024 (landscape).
-  // Para una página A4 portrait mostramos la mitad izquierda o derecha escalada.
+  // Escalar la mitad del spread para cubrir toda la página A4 (object-fit: cover)
   try {
-    const img = await cargarImagen(imgUrl);
-    // Recortar la mitad correspondiente
-    const halfW = img.width / 2;
-    const srcX = (lado === 'der') ? halfW : 0;
-    // Escalar esa mitad para cubrir la página A4 (cover)
-    const scale = Math.max(PX / halfW, PY / img.height);
-    const dw = halfW * scale, dh = img.height * scale;
-    ctx.drawImage(img, srcX, 0, halfW, img.height,
-                       (PX - dw) / 2, (PY - dh) / 2, dw, dh);
+    const img = await cargarImagen(mitadDataUrl);
+    drawCover(ctx, img, 0, 0, PX, PY);
   } catch(e) {
-    ctx.fillStyle = '#e8e0f8'; ctx.fillRect(0, 0, PX, PY);
+    ctx.fillStyle = '#2a1060'; ctx.fillRect(0, 0, PX, PY);
   }
 
-  // Panel texto
+  // Panel de texto — zona inferior con fondo semitransparente
   const pX = 60, pW = PX - 120, tW = pW - PH * 2;
   const szNum = 28, hNum = szNum + 20;
+
   const {sz:szT, lines:lT} = fitFontSize(ctx, titulo||'', 'italic bold SIZEpx Georgia,serif', tW, 2, 28, 52);
   const hT = lT.length * Math.round(szT * 1.35) + 18;
+
   const {sz:szB, lines:lB} = fitFontSize(ctx, texto||'', 'SIZEpx Georgia,serif', tW, 4, 24, 38);
   const lhB = Math.round(szB * 1.58);
   const hB  = lB.length * lhB;
+
   const panH = PV + hNum + hT + hB + PV + 10;
   const panY = PY - panH;
 
-  const g = ctx.createLinearGradient(0, panY - 60, 0, panY + 20);
-  g.addColorStop(0, 'rgba(8,3,18,0)'); g.addColorStop(1, 'rgba(8,3,18,0.45)');
-  ctx.fillStyle = g; ctx.fillRect(0, panY - 60, PX, 80);
+  // Degradado suave sobre la imagen antes del panel
+  const g = ctx.createLinearGradient(0, panY - 80, 0, panY + 20);
+  g.addColorStop(0, 'rgba(8,3,18,0)'); g.addColorStop(1, 'rgba(8,3,18,0.5)');
+  ctx.fillStyle = g; ctx.fillRect(0, panY - 80, PX, 100);
 
+  // Panel blanco redondeado
   ctx.save();
   roundRect(ctx, pX, panY, pW, panH, 32);
   ctx.fillStyle = 'rgba(255,253,250,0.97)';
   ctx.shadowColor = 'rgba(50,20,100,0.13)'; ctx.shadowBlur = 28; ctx.shadowOffsetY = -3;
   ctx.fill(); ctx.restore();
 
+  // Línea dorada
   ctx.strokeStyle = '#f7c94b'; ctx.lineWidth = 3;
   ctx.beginPath(); ctx.moveTo(pX + 50, panY + 3); ctx.lineTo(pX + pW - 50, panY + 3); ctx.stroke();
 
   let cy = panY + PV;
+
+  // Número de página
   ctx.font = `bold ${szNum}px Arial,sans-serif`; ctx.fillStyle = '#b88000'; ctx.textAlign = 'left';
   ctx.fillText(`PÁGINA ${numero}`, pX + PH, cy + szNum); cy += hNum;
 
+  // Título
   ctx.font = `italic bold ${szT}px Georgia,serif`; ctx.fillStyle = '#3a1070';
   const lhT = Math.round(szT * 1.35);
   for (const l of lT) { ctx.fillText(l, pX + PH, cy + lhT); cy += lhT; } cy += 18;
 
+  // Texto
   ctx.font = `${szB}px Georgia,serif`; ctx.fillStyle = '#2a1a40';
   for (const l of lB) { ctx.fillText(l, pX + PH, cy + lhB); cy += lhB; }
 
+  // Logo
   ctx.font = 'bold 22px Arial,sans-serif'; ctx.fillStyle = 'rgba(107,63,168,0.38)';
   ctx.textAlign = 'right'; ctx.fillText('🦉 StoryOwl', pX + pW - PH, panY + panH - 18);
   ctx.textAlign = 'left';
+
   return cv.toDataURL('image/jpeg', 0.92);
 }
 
@@ -1082,7 +1114,12 @@ async function componerColofonPagina(nombre, fecha) {
   return cv.toDataURL('image/jpeg', 0.92);
 }
 
-// ── Descargar PDF ──────────────────────────────────────
+// ── Descargar PDF ──────────────────────────────────────────
+// Estructura:
+//   1. Portada vertical
+//   2. Dedicatoria
+//   3-22. Spread 1 izq / Spread 1 der / ... / Spread 10 izq / Spread 10 der
+//   23. Colofón
 async function descargarPDF() {
   const btn = document.getElementById('btnPdf');
   btn.textContent = '⏳ Generando PDF...'; btn.disabled = true;
@@ -1098,38 +1135,73 @@ async function descargarPDF() {
     const fechaFinal  = document.getElementById('fechaFinalTexto')?.textContent || '';
     const coverImg    = document.getElementById('coverImg');
 
-    // Pág 1: Portada
+    // ── Pág 1: Portada ──────────────────────────────────────
     btn.textContent = '⏳ Componiendo portada...';
     if (coverImg && coverImg.src && coverImg.style.display !== 'none') {
       const portadaUrl = await componerPortada(coverImg.src, titulo);
       pdf.addImage(portadaUrl, 'JPEG', 0, 0, W, H);
     }
 
-    // Pág 2: Dedicatoria
+    // ── Pág 2: Dedicatoria ──────────────────────────────────
     btn.textContent = '⏳ Componiendo dedicatoria...';
     pdf.addPage();
     const dedUrl = await componerDedicatoria(nombreFinal, dedPersonal);
     pdf.addImage(dedUrl, 'JPEG', 0, 0, W, H);
 
-    // Páginas interiores: recorremos las páginas guardadas en pagesContainer
-    // Cada "page" tiene la imagen del spread y el texto de su lado (izq o der)
-    const pages = document.querySelectorAll('.page');
-    let i = 1;
-    for (const page of pages) {
-      btn.textContent = `⏳ Componiendo página ${i} de ${pages.length}...`;
+    // ── Págs interiores: split matemático de cada spread ────
+    // pagesContainer tiene pares de <div class="page">:
+    //   par[0] = página izquierda del spread N
+    //   par[1] = página derecha del spread N
+    // Ambas comparten la misma img.src (el spread horizontal).
+    const pages = Array.from(document.querySelectorAll('.page'));
+    const totalPairs = Math.ceil(pages.length / 2);
+
+    for (let s = 0; s < pages.length; s += 2) {
+      const spreadNum = Math.floor(s / 2) + 1;
+      btn.textContent = `⏳ Procesando spread ${spreadNum} de ${totalPairs}...`;
+
+      const pageIzq = pages[s];
+      const pageDer = pages[s + 1];
+
+      // URL del spread (ambas páginas comparten la misma imagen)
+      const spreadImgEl = pageIzq?.querySelector('.page-img');
+      const spreadUrl   = spreadImgEl?.src || '';
+
+      // Datos textuales de cada página
+      const numIzq  = pageIzq?.querySelector('.page-num')?.textContent?.replace('Página ','')  || String(s + 1);
+      const titIzq  = pageIzq?.querySelector('.page-title')?.textContent || '';
+      const bodyIzq = pageIzq?.querySelector('.page-text')?.textContent  || '';
+
+      const numDer  = pageDer?.querySelector('.page-num')?.textContent?.replace('Página ','')  || String(s + 2);
+      const titDer  = pageDer?.querySelector('.page-title')?.textContent || '';
+      const bodyDer = pageDer?.querySelector('.page-text')?.textContent  || '';
+
+      // Split matemático del spread — 50% izq / 50% der
+      let mitadIzq = '', mitadDer = '';
+      if (spreadUrl) {
+        try {
+          const partes = await splitSpreadImage(spreadUrl);
+          mitadIzq = partes.izq;
+          mitadDer = partes.der;
+        } catch(e) {
+          console.error(`Error split spread ${spreadNum}:`, e);
+        }
+      }
+
+      // Página izquierda
       pdf.addPage();
-      const img     = page.querySelector('.page-img');
-      const numTxt  = page.querySelector('.page-num')?.textContent?.replace('Página ','') || String(i);
-      const titTxt  = page.querySelector('.page-title')?.textContent || '';
-      const bodyTxt = page.querySelector('.page-text')?.textContent || '';
-      // lado: páginas impares (1,3,5...) = izquierda; pares = derecha
-      const lado = (parseInt(numTxt) % 2 === 1) ? 'izq' : 'der';
-      const pngUrl = await componerPaginaInterior(img?.src || '', numTxt, titTxt, bodyTxt, lado);
-      pdf.addImage(pngUrl, 'JPEG', 0, 0, W, H);
-      i++;
+      const pngIzq = await componerPaginaInterior(mitadIzq, numIzq, titIzq, bodyIzq);
+      pdf.addImage(pngIzq, 'JPEG', 0, 0, W, H);
+
+      // Página derecha (solo si existe)
+      if (pageDer) {
+        pdf.addPage();
+        const pngDer = await componerPaginaInterior(mitadDer, numDer, titDer, bodyDer);
+        pdf.addImage(pngDer, 'JPEG', 0, 0, W, H);
+      }
     }
 
-    // Última pág: Colofón
+    // ── Última pág: Colofón ─────────────────────────────────
     btn.textContent = '⏳ Componiendo colofón...';
     pdf.addPage();
     const colUrl = await componerColofonPagina(nombreFinal, fechaFinal);
