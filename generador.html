@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>StoryOwl — Crear cuento personalizado</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -212,7 +211,36 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
   color:rgba(255,255,255,.75);line-height:1.65;margin-bottom:16px;max-width:200px;}
 .fp-back-brand{font-size:11px;color:rgba(247,201,75,.5);font-weight:700;letter-spacing:2px;}
 #flipBook{margin:0 auto;}
-.stpf-page{position:relative;overflow:hidden;background:#0d0820;user-select:none;box-sizing:border-box;}
+
+/* ── FLIPBOOK CSS3D sin dependencias ──────────────────── */
+.book-viewer{position:relative;max-width:820px;margin:0 auto;}
+
+/* Desktop: libro abierto 2 páginas */
+.book-spread-view{display:none;position:relative;}
+.book-spread-view.active{display:flex;gap:0;border-radius:8px 12px 12px 8px;
+  overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.05);}
+.page-left-view,.page-right-view{flex:1;position:relative;min-height:480px;overflow:hidden;background:#0d0820;}
+.page-left-view{box-shadow:inset -8px 0 20px rgba(0,0,0,.4);border-radius:8px 0 0 8px;}
+.page-right-view{box-shadow:inset 8px 0 20px rgba(0,0,0,.4);border-radius:0 12px 12px 0;}
+/* Lomo */
+.book-spine-view{width:8px;background:linear-gradient(90deg,#08031a,#1a0840,#08031a);flex-shrink:0;}
+
+/* Móvil: página única */
+.book-single-view{display:none;position:relative;max-width:380px;margin:0 auto;
+  border-radius:12px;overflow:hidden;box-shadow:0 24px 56px rgba(0,0,0,.6);}
+.book-single-view.active{display:block;}
+
+/* Flip animation */
+.page-flip-anim{animation:pageFlipAnim .45s cubic-bezier(.4,0,.2,1);}
+@keyframes pageFlipAnim{
+  0%{opacity:1;transform:scale(1)}
+  45%{opacity:0;transform:scale(.97) rotateY(4deg)}
+  100%{opacity:1;transform:scale(1) rotateY(0deg)}
+}
+
+/* Contenido de página */
+.stpf-page{position:relative;overflow:hidden;background:#0d0820;user-select:none;
+  width:100%;height:100%;box-sizing:border-box;}
 .stpf-page img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
 .stpf-wm{position:absolute;inset:0;pointer-events:none;z-index:10;overflow:hidden;}
 .stpf-wm::before{content:'PREVIEW · El Cole Mágico · PREVIEW · El Cole Mágico';
@@ -437,25 +465,31 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
     <button class="btn-open-book" id="btnOpenBook" onclick="abrirLibro()" style="display:none">📖 Abrir libro</button>
   </div>
 
-  <!-- LIBRO ABIERTO con StPageFlip -->
+  <!-- LIBRO ABIERTO -->
   <div id="bookOpen" style="display:none">
     <!-- Controles -->
     <div class="flipbook-controls">
-      <button class="flip-btn" id="flipPrev" onclick="flipPage(-1)" disabled title="Página anterior">&#8592;</button>
+      <button class="flip-btn" id="flipPrev" onclick="flipPage(-1)" disabled>&#8592;</button>
       <span class="flip-counter" id="flipCounter">1 / 1</span>
-      <button class="flip-btn" id="flipNext" onclick="flipPage(1)" title="Página siguiente">&#8594;</button>
+      <button class="flip-btn" id="flipNext" onclick="flipPage(1)">&#8594;</button>
     </div>
 
-    <!-- Contenedor StPageFlip desktop -->
-    <div id="flipContainer" style="display:flex;justify-content:center;margin-bottom:16px;">
-      <div id="flipBook"></div>
+    <div class="book-viewer">
+      <!-- Desktop: spread 2 páginas -->
+      <div class="book-spread-view" id="bookSpreadView">
+        <div class="page-left-view"  id="pageLeft"></div>
+        <div class="book-spine-view"></div>
+        <div class="page-right-view" id="pageRight"></div>
+      </div>
+      <!-- Móvil: 1 página -->
+      <div class="book-single-view" id="bookSingleView">
+        <div id="pageSingle"></div>
+      </div>
     </div>
 
-    <!-- Móvil: una página -->
-    <div id="mobilePage" style="display:none;max-width:360px;margin:0 auto 16px;border-radius:12px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.6);"></div>
-
-    <!-- Dots de navegación -->
-    <div class="flip-dots" id="flipDots" style="justify-content:center;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px;"></div>
+    <!-- Dots -->
+    <div class="flip-dots" id="flipDots"
+         style="justify-content:center;display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 24px;"></div>
   </div>
 
   <!-- CTA comprar -->
@@ -653,155 +687,117 @@ function procesarEvento(data){
 
 
 // ═══════════════════════════════════════════════════════════
-// FLIPBOOK ENGINE — limpio, estable, PageFlip real
-// Estado: portada cerrada → libro abierto → navegación → fin
+// FLIPBOOK ENGINE — CSS3D puro, sin dependencias externas
 // ═══════════════════════════════════════════════════════════
 
-let flipPages   = [];   // {tipo, url, numero, titulo, texto}
-let flipBook    = null; // instancia PageFlip
-let flipIsOpen  = false;
-let flipNombre  = '';
-let mobileIdx   = 0;
+let flipPages  = [];   // {tipo, url, numero, titulo, texto}
+let flipIdx    = 0;    // índice actual (desktop = par → izq)
+let flipIsOpen = false;
+let flipNombre = '';
 
-// ── HTML de una página ────────────────────────────────────
-function makePageEl(p, w, h) {
-  const div = document.createElement('div');
-  div.className = 'stpf-page';
-  div.style.width  = w + 'px';
-  div.style.height = h + 'px';
+// ── Renderiza el contenido de una página en un contenedor ─
+function renderPageIn(container, p) {
+  if (!container) return;
+
+  if (!p) {
+    container.innerHTML = '<div style="background:#080318;width:100%;height:100%;min-height:440px;display:flex;align-items:center;justify-content:center;"><span style="color:rgba(255,255,255,.08);font-size:48px;">🦉</span></div>';
+    return;
+  }
+
+  if (p.tipo === 'final') {
+    container.innerHTML = `<div class="stpf-page" style="min-height:440px;background:linear-gradient(160deg,#0d0820,#160a35);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;">
+      <div style="font-size:52px;margin-bottom:16px;">✨</div>
+      <div style="font-family:'Fraunces',serif;font-size:clamp(22px,3vw,32px);font-weight:900;color:white;margin-bottom:12px;">¡FIN!</div>
+      <div style="font-size:clamp(12px,1.5vw,16px);color:rgba(255,255,255,.55);line-height:1.7;">
+        Un cuento creado especialmente para<br>
+        <strong style="color:rgba(255,255,255,.85);">${flipNombre}</strong>
+      </div>
+    </div>`;
+    return;
+  }
+
+  if (p.tipo === 'contraportada') {
+    container.innerHTML = `<div class="stpf-page" style="min-height:440px;background:linear-gradient(160deg,#0d0820,#1a0840);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;">
+      <div style="font-size:48px;margin-bottom:16px;opacity:.8;">🦉</div>
+      <div style="font-family:'Fraunces',serif;font-style:italic;font-size:clamp(14px,1.8vw,20px);color:rgba(255,255,255,.75);line-height:1.7;margin-bottom:20px;max-width:260px;">
+        Que la magia de las historias<br>te acompañe siempre.
+      </div>
+      <div style="width:50px;height:2px;background:rgba(247,201,75,.4);margin:0 auto 16px;"></div>
+      <div style="font-size:12px;color:rgba(247,201,75,.5);font-weight:700;letter-spacing:2px;">El Cole Mágico · storyowl.com</div>
+    </div>`;
+    return;
+  }
 
   if (p.tipo === 'portada') {
-    div.innerHTML = `
-      <img src="${p.url}" style="width:100%;height:100%;object-fit:cover;display:block;"
+    container.innerHTML = `<div class="stpf-page" style="min-height:440px;position:relative;">
+      <img src="${p.url}" style="width:100%;height:100%;object-fit:cover;display:block;min-height:440px;"
            oncontextmenu="return false" ondragstart="return false"/>
       <div class="stpf-wm"></div>
       <div class="stpf-cover-panel">
         <div class="stpf-cover-title">${p.titulo||''}</div>
         <div class="stpf-cover-brand">🦉 El Cole Mágico</div>
-      </div>`;
-
-  } else if (p.tipo === 'final') {
-    div.style.background = 'linear-gradient(160deg,#0d0820,#160a35)';
-    div.innerHTML = `
-      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;
-                  height:100%;padding:32px;text-align:center;">
-        <div style="font-size:clamp(36px,5vw,52px);margin-bottom:16px;">✨</div>
-        <div style="font-family:'Fraunces',serif;font-size:clamp(22px,3.5vw,32px);
-                    font-weight:900;color:white;margin-bottom:12px;">¡FIN!</div>
-        <div style="font-size:clamp(12px,1.5vw,16px);color:rgba(255,255,255,.55);line-height:1.7;">
-          Un cuento creado especialmente para<br>
-          <strong style="color:rgba(255,255,255,.85);">${flipNombre}</strong>
-        </div>
-      </div>`;
-
-  } else if (p.tipo === 'contraportada') {
-    div.style.background = 'linear-gradient(160deg,#0d0820,#1a0840)';
-    div.innerHTML = `
-      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;
-                  height:100%;padding:32px;text-align:center;">
-        <div style="font-size:clamp(32px,4vw,48px);margin-bottom:16px;opacity:.8;">🦉</div>
-        <div style="font-family:'Fraunces',serif;font-style:italic;
-                    font-size:clamp(14px,1.8vw,20px);color:rgba(255,255,255,.75);
-                    line-height:1.7;margin-bottom:20px;max-width:260px;">
-          Que la magia de las historias<br>te acompañe siempre.
-        </div>
-        <div style="width:50px;height:2px;background:rgba(247,201,75,.4);margin:0 auto 16px;"></div>
-        <div style="font-size:12px;color:rgba(247,201,75,.5);font-weight:700;letter-spacing:2px;">
-          El Cole Mágico · storyowl.com
-        </div>
-      </div>`;
-
-  } else {
-    // Página interior normal
-    div.innerHTML = `
-      <img src="${p.url}" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"
-           loading="lazy" oncontextmenu="return false" ondragstart="return false"/>
-      <div class="stpf-wm"></div>
-      <div class="stpf-text-panel">
-        <div class="stpf-num">Página ${p.numero}</div>
-        <div class="stpf-title">${p.titulo||''}</div>
-        <div class="stpf-body">${p.texto||''}</div>
-      </div>`;
-  }
-  return div;
-}
-
-// ── Inicializa PageFlip ───────────────────────────────────
-function initPageFlip() {
-  const container = document.getElementById('flipBook');
-  if (!container) return;
-  if (typeof PageFlip === 'undefined') {
-    // Fallback: mostrar páginas en scroll si PageFlip no carga
-    console.warn('PageFlip no disponible, usando fallback scroll');
-    container.innerHTML = '';
-    const stageW = Math.min(window.innerWidth - 32, 860);
-    const pageW  = Math.floor(stageW / 2);
-    const pageH  = Math.floor(pageW * 1.42);
-    container.style.cssText = `display:grid;grid-template-columns:1fr 1fr;gap:4px;max-width:${stageW}px;margin:0 auto;`;
-    flipPages.forEach(p => {
-      const el = makePageEl(p, pageW, pageH);
-      el.style.width = '100%'; el.style.height = pageH + 'px';
-      container.appendChild(el);
-    });
-    flipSyncControls(0, flipPages.length);
+      </div>
+    </div>`;
     return;
   }
 
-  if (flipBook) { try { flipBook.destroy(); } catch(e){} flipBook = null; }
-  container.innerHTML = '';
-
-  const stageW = Math.min(window.innerWidth - 32, 860);
-  const pageW  = Math.floor(stageW / 2);
-  const pageH  = Math.floor(pageW * 1.42);
-
-  flipPages.forEach(p => container.appendChild(makePageEl(p, pageW, pageH)));
-
-  flipBook = new PageFlip(container, {
-    width: pageW, height: pageH,
-    size: 'fixed',
-    maxShadowOpacity: 0.55,
-    showCover: true,
-    mobileScrollSupport: false,
-    usePortrait: false,
-    autoSize: false,
-    flippingTime: 680,
-    useMouseEvents: true,
-    swipeDistance: 30,
-  });
-
-  flipBook.loadFromHTML(container.querySelectorAll('.stpf-page'));
-
-  flipBook.on('flip', e => {
-    const pg = e.data;
-    flipSyncControls(pg, flipPages.length);
-  });
-
-  flipSyncControls(0, flipPages.length);
+  // Página interior
+  container.innerHTML = `<div class="stpf-page" style="min-height:440px;position:relative;">
+    <img src="${p.url}" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;min-height:440px;"
+         loading="lazy" oncontextmenu="return false" ondragstart="return false"/>
+    <div class="stpf-wm"></div>
+    <div class="stpf-text-panel">
+      <div class="stpf-num">Página ${p.numero}</div>
+      <div class="stpf-title">${p.titulo||''}</div>
+      <div class="stpf-body">${p.texto||''}</div>
+    </div>
+  </div>`;
 }
 
-// ── Móvil: renderiza una página ──────────────────────────
-function renderMobilePage(idx) {
-  const mp = document.getElementById('mobilePage');
-  if (!mp || !flipPages[idx]) return;
-  const p = flipPages[idx];
-  const el = makePageEl(p, mp.offsetWidth || 360, Math.floor((mp.offsetWidth||360)*1.42));
-  el.style.width  = '100%';
-  el.style.height = 'auto';
-  el.style.minHeight = '400px';
-  mp.innerHTML = '';
-  mp.appendChild(el);
-  flipSyncControls(idx, flipPages.length);
+// ── Anima el cambio de página ─────────────────────────────
+function animatePageChange(containerId, p) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.classList.remove('page-flip-anim');
+  void el.offsetWidth; // reflow
+  el.classList.add('page-flip-anim');
+  renderPageIn(el, p);
+  setTimeout(() => el.classList.remove('page-flip-anim'), 460);
 }
 
-// ── Sincroniza controles ─────────────────────────────────
-function flipSyncControls(current, total) {
-  const ctr = document.getElementById('flipCounter');
-  if (ctr) ctr.textContent = `${current + 1} / ${total}`;
-  const prev = document.getElementById('flipPrev');
-  const next = document.getElementById('flipNext');
-  if (prev) prev.disabled = current === 0;
-  if (next) next.disabled = current >= total - 1;
-  flipUpdateDots(total, current);
+// ── Actualiza lo que se muestra ───────────────────────────
+function flipRender(animate) {
+  const isMobile = window.innerWidth <= 640;
+
+  if (isMobile) {
+    const p = flipPages[flipIdx];
+    if (animate) animatePageChange('pageSingle', p);
+    else renderPageIn(document.getElementById('pageSingle'), p);
+  } else {
+    // Desktop: par=izquierda, impar=derecha
+    // flipIdx siempre apunta al par (página izquierda del spread)
+    const pL = flipPages[flipIdx];
+    const pR = flipPages[flipIdx + 1] || null;
+    if (animate) {
+      animatePageChange('pageLeft', pL);
+      animatePageChange('pageRight', pR);
+    } else {
+      renderPageIn(document.getElementById('pageLeft'),  pL);
+      renderPageIn(document.getElementById('pageRight'), pR);
+    }
+  }
+
+  // Controles
+  const isMob = window.innerWidth <= 640;
+  const step  = isMob ? 1 : 2;
+  const total = flipPages.length;
+  const ctr   = document.getElementById('flipCounter');
+  const pg    = Math.floor(flipIdx / step) + 1;
+  const tots  = Math.ceil(total / step);
+  if (ctr) ctr.textContent = `${pg} / ${tots}`;
+  document.getElementById('flipPrev').disabled = flipIdx === 0;
+  document.getElementById('flipNext').disabled = flipIdx + step >= total;
+  flipUpdateDots(tots, pg - 1);
 }
 
 function flipUpdateDots(total, current) {
@@ -811,28 +807,29 @@ function flipUpdateDots(total, current) {
   for (let i = 0; i < Math.min(total, 14); i++) {
     const d = document.createElement('div');
     d.className = 'flip-dot' + (i === current ? ' active' : '');
+    const isMob = window.innerWidth <= 640;
     d.onclick = () => {
-      if (flipBook) flipBook.turnToPage(i);
-      else { mobileIdx = i; renderMobilePage(i); }
+      flipIdx = i * (isMob ? 1 : 2);
+      flipIdx = Math.min(flipIdx, flipPages.length - 1);
+      flipRender(true);
     };
     dots.appendChild(d);
   }
 }
 
-// ── Navegación ───────────────────────────────────────────
+// ── Navegación ────────────────────────────────────────────
 function flipPage(dir) {
-  if (flipBook) {
-    dir > 0 ? flipBook.flipNext() : flipBook.flipPrev();
-  } else {
-    mobileIdx = Math.max(0, Math.min(flipPages.length - 1, mobileIdx + dir));
-    renderMobilePage(mobileIdx);
-  }
+  const isMob = window.innerWidth <= 640;
+  const step  = isMob ? 1 : 2;
+  flipIdx = Math.max(0, Math.min(flipPages.length - (isMob?1:2), flipIdx + dir * step));
+  flipRender(true);
 }
 
-// ── Abrir libro ──────────────────────────────────────────
+// ── Abrir libro ───────────────────────────────────────────
 function abrirLibro() {
   if (flipIsOpen || flipPages.length === 0) return;
   flipIsOpen = true;
+  flipIdx = 0;
 
   const closed = document.getElementById('bookClosed');
   closed.style.transition = 'opacity .4s, transform .5s';
@@ -845,24 +842,24 @@ function abrirLibro() {
     open.style.display = 'block';
     open.style.animation = 'openBook .5s ease forwards';
 
-    if (window.innerWidth <= 640) {
-      document.getElementById('flipContainer').style.display = 'none';
-      document.getElementById('mobilePage').style.display = 'block';
-      mobileIdx = 0;
-      renderMobilePage(0);
+    const isMob = window.innerWidth <= 640;
+    const spread = document.getElementById('bookSpreadView');
+    const single = document.getElementById('bookSingleView');
+    if (isMob) {
+      spread.classList.remove('active');
+      single.classList.add('active');
     } else {
-      document.getElementById('flipContainer').style.display = 'flex';
-      document.getElementById('mobilePage').style.display = 'none';
-      initPageFlip();
+      spread.classList.add('active');
+      single.classList.remove('active');
     }
+    flipRender(false);
   }, 430);
 }
 
 // ── API pública ───────────────────────────────────────────
 function flipAddPage(p) {
   flipPages.push(p);
-  // Si está abierto en móvil y es primera página, renderizar
-  if (flipIsOpen && window.innerWidth <= 640 && flipPages.length === 1) renderMobilePage(0);
+  if (flipIsOpen) flipRender(false);
 }
 
 function flipShowCover(url, titulo) {
@@ -872,17 +869,16 @@ function flipShowCover(url, titulo) {
   document.getElementById('coverTitleText').textContent = titulo || '';
   document.getElementById('coverTitlePanel').style.display = 'block';
   document.getElementById('btnOpenBook').style.display = 'inline-block';
-  // Añadir portada a flipPages
+  // Portada es la primera página del libro
   flipPages.unshift({ tipo:'portada', url, titulo });
 }
 
 function flipInit(titulo, nombre) {
-  flipPages = []; flipIsOpen = false; mobileIdx = 0;
+  flipPages = []; flipIdx = 0; flipIsOpen = false;
   flipNombre = nombre || '';
   document.getElementById('flipbookSection').style.display = 'block';
   document.getElementById('flipTitle').textContent = titulo || '';
   document.getElementById('flipCta').style.display = 'none';
-  // Reset portada cerrada
   const closed = document.getElementById('bookClosed');
   closed.style.cssText = 'text-align:center';
   document.getElementById('bookOpen').style.display = 'none';
@@ -897,10 +893,7 @@ function flipComplete() {
   flipPages.push({ tipo:'final'         });
   flipPages.push({ tipo:'contraportada' });
   document.getElementById('flipCta').style.display = 'block';
-  if (flipIsOpen) {
-    if (flipBook) initPageFlip();
-    else renderMobilePage(mobileIdx);
-  }
+  if (flipIsOpen) flipRender(false);
   setTimeout(() => document.getElementById('flipCta').scrollIntoView({behavior:'smooth', block:'nearest'}), 400);
 }
 
