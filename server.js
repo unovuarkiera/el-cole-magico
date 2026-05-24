@@ -196,8 +196,6 @@ const SPREADS_CUMPLE = [
     escena:"Left side: child opening a beautiful golden wrapped present with magical friend watching lovingly, gift wrapping paper everywhere. Right side: child peacefully in bed smiling, birthday decorations visible, magical friend waving from window under starlight. Panoramic warm ending." }
 ];
 
-];
-
 app.post('/generar-cumple', async (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
@@ -332,8 +330,6 @@ const SPREADS_DIENTE = [
     escena:"Left side: child smiling proudly at their reflection showing the gap tooth, confident and happy. Right side: child sleeping peacefully with a happy smile, magical coin on bedside table, moonlight through window. Panoramic warm ending." }
 ];
 
-];
-
 app.post('/generar-diente', async (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
@@ -456,8 +452,6 @@ const SPREADS_VERANO = [
     pagIzq:{ numero:15, titulo:"El viaje de vuelta", texto_base:"En el coche de regreso, [NOMBRE] va callado mirando por la ventana. Piensa en todo lo vivido. [PERSONAJE] le aprieta la mano. 'Ha sido el mejor verano', dice [NOMBRE] sonriendo." },
     pagDer:{ numero:16, titulo:"El verano guardado en el corazón", texto_base:"En la cama, [NOMBRE] abraza su recuerdo favorito del verano. Cierra los ojos y sonríe. El mejor verano de su vida ya vive para siempre en su corazón." },
     escena:"Left side: child looking pensively out of car window on the way home, companion holding their hand, warm afternoon light. Right side: child sleeping peacefully in bed with a happy smile, summer souvenirs nearby, cozy bedroom lamp. Panoramic peaceful ending." }
-];
-
 ];
 
 app.post('/generar-verano', async (req, res) => {
