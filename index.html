@@ -195,7 +195,19 @@ footer{padding:60px 48px 40px;border-top:1px solid rgba(255,255,255,.06);display
     <a href="#colecciones">Colecciones</a>
     <a href="#como-funciona">Cómo funciona</a>
     <a href="#estilos">Estilos</a>
-    <a href="/generador.html" class="nav-cta">✨ Crear gratis</a>
+    <div class="lang-selector" id="langSelector" style="position:relative;display:inline-flex;align-items:center;">
+      <button onclick="toggleLang()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:6px 14px;color:white;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:'Nunito',sans-serif;">
+        <span id="langFlag">🇪🇸</span><span id="langCode">ES</span><span style="font-size:10px;opacity:.6">▼</span>
+      </button>
+      <div id="langDropdown" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:#1a0840;border:1px solid rgba(255,255,255,.15);border-radius:14px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.4);z-index:999;min-width:140px;">
+        <div onclick="setLang('es')" style="padding:10px 16px;cursor:pointer;font-size:14px;font-weight:700;color:#f7c94b;font-family:'Nunito',sans-serif;">🇪🇸 Español</div>
+        <div onclick="setLang('en')" style="padding:10px 16px;cursor:pointer;font-size:14px;font-weight:700;color:rgba(255,255,255,.7);font-family:'Nunito',sans-serif;">🇬🇧 English</div>
+        <div onclick="setLang('de')" style="padding:10px 16px;cursor:pointer;font-size:14px;font-weight:700;color:rgba(255,255,255,.7);font-family:'Nunito',sans-serif;">🇩🇪 Deutsch</div>
+        <div onclick="setLang('fr')" style="padding:10px 16px;cursor:pointer;font-size:14px;font-weight:700;color:rgba(255,255,255,.7);font-family:'Nunito',sans-serif;">🇫🇷 Français</div>
+        <div onclick="setLang('pt')" style="padding:10px 16px;cursor:pointer;font-size:14px;font-weight:700;color:rgba(255,255,255,.7);font-family:'Nunito',sans-serif;">🇵🇹 Português</div>
+      </div>
+    </div>
+    <a href="/generador.html" class="nav-cta" id="navCta">✨ Crear gratis</a>
   </div>
 </nav>
 
@@ -525,6 +537,75 @@ const observer=new IntersectionObserver(entries=>{
   entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target);}});
 },{threshold:.1});
 reveals.forEach(el=>observer.observe(el));
+
+// ── MULTIIDIOMA INDEX ───────────────────────────────────
+const INDEX_LANGS = {
+  es:{ flag:'🇪🇸', code:'ES', badge:'✨ Más de 5 estilos de ilustración disponibles',
+    l1:'Cuentos únicos', l2:'para tu peque', l3:'con magia real',
+    sub:'Crea en minutos un cuento <strong>completamente personalizado</strong> con el protagonista que tú diseñas — pelo, ojos, piel, gafas — ilustrado con IA en el estilo que elijas.',
+    btn1:'✨ Crear mi cuento gratis', btn2:'Ver colecciones →',
+    navCta:'✨ Crear gratis', scroll:'Descubre más',
+    nav:['Colecciones','Cómo funciona','Estilos'] },
+  en:{ flag:'🇬🇧', code:'EN', badge:'✨ Over 5 illustration styles available',
+    l1:'Unique stories', l2:'for your little one', l3:'with real magic',
+    sub:'Create in minutes a <strong>fully personalized</strong> story with the character you design — hair, eyes, skin, glasses — illustrated with AI in the style you choose.',
+    btn1:'✨ Create my story free', btn2:'See collections →',
+    navCta:'✨ Create free', scroll:'Discover more',
+    nav:['Collections','How it works','Styles'] },
+  de:{ flag:'🇩🇪', code:'DE', badge:'✨ Über 5 Illustrationsstile verfügbar',
+    l1:'Einzigartige Bücher', l2:'für dein Kind', l3:'mit echter Magie',
+    sub:'Erstelle in Minuten ein <strong>vollständig personalisiertes</strong> Buch mit dem Charakter, den du gestaltest — Haare, Augen, Haut, Brille — illustriert mit KI.',
+    btn1:'✨ Buch kostenlos erstellen', btn2:'Sammlungen ansehen →',
+    navCta:'✨ Kostenlos erstellen', scroll:'Mehr entdecken',
+    nav:['Sammlungen','So funktioniert\'s','Stile'] },
+  fr:{ flag:'🇫🇷', code:'FR', badge:'✨ Plus de 5 styles d\'illustration disponibles',
+    l1:'Histoires uniques', l2:'pour ton enfant', l3:'avec de la vraie magie',
+    sub:'Crée en quelques minutes une histoire <strong>entièrement personnalisée</strong> avec le personnage que tu conçois — cheveux, yeux, teint, lunettes — illustrée avec l\'IA.',
+    btn1:'✨ Créer mon livre gratuitement', btn2:'Voir les collections →',
+    navCta:'✨ Créer gratuitement', scroll:'Découvrir plus',
+    nav:['Collections','Comment ça marche','Styles'] },
+  pt:{ flag:'🇵🇹', code:'PT', badge:'✨ Mais de 5 estilos de ilustração disponíveis',
+    l1:'Histórias únicas', l2:'para o seu pequeno', l3:'com magia real',
+    sub:'Cria em minutos uma história <strong>completamente personalizada</strong> com o personagem que tu defines — cabelo, olhos, pele, óculos — ilustrada com IA.',
+    btn1:'✨ Criar a minha história grátis', btn2:'Ver coleções →',
+    navCta:'✨ Criar grátis', scroll:'Descobrir mais',
+    nav:['Coleções','Como funciona','Estilos'] },
+};
+
+let indexLang = localStorage.getItem('storyowl_lang') || 'es';
+
+function toggleLang(){
+  const dd = document.getElementById('langDropdown');
+  dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+}
+document.addEventListener('click', e => {
+  if(!document.getElementById('langSelector')?.contains(e.target))
+    document.getElementById('langDropdown').style.display = 'none';
+});
+
+function setLang(lang){
+  indexLang = lang;
+  localStorage.setItem('storyowl_lang', lang);
+  document.getElementById('langDropdown').style.display = 'none';
+  const L = INDEX_LANGS[lang];
+  document.getElementById('langFlag').textContent = L.flag;
+  document.getElementById('langCode').textContent  = L.code;
+  // Hero
+  document.querySelector('.hero-badge').textContent = L.badge;
+  document.querySelector('.line1').textContent = L.l1;
+  document.querySelector('.line2').textContent = L.l2;
+  document.querySelector('.line3').textContent = L.l3;
+  document.querySelector('.hero-sub').innerHTML = L.sub;
+  document.querySelector('.btn-hero-primary').textContent = L.btn1;
+  document.querySelector('.btn-hero-secondary').textContent = L.btn2;
+  document.querySelector('.hero-scroll span').textContent = L.scroll;
+  // Nav CTA
+  const nc = document.getElementById('navCta');
+  if(nc) nc.textContent = L.navCta;
+}
+
+// Aplicar idioma guardado
+if(indexLang !== 'es') setLang(indexLang);
 </script>
 </body>
 </html>

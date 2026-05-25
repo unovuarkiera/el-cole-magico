@@ -14,8 +14,20 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--dark);overflow-x:hidden;}
 
-/* HERO */
-.hero{min-height:60vh;background:linear-gradient(150deg,#0d1a40 0%,#2a1060 50%,#0d1a40 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;text-align:center;position:relative;overflow:hidden;}
+/* ── SELECTOR DE IDIOMA ── */
+.lang-selector{position:relative;display:inline-flex;align-items:center;}
+.lang-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  border-radius:20px;padding:6px 14px;color:white;font-size:13px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;font-family:'Nunito',sans-serif;}
+.lang-btn:hover{background:rgba(255,255,255,.18);}
+.lang-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#1a0840;
+  border:1px solid rgba(255,255,255,.15);border-radius:14px;overflow:hidden;
+  box-shadow:0 12px 40px rgba(0,0,0,.4);z-index:999;min-width:140px;display:none;}
+.lang-dropdown.open{display:block;}
+.lang-option{padding:10px 16px;cursor:pointer;font-size:14px;font-weight:700;color:rgba(255,255,255,.7);
+  transition:all .15s;display:flex;align-items:center;gap:8px;font-family:'Nunito',sans-serif;}
+.lang-option:hover{background:rgba(255,255,255,.08);color:white;}
+.lang-option.active{color:#f7c94b;}background:linear-gradient(150deg,#0d1a40 0%,#2a1060 50%,#0d1a40 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;text-align:center;position:relative;overflow:hidden;}
 .stars{position:absolute;inset:0;pointer-events:none;}
 .star{position:absolute;background:white;border-radius:50%;animation:twinkle var(--d) var(--dl) infinite alternate;}
 @keyframes twinkle{from{opacity:.1;transform:scale(.7)}to{opacity:.9;transform:scale(1.3)}}
@@ -288,6 +300,22 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
 
 <section class="hero">
   <div class="stars" id="stars"></div>
+  <div style="position:absolute;top:20px;right:20px;z-index:10;">
+    <div class="lang-selector" id="langSelector">
+      <button class="lang-btn" onclick="toggleLang()">
+        <span id="langFlag">🇪🇸</span>
+        <span id="langCode">ES</span>
+        <span style="font-size:10px;opacity:.6">▼</span>
+      </button>
+      <div class="lang-dropdown" id="langDropdown">
+        <div class="lang-option active" onclick="setLang('es')">🇪🇸 Español</div>
+        <div class="lang-option" onclick="setLang('en')">🇬🇧 English</div>
+        <div class="lang-option" onclick="setLang('de')">🇩🇪 Deutsch</div>
+        <div class="lang-option" onclick="setLang('fr')">🇫🇷 Français</div>
+        <div class="lang-option" onclick="setLang('pt')">🇵🇹 Português</div>
+      </div>
+    </div>
+  </div>
   <div class="owl-emoji">🦉</div>
   <h1>Cuento<em>a tu medida</em></h1>
   <p>Tú eliges el protagonista, el tema y el personaje especial. La IA hace el resto.</p>
@@ -509,6 +537,321 @@ let opciones = {
   pecas: '', piel: 'light, fair skin', pelo: 'bright blonde', ojos: 'brown'
 };
 
+// ── MULTIIDIOMA ─────────────────────────────────────────
+let idiomaActual = localStorage.getItem('storyowl_lang') || 'es';
+
+const LANGS = {
+  es: {
+    flag:'🇪🇸', code:'ES',
+    heroTitle:'Crea el cuento', heroEm:'de tu peque',
+    formTitle:'Personaliza', formTitleEm:'el protagonista',
+    formSub:'Cada detalle importa. Así el cuento será realmente suyo.',
+    labelNombre:'Nombre del protagonista', placeholderNombre:'Ej: Sofía, Lucas, Martina...',
+    labelEdad:'Edad',
+    labelGenero:'¿Niño o niña?', btnNino:'👦 Niño', btnNina:'👧 Niña',
+    labelPiel:'Tono de piel',
+    labelPelo:'Color de pelo',
+    labelTipoPelo:'Tipo de pelo', btnLiso:'〰 Liso', btnOndulado:'〜 Ondulado', btnRizado:'✦ Rizado',
+    labelOjos:'Color de ojos',
+    labelGafas:'¿Lleva gafas?', btnGafasNo:'😊 No', btnGafasSi:'🤓 Sí',
+    labelPecas:'¿Tiene pecas?', btnPecasNo:'✨ No', btnPecasSi:'🌟 Sí',
+    labelSeccionCuento:'✨ El cuento',
+    labelTema:'¿De qué trata la aventura?', placeholderTema:'Ej: encontrar un dragón perdido, salvar el bosque mágico...',
+    labelPersonaje:'¿Quién le acompaña? (personaje especial)', placeholderPersonaje:'Ej: su perro Toby, una hada traviesa, un robot amigo...',
+    labelEstilo:'🎨 Estilo de ilustración',
+    labelDedicatoria:'💌 Dedicatoria personal',
+    labelDedicatoriaTexto:'Palabras para tu peque', labelOpcional:'(opcional)',
+    placeholderDedicatoria:'Ej: Para mi niña Sofía, que llena nuestra vida de magia. Con todo nuestro amor, mamá y papá',
+    btnGenerar:'🦉 ¡Crear el cuento!',
+    estilos:[
+      {nombre:'Pixar', desc:'3D vivo y colorido'},
+      {nombre:'Acuarela', desc:'Suave y soñador'},
+      {nombre:'Cómic', desc:'Dinámico y divertido'},
+      {nombre:'Clásico', desc:'Cuento tradicional'},
+      {nombre:'Manga', desc:'Estilo japonés'}
+    ],
+    alertNombre:'Escribe el nombre del protagonista',
+    alertTema:'Escribe el tema de la aventura',
+    alertPersonaje:'Escribe el personaje especial',
+    estadoPersonajes:'🦉 El búho está creando los personajes...',
+    estadoCuento:'🦉 El búho está escribiendo el cuento...',
+    estadoPortada:'🎨 Generando portada...',
+    estadoPagina:'🎨 Generando página',
+    estadoDe:'de',
+    ctaListo:'¡Tu cuento está listo!',
+    ctaSub:'Descarga el PDF de alta calidad, sin marca de agua, listo para imprimir y regalar.',
+    btnDescargar:'📄 Descargar PDF',
+    btnCrearOtro:'✨ Crear otro cuento',
+    backLink:'← Volver a StoryOwl',
+  },
+  en: {
+    flag:'🇬🇧', code:'EN',
+    heroTitle:'Create the story', heroEm:'of your little one',
+    formTitle:'Customize', formTitleEm:'the main character',
+    formSub:'Every detail matters. This way the story will truly be theirs.',
+    labelNombre:'Character name', placeholderNombre:'E.g.: Emma, Jack, Lily...',
+    labelEdad:'Age',
+    labelGenero:'Boy or girl?', btnNino:'👦 Boy', btnNina:'👧 Girl',
+    labelPiel:'Skin tone',
+    labelPelo:'Hair color',
+    labelTipoPelo:'Hair type', btnLiso:'〰 Straight', btnOndulado:'〜 Wavy', btnRizado:'✦ Curly',
+    labelOjos:'Eye color',
+    labelGafas:'Wears glasses?', btnGafasNo:'😊 No', btnGafasSi:'🤓 Yes',
+    labelPecas:'Has freckles?', btnPecasNo:'✨ No', btnPecasSi:'🌟 Yes',
+    labelSeccionCuento:'✨ The story',
+    labelTema:'What is the adventure about?', placeholderTema:'E.g.: finding a lost dragon, saving the magic forest, a space journey...',
+    labelPersonaje:'Who joins them? (special character)', placeholderPersonaje:'E.g.: their dog Buddy, a mischievous fairy, a robot friend...',
+    labelEstilo:'🎨 Illustration style',
+    labelDedicatoria:'💌 Personal dedication',
+    labelDedicatoriaTexto:'Words for your little one', labelOpcional:'(optional)',
+    placeholderDedicatoria:'E.g.: For my girl Emma, who fills our lives with magic. With all our love, mum and dad',
+    btnGenerar:'🦉 Create the story!',
+    estilos:[
+      {nombre:'Pixar', desc:'3D vivid & colorful'},
+      {nombre:'Watercolor', desc:'Soft & dreamy'},
+      {nombre:'Comic', desc:'Dynamic & fun'},
+      {nombre:'Classic', desc:'Traditional storybook'},
+      {nombre:'Manga', desc:'Japanese style'}
+    ],
+    alertNombre:'Enter the character\'s name',
+    alertTema:'Enter the adventure theme',
+    alertPersonaje:'Enter the special character',
+    estadoPersonajes:'🦉 The owl is creating the characters...',
+    estadoCuento:'🦉 The owl is writing the story...',
+    estadoPortada:'🎨 Generating cover...',
+    estadoPagina:'🎨 Generating page',
+    estadoDe:'of',
+    ctaListo:'Your story is ready!',
+    ctaSub:'Download the high-quality PDF, watermark-free, ready to print and gift.',
+    btnDescargar:'📄 Download PDF',
+    btnCrearOtro:'✨ Create another story',
+    backLink:'← Back to StoryOwl',
+  },
+  de: {
+    flag:'🇩🇪', code:'DE',
+    heroTitle:'Erstelle das Buch', heroEm:'für dein Kind',
+    formTitle:'Gestalte', formTitleEm:'die Hauptfigur',
+    formSub:'Jedes Detail zählt. So wird die Geschichte wirklich einzigartig.',
+    labelNombre:'Name der Hauptfigur', placeholderNombre:'Z.B.: Emma, Luca, Mia...',
+    labelEdad:'Alter',
+    labelGenero:'Junge oder Mädchen?', btnNino:'👦 Junge', btnNina:'👧 Mädchen',
+    labelPiel:'Hautton',
+    labelPelo:'Haarfarbe',
+    labelTipoPelo:'Haartyp', btnLiso:'〰 Glatt', btnOndulado:'〜 Wellig', btnRizado:'✦ Lockig',
+    labelOjos:'Augenfarbe',
+    labelGafas:'Trägt Brille?', btnGafasNo:'😊 Nein', btnGafasSi:'🤓 Ja',
+    labelPecas:'Hat Sommersprossen?', btnPecasNo:'✨ Nein', btnPecasSi:'🌟 Ja',
+    labelSeccionCuento:'✨ Die Geschichte',
+    labelTema:'Worum geht es im Abenteuer?', placeholderTema:'Z.B.: einen verlorenen Drachen finden, den Zauberwald retten...',
+    labelPersonaje:'Wer begleitet sie? (besondere Figur)', placeholderPersonaje:'Z.B.: ihr Hund Bello, eine freche Fee, ein Roboterfreund...',
+    labelEstilo:'🎨 Illustrationsstil',
+    labelDedicatoria:'💌 Persönliche Widmung',
+    labelDedicatoriaTexto:'Worte für dein Kind', labelOpcional:'(optional)',
+    placeholderDedicatoria:'Z.B.: Für meine Emma, die unser Leben mit Magie füllt. In Liebe, Mama und Papa',
+    btnGenerar:'🦉 Geschichte erstellen!',
+    estilos:[
+      {nombre:'Pixar', desc:'3D lebendig & bunt'},
+      {nombre:'Aquarell', desc:'Sanft & verträumt'},
+      {nombre:'Comic', desc:'Dynamisch & lustig'},
+      {nombre:'Klassisch', desc:'Traditionelles Bilderbuch'},
+      {nombre:'Manga', desc:'Japanischer Stil'}
+    ],
+    alertNombre:'Gib den Namen der Hauptfigur ein',
+    alertTema:'Gib das Abenteuer-Thema ein',
+    alertPersonaje:'Gib die besondere Figur ein',
+    estadoPersonajes:'🦉 Die Eule erstellt die Charaktere...',
+    estadoCuento:'🦉 Die Eule schreibt die Geschichte...',
+    estadoPortada:'🎨 Cover wird erstellt...',
+    estadoPagina:'🎨 Seite wird erstellt',
+    estadoDe:'von',
+    ctaListo:'Dein Buch ist fertig!',
+    ctaSub:'Lade das hochauflösende PDF herunter — ohne Wasserzeichen, druckfertig.',
+    btnDescargar:'📄 PDF herunterladen',
+    btnCrearOtro:'✨ Neue Geschichte erstellen',
+    backLink:'← Zurück zu StoryOwl',
+  },
+  fr: {
+    flag:'🇫🇷', code:'FR',
+    heroTitle:'Crée le livre', heroEm:'de ton enfant',
+    formTitle:'Personnalise', formTitleEm:'le personnage principal',
+    formSub:'Chaque détail compte. Ainsi, l\'histoire sera vraiment la sienne.',
+    labelNombre:'Prénom du personnage', placeholderNombre:'Ex: Emma, Lucas, Chloé...',
+    labelEdad:'Âge',
+    labelGenero:'Garçon ou fille?', btnNino:'👦 Garçon', btnNina:'👧 Fille',
+    labelPiel:'Teint',
+    labelPelo:'Couleur des cheveux',
+    labelTipoPelo:'Type de cheveux', btnLiso:'〰 Lisses', btnOndulado:'〜 Ondulés', btnRizado:'✦ Bouclés',
+    labelOjos:'Couleur des yeux',
+    labelGafas:'Porte des lunettes?', btnGafasNo:'😊 Non', btnGafasSi:'🤓 Oui',
+    labelPecas:'A des taches de rousseur?', btnPecasNo:'✨ Non', btnPecasSi:'🌟 Oui',
+    labelSeccionCuento:'✨ L\'histoire',
+    labelTema:'De quoi parle l\'aventure?', placeholderTema:'Ex: trouver un dragon perdu, sauver la forêt magique...',
+    labelPersonaje:'Qui l\'accompagne? (personnage spécial)', placeholderPersonaje:'Ex: son chien Filou, une fée espiègle, un robot ami...',
+    labelEstilo:'🎨 Style d\'illustration',
+    labelDedicatoria:'💌 Dédicace personnelle',
+    labelDedicatoriaTexto:'Mots pour ton enfant', labelOpcional:'(optionnel)',
+    placeholderDedicatoria:'Ex: Pour ma petite Emma, qui remplit notre vie de magie. Avec tout notre amour, maman et papa',
+    btnGenerar:'🦉 Créer le livre!',
+    estilos:[
+      {nombre:'Pixar', desc:'3D vif & coloré'},
+      {nombre:'Aquarelle', desc:'Doux & onirique'},
+      {nombre:'BD', desc:'Dynamique & amusant'},
+      {nombre:'Classique', desc:'Livre traditionnel'},
+      {nombre:'Manga', desc:'Style japonais'}
+    ],
+    alertNombre:'Entre le prénom du personnage',
+    alertTema:'Entre le thème de l\'aventure',
+    alertPersonaje:'Entre le personnage spécial',
+    estadoPersonajes:'🦉 Le hibou crée les personnages...',
+    estadoCuento:'🦉 Le hibou écrit l\'histoire...',
+    estadoPortada:'🎨 Génération de la couverture...',
+    estadoPagina:'🎨 Génération de la page',
+    estadoDe:'sur',
+    ctaListo:'Ton livre est prêt!',
+    ctaSub:'Télécharge le PDF haute qualité, sans filigrane, prêt à imprimer et offrir.',
+    btnDescargar:'📄 Télécharger le PDF',
+    btnCrearOtro:'✨ Créer une autre histoire',
+    backLink:'← Retour à StoryOwl',
+  },
+  pt: {
+    flag:'🇵🇹', code:'PT',
+    heroTitle:'Crie o livro', heroEm:'do seu pequeno',
+    formTitle:'Personalize', formTitleEm:'o personagem principal',
+    formSub:'Cada detalhe importa. Assim a história será verdadeiramente dele.',
+    labelNombre:'Nome do personagem', placeholderNombre:'Ex: Sofia, Lucas, Ana...',
+    labelEdad:'Idade',
+    labelGenero:'Menino ou menina?', btnNino:'👦 Menino', btnNina:'👧 Menina',
+    labelPiel:'Tom de pele',
+    labelPelo:'Cor do cabelo',
+    labelTipoPelo:'Tipo de cabelo', btnLiso:'〰 Liso', btnOndulado:'〜 Ondulado', btnRizado:'✦ Cacheado',
+    labelOjos:'Cor dos olhos',
+    labelGafas:'Usa óculos?', btnGafasNo:'😊 Não', btnGafasSi:'🤓 Sim',
+    labelPecas:'Tem sardas?', btnPecasNo:'✨ Não', btnPecasSi:'🌟 Sim',
+    labelSeccionCuento:'✨ A história',
+    labelTema:'Sobre o que é a aventura?', placeholderTema:'Ex: encontrar um dragão perdido, salvar a floresta mágica...',
+    labelPersonaje:'Quem o acompanha? (personagem especial)', placeholderPersonaje:'Ex: seu cachorro Rex, uma fada travessa, um robô amigo...',
+    labelEstilo:'🎨 Estilo de ilustração',
+    labelDedicatoria:'💌 Dedicatória pessoal',
+    labelDedicatoriaTexto:'Palavras para o seu pequeno', labelOpcional:'(opcional)',
+    placeholderDedicatoria:'Ex: Para a minha Sofia, que enche a nossa vida de magia. Com todo o nosso amor, mamã e papá',
+    btnGenerar:'🦉 Criar a história!',
+    estilos:[
+      {nombre:'Pixar', desc:'3D vivo e colorido'},
+      {nombre:'Aquarela', desc:'Suave e sonhador'},
+      {nombre:'Quadrinhos', desc:'Dinâmico e divertido'},
+      {nombre:'Clássico', desc:'Livro tradicional'},
+      {nombre:'Manga', desc:'Estilo japonês'}
+    ],
+    alertNombre:'Escreve o nome do personagem',
+    alertTema:'Escreve o tema da aventura',
+    alertPersonaje:'Escreve o personagem especial',
+    estadoPersonajes:'🦉 A coruja está a criar os personagens...',
+    estadoCuento:'🦉 A coruja está a escrever a história...',
+    estadoPortada:'🎨 A gerar a capa...',
+    estadoPagina:'🎨 A gerar a página',
+    estadoDe:'de',
+    ctaListo:'O teu livro está pronto!',
+    ctaSub:'Descarrega o PDF de alta qualidade, sem marca de água, pronto para imprimir e oferecer.',
+    btnDescargar:'📄 Descarregar PDF',
+    btnCrearOtro:'✨ Criar outra história',
+    backLink:'← Voltar ao StoryOwl',
+  }
+};
+
+// Idioma en inglés de Claude para los prompts del cuento
+const LANG_NAMES = {
+  es: 'Spanish', en: 'English', de: 'German', fr: 'French', pt: 'Portuguese'
+};
+
+function toggleLang() {
+  document.getElementById('langDropdown').classList.toggle('open');
+}
+
+// Cerrar dropdown al hacer click fuera
+document.addEventListener('click', (e) => {
+  if (!document.getElementById('langSelector')?.contains(e.target)) {
+    document.getElementById('langDropdown')?.classList.remove('open');
+  }
+});
+
+function setLang(lang) {
+  idiomaActual = lang;
+  localStorage.setItem('storyowl_lang', lang);
+  document.getElementById('langDropdown').classList.remove('open');
+  const L = LANGS[lang];
+  document.getElementById('langFlag').textContent = L.flag;
+  document.getElementById('langCode').textContent  = L.code;
+  // Marcar activo
+  document.querySelectorAll('.lang-option').forEach(o => {
+    o.classList.toggle('active', o.textContent.includes(L.code) || o.onclick.toString().includes(`'${lang}'`));
+  });
+  aplicarIdioma(L);
+}
+
+function aplicarIdioma(L) {
+  // Hero
+  const h1 = document.querySelector('.hero h1');
+  if(h1) h1.innerHTML = `${L.heroTitle}<em>${L.heroEm}</em>`;
+  // Form title
+  const ft = document.querySelector('.form-title');
+  if(ft) ft.innerHTML = `${L.formTitle} <em>${L.formTitleEm}</em>`;
+  const fs = document.querySelector('.form-sub');
+  if(fs) fs.textContent = L.formSub;
+  // Labels e inputs
+  _setLabel('nombre', L.labelNombre); _setPlaceholder('nombre', L.placeholderNombre);
+  _setLabel('tema',   L.labelTema);   _setPlaceholder('tema', L.placeholderTema);
+  _setLabel('personaje', L.labelPersonaje); _setPlaceholder('personaje', L.placeholderPersonaje);
+  _setLabel('dedicatoriaPersonal', L.labelDedicatoriaTexto); _setPlaceholder('dedicatoriaPersonal', L.placeholderDedicatoria);
+  // Sección cuento
+  const secs = document.querySelectorAll('.section-label');
+  if(secs[2]) secs[2].innerHTML = L.labelSeccionCuento + '<span style="flex:1;height:1px;background:rgba(58,32,112,.1);margin-left:8px;display:block"></span>';
+  // Botón generar
+  const bg = document.getElementById('btnGenerar');
+  if(bg) bg.textContent = L.btnGenerar;
+  // Estilos
+  const cards = document.querySelectorAll('.style-card');
+  L.estilos.forEach((e,i) => {
+    if(cards[i]) {
+      const n = cards[i].querySelector('.style-name');
+      const d = cards[i].querySelector('.style-desc');
+      if(n) n.textContent = e.nombre;
+      if(d) d.textContent = e.desc;
+    }
+  });
+  // CTA
+  const ctaT = document.querySelector('.flipbook-cta-title');
+  if(ctaT) ctaT.textContent = L.ctaListo;
+  const ctaS = document.querySelector('.flipbook-cta-sub');
+  if(ctaS) ctaS.textContent = L.ctaSub;
+  const btnPdf = document.getElementById('btnPdf');
+  if(btnPdf) btnPdf.textContent = L.btnDescargar;
+  // Back link
+  const bl = document.querySelector('.back-link');
+  if(bl) bl.textContent = L.backLink;
+}
+
+function _setLabel(id, text) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  const label = el.previousElementSibling || el.closest('.field')?.querySelector('label');
+  if(label && label.tagName === 'LABEL') {
+    // preservar el span opcional si existe
+    const span = label.querySelector('span');
+    label.childNodes[0].textContent = text + ' ';
+    if(!span && text) {} // no span needed
+  }
+}
+
+function _setPlaceholder(id, text) {
+  const el = document.getElementById(id);
+  if(el) el.placeholder = text;
+}
+
+// Aplicar idioma guardado al cargar
+document.addEventListener('DOMContentLoaded', () => {
+  if(idiomaActual !== 'es') setLang(idiomaActual);
+});
+
 // ── Estrellas hero ──────────────────────────────────────
 const starsEl = document.getElementById('stars');
 for(let i=0;i<50;i++){
@@ -563,7 +906,7 @@ async function generar(){
   const edad = parseInt(document.getElementById('edad').value);
   const dedicatoriaPersonal = document.getElementById('dedicatoriaPersonal')?.value || '';
 
-  const payload = { nombre, edad, tema, personaje, opciones, estilo, dedicatoriaPersonal };
+  const payload = { nombre, edad, tema, personaje, opciones, estilo, dedicatoriaPersonal, idioma: idiomaActual };
   console.log('[StoryOwl] Enviando payload:', JSON.stringify(payload, null, 2));
 
   document.getElementById('btnGenerar').disabled = true;
@@ -659,6 +1002,14 @@ function procesarEvento(data){
     const sb=document.getElementById('status-bar');
     if(sb){ sb.style.opacity='0'; setTimeout(()=>sb.remove(),500); }
     flipComplete();
+    // Traducir CTA al idioma activo
+    const L = LANGS[idiomaActual];
+    const ctaT = document.querySelector('.flipbook-cta-title');
+    if(ctaT) ctaT.textContent = L.ctaListo;
+    const ctaS = document.querySelector('.flipbook-cta-sub');
+    if(ctaS) ctaS.textContent = L.ctaSub;
+    const btnPdf = document.getElementById('btnPdf');
+    if(btnPdf) btnPdf.textContent = L.btnDescargar;
     document.getElementById('btnGenerar').disabled = false;
 
   } else if(data.tipo === 'error'){
