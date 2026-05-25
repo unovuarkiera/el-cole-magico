@@ -98,7 +98,7 @@ Language level: adapted for a ${edad}-year-old child — short sentences, simple
 
 The story must have a complete narrative arc in 16 pages: introduction (1-3), development (4-12), climax (13-14), resolution (15-16).
 
-RESPOND ONLY WITH JSON, no text before or after, no backticks. All "titulo" and "texto" fields must be in ${idiomaCuento}. The "escena" field must always be in English (for image generation).
+RESPOND ONLY WITH VALID JSON. No text before or after. No backticks. No apostrophes inside string values (rephrase to avoid them). Use only double quotes. All "titulo" and "texto" must be in ${idiomaCuento}. The "escena" field must always be in English.
 
 {"titulo":"poetic title in ${idiomaCuento}","dedicatoria":"emotional dedication for ${nombre} in ${idiomaCuento}","paginas":[
 {"numero":1,"titulo":"page title in ${idiomaCuento}","texto":"page text in ${idiomaCuento}","escena":"detailed scene in English for image generation"},
@@ -122,8 +122,17 @@ RESPOND ONLY WITH JSON, no text before or after, no backticks. All "titulo" and 
 
     const text = msg.content[0].text.trim();
     const match = text.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error('No JSON encontrado');
-    const cuento = JSON.parse(match[0]);
+    if (!match) throw new Error('No JSON encontrado en respuesta de Claude');
+    let cuento;
+    try {
+      cuento = JSON.parse(match[0]);
+    } catch(e) {
+      // Limpiar caracteres problemáticos e intentar de nuevo
+      const cleaned = match[0]
+        .replace(/[\u0000-\u001F\u007F]/g, ' ')
+        .replace(/,\s*([}\]])/g, '$1');
+      cuento = JSON.parse(cleaned);
+    }
 
     send({ tipo: 'cuento', titulo: cuento.titulo, dedicatoria: cuento.dedicatoria });
 
