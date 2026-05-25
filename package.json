@@ -15,8 +15,9 @@
     "anthropic": "^0.0.0",
     "express": "^5.2.1",
     "multer": "^2.1.1",
-    "nodemailer": "^8.0.7",
+    "nodemailer": "^8.0.8",
     "openai": "^6.38.0",
-    "pdfkit": "^0.18.0"
+    "pdfkit": "^0.18.0",
+    "stripe": "^22.1.1"
   }
 }
