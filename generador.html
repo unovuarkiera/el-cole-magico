@@ -1140,7 +1140,6 @@ function procesarEvento(data){
     document.getElementById('bookTitle').textContent = data.titulo;
     document.getElementById('bookDed').textContent = data.dedicatoria;
     flipDed = data.dedicatoria || '';
-    send({ tipo: 'estado', mensaje: LANGS[idiomaActual]?.estadoPersonajes || '🦉 Creando personajes...' });
     flipInit(data.titulo, document.getElementById('nombre')?.value || '');
     actualizarProgreso(1, TOTAL_PAGS);
     mostrarIndicador(1, TOTAL_PAGS);
