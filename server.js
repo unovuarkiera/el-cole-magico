@@ -118,6 +118,8 @@ RESPOND ONLY WITH JSON, no text before or after, no backticks. All "titulo" and 
 {"numero":15,"titulo":"...","texto":"...","escena":"..."},
 {"numero":16,"titulo":"...","texto":"...","escena":"..."}
 ]}` }]
+    });
+
     const text = msg.content[0].text.trim();
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) throw new Error('No JSON encontrado');
