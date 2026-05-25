@@ -15,6 +15,8 @@
 body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--dark);overflow-x:hidden;}
 
 /* ── SELECTOR DE IDIOMA ── */
+.hero-nav{position:absolute;top:18px;left:0;right:0;display:flex;align-items:center;
+  justify-content:space-between;padding:0 24px;z-index:10;}
 .lang-selector{position:relative;display:inline-flex;align-items:center;}
 .lang-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
   border-radius:20px;padding:6px 14px;color:white;font-size:13px;font-weight:700;
@@ -300,7 +302,8 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
 
 <section class="hero">
   <div class="stars" id="stars"></div>
-  <div style="position:absolute;top:20px;right:20px;z-index:10;">
+  <div class="hero-nav">
+    <a href="/" class="back-link">← Volver a StoryOwl</a>
     <div class="lang-selector" id="langSelector">
       <button class="lang-btn" onclick="toggleLang()">
         <span id="langFlag">🇪🇸</span>
@@ -327,31 +330,31 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
   <p class="form-sub">Personaliza cada detalle — el cuento tardará unos minutos en generarse</p>
 
   <div class="form-card">
-    <div class="section-label">🦸 El protagonista</div>
+    <div class="section-label" id="secProtagonista">🦸 El protagonista</div>
 
     <div class="field">
-      <label class="label">¿Cómo se llama?</label>
+      <label class="label" id="lblNombre">¿Cómo se llama?</label>
       <input class="input" id="nombre" placeholder="Ej: Lucas, Sofía, Martina..."/>
     </div>
 
     <div class="field">
-      <label class="label">¿Cuántos años tiene?</label>
+      <label class="label" id="lblEdad">¿Cuántos años tiene?</label>
       <div class="edad-display" id="edadDisplay">6</div>
-      <div class="edad-sub">El tono del cuento se adapta a esta edad</div>
+      <div class="edad-sub" id="lblEdadSub">El tono del cuento se adapta a esta edad</div>
       <input type="range" id="edad" min="1" max="15" value="6" oninput="document.getElementById('edadDisplay').textContent=this.value"/>
     </div>
 
     <div class="field">
-      <label class="label">Es un...</label>
+      <label class="label" id="lblGenero">Es un...</label>
       <div class="btn-group">
-        <button class="opt-btn active" onclick="setOpt(this,'genero','niña')">👧 Niña</button>
-        <button class="opt-btn" onclick="setOpt(this,'genero','niño')">👦 Niño</button>
+        <button class="opt-btn active" id="btnNina" onclick="setOpt(this,'genero','niña')">👧 Niña</button>
+        <button class="opt-btn" id="btnNino" onclick="setOpt(this,'genero','niño')">👦 Niño</button>
         <button class="opt-btn" onclick="setOpt(this,'genero','protagonista')">🌟 Sorpresa</button>
       </div>
     </div>
 
     <div class="field">
-      <label class="label">Tono de piel</label>
+      <label class="label" id="lblPiel">Tono de piel</label>
       <div class="color-group">
         <div class="color-btn active" style="background:#FDDBB4" onclick="setColor(this,'piel','light, fair skin')"><span class="check">✓</span></div>
         <div class="color-btn" style="background:#F0C08A" onclick="setColor(this,'piel','medium light skin')"><span class="check">✓</span></div>
@@ -362,7 +365,7 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
     </div>
 
     <div class="field">
-      <label class="label">Color de pelo</label>
+      <label class="label" id="lblPelo">Color de pelo</label>
       <div class="color-group">
         <div class="color-btn active" style="background:#F5E6A3" onclick="setColor(this,'pelo','bright blonde')"><span class="check">✓</span></div>
         <div class="color-btn" style="background:#D4A017" onclick="setColor(this,'pelo','golden blonde')"><span class="check">✓</span></div>
@@ -374,18 +377,18 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
     </div>
 
     <div class="field">
-      <label class="label">Tipo de pelo</label>
+      <label class="label" id="lblTipoPelo">Tipo de pelo</label>
       <div class="btn-group">
-        <button class="opt-btn active" onclick="setOpt(this,'tipopelo','straight')">〰️ Liso</button>
-        <button class="opt-btn" onclick="setOpt(this,'tipopelo','curly')">🌀 Rizado</button>
-        <button class="opt-btn" onclick="setOpt(this,'tipopelo','wavy')">〜 Ondulado</button>
+        <button class="opt-btn active" id="btnLiso" onclick="setOpt(this,'tipopelo','straight')">〰️ Liso</button>
+        <button class="opt-btn" id="btnRizado" onclick="setOpt(this,'tipopelo','curly')">🌀 Rizado</button>
+        <button class="opt-btn" id="btnOndulado" onclick="setOpt(this,'tipopelo','wavy')">〜 Ondulado</button>
         <button class="opt-btn" onclick="setOpt(this,'tipopelo','very short')">✂️ Muy corto</button>
         <button class="opt-btn" onclick="setOpt(this,'tipopelo','long braided')">💈 Trenzas</button>
       </div>
     </div>
 
     <div class="field">
-      <label class="label">Color de ojos</label>
+      <label class="label" id="lblOjos">Color de ojos</label>
       <div class="color-group">
         <div class="color-btn active" style="background:#6B4226" onclick="setColor(this,'ojos','brown')"><span class="check">✓</span></div>
         <div class="color-btn" style="background:#4A90D9" onclick="setColor(this,'ojos','blue')"><span class="check">✓</span></div>
@@ -397,34 +400,34 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
 
     <div class="row2">
       <div class="field">
-        <label class="label">¿Lleva gafas?</label>
+        <label class="label" id="lblGafas">¿Lleva gafas?</label>
         <div class="btn-group">
-          <button class="opt-btn active" onclick="setOpt(this,'gafas','without glasses')">😊 No</button>
-          <button class="opt-btn" onclick="setOpt(this,'gafas','wearing round glasses')">🤓 Sí</button>
+          <button class="opt-btn active" id="btnGafasNo" onclick="setOpt(this,'gafas','without glasses')">😊 No</button>
+          <button class="opt-btn" id="btnGafasSi" onclick="setOpt(this,'gafas','wearing round glasses')">🤓 Sí</button>
         </div>
       </div>
       <div class="field">
-        <label class="label">¿Tiene pecas?</label>
+        <label class="label" id="lblPecas">¿Tiene pecas?</label>
         <div class="btn-group">
-          <button class="opt-btn active" onclick="setOpt(this,'pecas','')">✨ No</button>
-          <button class="opt-btn" onclick="setOpt(this,'pecas','with cute freckles on the nose')">🌟 Sí</button>
+          <button class="opt-btn active" id="btnPecasNo" onclick="setOpt(this,'pecas','')">✨ No</button>
+          <button class="opt-btn" id="btnPecasSi" onclick="setOpt(this,'pecas','with cute freckles on the nose')">🌟 Sí</button>
         </div>
       </div>
     </div>
 
-    <div class="section-label">✨ El cuento</div>
+    <div class="section-label" id="secCuento">✨ El cuento</div>
 
     <div class="field">
-      <label class="label">¿De qué trata la aventura?</label>
+      <label class="label" id="lblTema">¿De qué trata la aventura?</label>
       <input class="input" id="tema" placeholder="Ej: encontrar un dragón perdido, salvar el bosque mágico, un viaje al espacio..."/>
     </div>
 
     <div class="field">
-      <label class="label">¿Quién le acompaña? (personaje especial)</label>
+      <label class="label" id="lblPersonaje">¿Quién le acompaña? (personaje especial)</label>
       <input class="input" id="personaje" placeholder="Ej: su perro Toby, una hada traviesa, un robot amigo..."/>
     </div>
 
-    <div class="section-label">🎨 Estilo de ilustración</div>
+    <div class="section-label" id="secEstilo">🎨 Estilo de ilustración</div>
     <div class="field">
       <div class="style-grid">
         <div class="style-card active" onclick="setEstilo(this,'Pixar CGI quality, 3D animation style, vibrant and detailed')">
@@ -445,9 +448,9 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
       </div>
     </div>
 
-    <div class="section-label" style="margin-top:8px">💌 Dedicatoria personal</div>
+    <div class="section-label" id="secDedicatoria" style="margin-top:8px">💌 Dedicatoria personal</div>
     <div class="field">
-      <label class="label">Palabras para tu peque <span style="color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none;font-size:11px">(opcional)</span></label>
+      <label class="label" id="lblDedicatoriaTexto">Palabras para tu peque <span id="lblOpcional" style="color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none;font-size:11px">(opcional)</span></label>
       <textarea class="input" id="dedicatoriaPersonal" rows="3" placeholder="Ej: Para mi niña Sofía, que llena nuestra vida de magia. Con todo nuestro amor, mamá y papá" style="resize:vertical;font-family:inherit;"></textarea>
     </div>
 
@@ -563,6 +566,19 @@ const LANGS = {
     labelDedicatoriaTexto:'Palabras para tu peque', labelOpcional:'(opcional)',
     placeholderDedicatoria:'Ej: Para mi niña Sofía, que llena nuestra vida de magia. Con todo nuestro amor, mamá y papá',
     btnGenerar:'🦉 ¡Crear el cuento!',
+    secProtagonista:'🦸 El protagonista',
+    lblNombre:'¿Cómo se llama?',
+    lblEdad:'¿Cuántos años tiene?',
+    lblEdadSub:'El tono del cuento se adapta a esta edad',
+    lblGenero:'Es un...',
+    lblGeneroSorpresa:'🌟 Sorpresa',
+    lblPiel:'Tono de piel', lblPelo:'Color de pelo',
+    lblTipoPelo:'Tipo de pelo',
+    btnMuyCorto:'✂️ Muy corto', btnTrenzas:'💈 Trenzas',
+    lblOjos:'Color de ojos',
+    lblGafas:'¿Lleva gafas?', lblPecas:'¿Tiene pecas?',
+    secEstilo:'🎨 Estilo de ilustración',
+    secDedicatoria:'💌 Dedicatoria personal',
     estilos:[
       {nombre:'Pixar', desc:'3D vivo y colorido'},
       {nombre:'Acuarela', desc:'Suave y soñador'},
@@ -617,6 +633,19 @@ const LANGS = {
     labelDedicatoriaTexto:'Words for your little one', labelOpcional:'(optional)',
     placeholderDedicatoria:'E.g.: For my girl Emma, who fills our lives with magic. With all our love, mum and dad',
     btnGenerar:'🦉 Create the story!',
+    secProtagonista:'🦸 The character',
+    lblNombre:'What is their name?',
+    lblEdad:'How old are they?',
+    lblEdadSub:'The story tone adapts to this age',
+    lblGenero:'They are a...',
+    lblGeneroSorpresa:'🌟 Surprise',
+    lblPiel:'Skin tone', lblPelo:'Hair color',
+    lblTipoPelo:'Hair type',
+    btnMuyCorto:'✂️ Very short', btnTrenzas:'💈 Braids',
+    lblOjos:'Eye color',
+    lblGafas:'Wears glasses?', lblPecas:'Has freckles?',
+    secEstilo:'🎨 Illustration style',
+    secDedicatoria:'💌 Personal dedication',
     estilos:[
       {nombre:'Pixar', desc:'3D vivid & colorful'},
       {nombre:'Watercolor', desc:'Soft & dreamy'},
@@ -671,6 +700,19 @@ const LANGS = {
     labelDedicatoriaTexto:'Worte für dein Kind', labelOpcional:'(optional)',
     placeholderDedicatoria:'Z.B.: Für meine Emma, die unser Leben mit Magie füllt. In Liebe, Mama und Papa',
     btnGenerar:'🦉 Geschichte erstellen!',
+    secProtagonista:'🦸 Die Figur',
+    lblNombre:'Wie heißt sie/er?',
+    lblEdad:'Wie alt ist sie/er?',
+    lblEdadSub:'Der Ton der Geschichte passt sich dem Alter an',
+    lblGenero:'Es ist ein...',
+    lblGeneroSorpresa:'🌟 Überraschung',
+    lblPiel:'Hautton', lblPelo:'Haarfarbe',
+    lblTipoPelo:'Haartyp',
+    btnMuyCorto:'✂️ Sehr kurz', btnTrenzas:'💈 Zöpfe',
+    lblOjos:'Augenfarbe',
+    lblGafas:'Trägt Brille?', lblPecas:'Hat Sommersprossen?',
+    secEstilo:'🎨 Illustrationsstil',
+    secDedicatoria:'💌 Persönliche Widmung',
     estilos:[
       {nombre:'Pixar', desc:'3D lebendig & bunt'},
       {nombre:'Aquarell', desc:'Sanft & verträumt'},
@@ -725,6 +767,19 @@ const LANGS = {
     labelDedicatoriaTexto:'Mots pour ton enfant', labelOpcional:'(optionnel)',
     placeholderDedicatoria:'Ex: Pour ma petite Emma, qui remplit notre vie de magie. Avec tout notre amour, maman et papa',
     btnGenerar:'🦉 Créer le livre!',
+    secProtagonista:'🦸 Le personnage',
+    lblNombre:"Comment s'appelle-t-il/elle?",
+    lblEdad:"Quel âge a-t-il/elle?",
+    lblEdadSub:"Le ton de l'histoire s'adapte à cet âge",
+    lblGenero:"C'est un...",
+    lblGeneroSorpresa:'🌟 Surprise',
+    lblPiel:'Teint', lblPelo:'Couleur des cheveux',
+    lblTipoPelo:'Type de cheveux',
+    btnMuyCorto:'✂️ Très court', btnTrenzas:'💈 Tresses',
+    lblOjos:'Couleur des yeux',
+    lblGafas:'Porte des lunettes?', lblPecas:"A des taches de rousseur?",
+    secEstilo:"🎨 Style d'illustration",
+    secDedicatoria:'💌 Dédicace personnelle',
     estilos:[
       {nombre:'Pixar', desc:'3D vif & coloré'},
       {nombre:'Aquarelle', desc:'Doux & onirique'},
@@ -779,6 +834,19 @@ const LANGS = {
     labelDedicatoriaTexto:'Palavras para o seu pequeno', labelOpcional:'(opcional)',
     placeholderDedicatoria:'Ex: Para a minha Sofia, que enche a nossa vida de magia. Com todo o nosso amor, mamã e papá',
     btnGenerar:'🦉 Criar a história!',
+    secProtagonista:'🦸 O personagem',
+    lblNombre:'Como se chama?',
+    lblEdad:'Quantos anos tem?',
+    lblEdadSub:'O tom da história adapta-se a esta idade',
+    lblGenero:'É um...',
+    lblGeneroSorpresa:'🌟 Surpresa',
+    lblPiel:'Tom de pele', lblPelo:'Cor do cabelo',
+    lblTipoPelo:'Tipo de cabelo',
+    btnMuyCorto:'✂️ Muito curto', btnTrenzas:'💈 Tranças',
+    lblOjos:'Cor dos olhos',
+    lblGafas:'Usa óculos?', lblPecas:'Tem sardas?',
+    secEstilo:'🎨 Estilo de ilustração',
+    secDedicatoria:'💌 Dedicatória pessoal',
     estilos:[
       {nombre:'Pixar', desc:'3D vivo e colorido'},
       {nombre:'Aquarela', desc:'Suave e sonhador'},
@@ -847,25 +915,64 @@ function aplicarIdioma(L) {
   // Hero
   const h1 = document.querySelector('.hero h1');
   if(h1) h1.innerHTML = `${L.heroTitle}<em>${L.heroEm}</em>`;
-  // Form title
   const ft = document.querySelector('.form-title');
   if(ft) ft.innerHTML = `${L.formTitle} <em>${L.formTitleEm}</em>`;
   const fs = document.querySelector('.form-sub');
   if(fs) fs.textContent = L.formSub;
-  // Labels e inputs
-  _setLabel('nombre', L.labelNombre); _setPlaceholder('nombre', L.placeholderNombre);
-  _setLabel('tema',   L.labelTema);   _setPlaceholder('tema', L.placeholderTema);
-  _setLabel('personaje', L.labelPersonaje); _setPlaceholder('personaje', L.placeholderPersonaje);
-  _setLabel('dedicatoriaPersonal', L.labelDedicatoriaTexto); _setPlaceholder('dedicatoriaPersonal', L.placeholderDedicatoria);
-  // Sección cuento
-  const secs = document.querySelectorAll('.section-label');
-  if(secs[2]) secs[2].innerHTML = L.labelSeccionCuento + '<span style="flex:1;height:1px;background:rgba(58,32,112,.1);margin-left:8px;display:block"></span>';
+
+  // Secciones
+  _setTxt('secProtagonista', L.secProtagonista);
+  _setTxt('secCuento',       L.labelSeccionCuento);
+  _setTxt('secEstilo',       L.secEstilo);
+  _setTxt('secDedicatoria',  L.secDedicatoria);
+
+  // Labels
+  _setTxt('lblNombre',           L.lblNombre);
+  _setTxt('lblEdad',             L.lblEdad);
+  _setTxt('lblEdadSub',          L.lblEdadSub);
+  _setTxt('lblGenero',           L.lblGenero);
+  _setTxt('lblPiel',             L.lblPiel);
+  _setTxt('lblPelo',             L.lblPelo);
+  _setTxt('lblTipoPelo',         L.lblTipoPelo);
+  _setTxt('lblOjos',             L.lblOjos);
+  _setTxt('lblGafas',            L.lblGafas);
+  _setTxt('lblPecas',            L.lblPecas);
+  _setTxt('lblDedicatoriaTexto', L.labelDedicatoriaTexto);
+  _setTxt('lblOpcional',         L.labelOpcional);
+
+  // Botones genero
+  _setTxt('btnNina',    L.btnNina);
+  _setTxt('btnNino',    L.btnNino);
+
+  // Botones tipo pelo
+  _setTxt('btnLiso',     L.btnLiso);
+  _setTxt('btnRizado',   L.btnRizado);
+  _setTxt('btnOndulado', L.btnOndulado);
+  _setTxt('btnMuyCorto', L.btnMuyCorto);
+  _setTxt('btnTrenzas',  L.btnTrenzas);
+
+  // Botones gafas/pecas
+  _setTxt('btnGafasNo', L.btnGafasNo);
+  _setTxt('btnGafasSi', L.btnGafasSi);
+  _setTxt('btnPecasNo', L.btnPecasNo);
+  _setTxt('btnPecasSi', L.btnPecasSi);
+
+  // Inputs
+  _setPlaceholder('nombre',            L.placeholderNombre);
+  _setPlaceholder('tema',              L.placeholderTema);
+  _setPlaceholder('personaje',         L.placeholderPersonaje);
+  _setPlaceholder('dedicatoriaPersonal', L.placeholderDedicatoria);
+
+  // Labels inputs con ID
+  _setTxt('lblTema',      L.labelTema);
+  _setTxt('lblPersonaje', L.labelPersonaje);
+
   // Botón generar
-  const bg = document.getElementById('btnGenerar');
-  if(bg) bg.textContent = L.btnGenerar;
+  _setTxt('btnGenerar', L.btnGenerar);
+
   // Estilos
   const cards = document.querySelectorAll('.style-card');
-  L.estilos.forEach((e,i) => {
+  (L.estilos||[]).forEach((e,i) => {
     if(cards[i]) {
       const n = cards[i].querySelector('.style-name');
       const d = cards[i].querySelector('.style-desc');
@@ -873,39 +980,36 @@ function aplicarIdioma(L) {
       if(d) d.textContent = e.desc;
     }
   });
-  // CTA
+
+  // CTA flipbook
+  _setTxt('flipCta', null); // no sobreescribir el card entero
   const ctaT = document.querySelector('.flipbook-cta-title');
   if(ctaT) ctaT.textContent = L.ctaListo;
   const ctaS = document.querySelector('.flipbook-cta-sub');
   if(ctaS) ctaS.textContent = L.ctaSub;
-  const btnPdf = document.getElementById('btnPdf');
-  if(btnPdf) btnPdf.textContent = L.btnDescargar;
-  // Back link
-  const bl = document.querySelector('.back-link');
-  if(bl) bl.textContent = L.backLink;
+  _setTxt('btnPdf',      L.btnDescargar);
+
   // Subtítulo flipbook
   const fsub = document.querySelector('.flipbook-subtitle');
-  if(fsub) fsub.textContent = L.subtituloFlip;
-  // Watermark dinámica vía CSS variable
-  document.documentElement.style.setProperty('--wm-text', `'${L.watermark}'`);
-  document.documentElement.style.setProperty('--wm-footer', `'${L.watermarkFooter}'`);
+  if(fsub) fsub.textContent = L.subtituloFlip||'';
+
+  // Watermark CSS dinámica
+  document.documentElement.style.setProperty('--wm-text',   `'${(L.watermark||'').replace(/'/g,"\\'")}'`);
+  document.documentElement.style.setProperty('--wm-footer', `'${(L.watermarkFooter||'').replace(/'/g,"\\'")}'`);
+
+  // Back link
+  const bl = document.querySelector('.back-link');
+  if(bl) bl.textContent = L.backLink||'';
 }
 
-function _setLabel(id, text) {
+function _setTxt(id, text) {
   const el = document.getElementById(id);
-  if(!el) return;
-  const label = el.previousElementSibling || el.closest('.field')?.querySelector('label');
-  if(label && label.tagName === 'LABEL') {
-    // preservar el span opcional si existe
-    const span = label.querySelector('span');
-    label.childNodes[0].textContent = text + ' ';
-    if(!span && text) {} // no span needed
-  }
+  if(el && text != null) el.textContent = text;
 }
 
 function _setPlaceholder(id, text) {
   const el = document.getElementById(id);
-  if(el) el.placeholder = text;
+  if(el && text) el.placeholder = text;
 }
 
 // Aplicar idioma guardado al cargar
@@ -1018,12 +1122,23 @@ function procesarEvento(data){
   console.log('[StoryOwl] Evento:', data.tipo, data);
 
   if(data.tipo === 'estado'){
-    actualizarStatus(data.mensaje);
+    // Traducir mensaje al idioma activo
+    const L = LANGS[idiomaActual];
+    let msg = data.mensaje;
+    if(msg.includes('creando los personajes') || msg.includes('creating the char') || msg.includes('Charaktere') || msg.includes('personnages') || msg.includes('personagens')) msg = L.estadoPersonajes||msg;
+    else if(msg.includes('escribiendo el cuento') || msg.includes('writing') || msg.includes('schreibt') || msg.includes('écrit') || msg.includes('escrever')) msg = L.estadoCuento||msg;
+    else if(msg.includes('portada') || msg.includes('cover') || msg.includes('Cover') || msg.includes('couverture') || msg.includes('capa')) msg = L.estadoPortada||msg;
+    else if(msg.includes('Generando página') || msg.includes('Generating page') || msg.includes('Seite') || msg.includes('page') || msg.includes('gerar a página')) {
+      const match = msg.match(/(\d+)\s*(?:de|of|von|sur)\s*(\d+)/);
+      if(match) msg = `${L.estadoPagina||'🎨 Generando página'} ${match[1]} ${L.estadoDe||'de'} ${match[2]}`;
+    }
+    actualizarStatus(msg);
 
   } else if(data.tipo === 'cuento'){
     document.getElementById('bookTitle').textContent = data.titulo;
     document.getElementById('bookDed').textContent = data.dedicatoria;
     flipDed = data.dedicatoria || '';
+    send({ tipo: 'estado', mensaje: LANGS[idiomaActual]?.estadoPersonajes || '🦉 Creando personajes...' });
     flipInit(data.titulo, document.getElementById('nombre')?.value || '');
     actualizarProgreso(1, TOTAL_PAGS);
     mostrarIndicador(1, TOTAL_PAGS);
