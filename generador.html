@@ -180,13 +180,13 @@ input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3
 .fp-page img{width:100%;height:auto;display:block;object-fit:contain;max-height:none;}
 .fp-wm{position:absolute;inset:0;pointer-events:none;z-index:8;overflow:hidden;}
 .fp-wm::before{
-  content:'Vista previa · StoryOwl · Vista previa · StoryOwl · Vista previa · StoryOwl';
+  content:var(--wm-text,'Vista previa · StoryOwl · Vista previa · StoryOwl · Vista previa · StoryOwl');
   position:absolute;top:40%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);
   font-family:'Fraunces',serif;font-size:clamp(11px,1.8vw,17px);font-weight:900;
   color:rgba(255,255,255,0.22);letter-spacing:4px;white-space:nowrap;
   user-select:none;width:220%;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.4);}
 .fp-wm::after{
-  content:'🦉 storyowl.com · Vista previa · 🦉 storyowl.com · Vista previa · 🦉';
+  content:var(--wm-footer,'🦉 storyowl.com · Vista previa · 🦉 storyowl.com · Vista previa · 🦉');
   position:absolute;bottom:0;left:0;right:0;
   padding:6px 0;text-align:center;
   font-size:clamp(9px,1.2vw,13px);color:rgba(255,255,255,.28);
@@ -583,6 +583,17 @@ const LANGS = {
     btnDescargar:'📄 Descargar PDF',
     btnCrearOtro:'✨ Crear otro cuento',
     backLink:'← Volver a StoryOwl',
+    subtituloFlip:'Vista previa · Descarga el PDF para la versión completa en alta resolución',
+    watermark:'Vista previa · StoryOwl · Vista previa · StoryOwl · Vista previa · StoryOwl',
+    watermarkFooter:'🦉 storyowl.com · Vista previa · 🦉 storyowl.com · Vista previa · 🦉',
+    finSub:'Un cuento creado especialmente para',
+    backPhrase:'Que la magia de las historias\nte acompañe siempre.',
+    dedicatoriaPara:'Para',
+    dedicatoriaEscribe:'escribe aquí tu dedicatoria',
+    pdfPagina:'PÁGINA',
+    pdfCreadoPara:'Un cuento creado para',
+    pdfFrase:'Una historia única en el mundo, igual que tú.',
+    pdfContraFrase:'Que la magia de las historias\nte acompañe siempre.',
   },
   en: {
     flag:'🇬🇧', code:'EN',
@@ -626,6 +637,17 @@ const LANGS = {
     btnDescargar:'📄 Download PDF',
     btnCrearOtro:'✨ Create another story',
     backLink:'← Back to StoryOwl',
+    subtituloFlip:'Preview · Download the PDF for the full high-resolution version',
+    watermark:'Preview · StoryOwl · Preview · StoryOwl · Preview · StoryOwl',
+    watermarkFooter:'🦉 storyowl.com · Preview · 🦉 storyowl.com · Preview · 🦉',
+    finSub:'A story created especially for',
+    backPhrase:'May the magic of stories\nbe with you always.',
+    dedicatoriaPara:'For',
+    dedicatoriaEscribe:'write your dedication here',
+    pdfPagina:'PAGE',
+    pdfCreadoPara:'A story created for',
+    pdfFrase:'A unique story in the world, just like you.',
+    pdfContraFrase:'May the magic of stories\nbe with you always.',
   },
   de: {
     flag:'🇩🇪', code:'DE',
@@ -669,6 +691,17 @@ const LANGS = {
     btnDescargar:'📄 PDF herunterladen',
     btnCrearOtro:'✨ Neue Geschichte erstellen',
     backLink:'← Zurück zu StoryOwl',
+    subtituloFlip:'Vorschau · PDF für die vollständige hochauflösende Version herunterladen',
+    watermark:'Vorschau · StoryOwl · Vorschau · StoryOwl · Vorschau · StoryOwl',
+    watermarkFooter:'🦉 storyowl.com · Vorschau · 🦉 storyowl.com · Vorschau · 🦉',
+    finSub:'Eine Geschichte, die speziell für',
+    backPhrase:'Möge die Magie der Geschichten\nimmer bei dir sein.',
+    dedicatoriaPara:'Für',
+    dedicatoriaEscribe:'Hier deine Widmung eintragen',
+    pdfPagina:'SEITE',
+    pdfCreadoPara:'Eine Geschichte für',
+    pdfFrase:'Eine einzigartige Geschichte, genau wie du.',
+    pdfContraFrase:'Möge die Magie der Geschichten\nimmer bei dir sein.',
   },
   fr: {
     flag:'🇫🇷', code:'FR',
@@ -712,6 +745,17 @@ const LANGS = {
     btnDescargar:'📄 Télécharger le PDF',
     btnCrearOtro:'✨ Créer une autre histoire',
     backLink:'← Retour à StoryOwl',
+    subtituloFlip:"Aperçu · Téléchargez le PDF pour la version complète en haute résolution",
+    watermark:"Aperçu · StoryOwl · Aperçu · StoryOwl · Aperçu · StoryOwl",
+    watermarkFooter:"🦉 storyowl.com · Aperçu · 🦉 storyowl.com · Aperçu · 🦉",
+    finSub:"Une histoire créée spécialement pour",
+    backPhrase:"Que la magie des histoires\nte soit toujours fidèle.",
+    dedicatoriaPara:'Pour',
+    dedicatoriaEscribe:"écris ta dédicace ici",
+    pdfPagina:'PAGE',
+    pdfCreadoPara:"Une histoire créée pour",
+    pdfFrase:"Une histoire unique au monde, tout comme toi.",
+    pdfContraFrase:"Que la magie des histoires\nte soit toujours fidèle.",
   },
   pt: {
     flag:'🇵🇹', code:'PT',
@@ -755,6 +799,17 @@ const LANGS = {
     btnDescargar:'📄 Descarregar PDF',
     btnCrearOtro:'✨ Criar outra história',
     backLink:'← Voltar ao StoryOwl',
+    subtituloFlip:'Pré-visualização · Descarregue o PDF para a versão completa em alta resolução',
+    watermark:'Pré-visualização · StoryOwl · Pré-visualização · StoryOwl · Pré-visualização',
+    watermarkFooter:'🦉 storyowl.com · Pré-visualização · 🦉 storyowl.com · Pré-visualização · 🦉',
+    finSub:'Uma história criada especialmente para',
+    backPhrase:'Que a magia das histórias\nte acompanhe sempre.',
+    dedicatoriaPara:'Para',
+    dedicatoriaEscribe:'escreve aqui a tua dedicatória',
+    pdfPagina:'PÁGINA',
+    pdfCreadoPara:'Uma história criada para',
+    pdfFrase:'Uma história única no mundo, tal como tu.',
+    pdfContraFrase:'Que a magia das histórias\nte acompanhe sempre.',
   }
 };
 
@@ -828,6 +883,12 @@ function aplicarIdioma(L) {
   // Back link
   const bl = document.querySelector('.back-link');
   if(bl) bl.textContent = L.backLink;
+  // Subtítulo flipbook
+  const fsub = document.querySelector('.flipbook-subtitle');
+  if(fsub) fsub.textContent = L.subtituloFlip;
+  // Watermark dinámica vía CSS variable
+  document.documentElement.style.setProperty('--wm-text', `'${L.watermark}'`);
+  document.documentElement.style.setProperty('--wm-footer', `'${L.watermarkFooter}'`);
 }
 
 function _setLabel(id, text) {
@@ -1060,7 +1121,7 @@ function buildPage(p) {
 
   if (p.tipo === 'dedicatoria') return `
     <div class="fp-ded">
-      <div class="fp-ded-para">Para</div>
+      <div class="fp-ded-para">${LANGS[idiomaActual].dedicatoriaPara||"Para"}</div>
       <div class="fp-ded-nombre">${esc(p.nombre)}</div>
       ${p.texto ? `<div class="fp-ded-texto">${esc(p.texto)}</div>` : ''}
       <div class="fp-ded-line"></div>
@@ -1082,7 +1143,7 @@ function buildPage(p) {
     <div class="fp-special fp-fin"><div>
       <div class="fp-fin-icon">✨</div>
       <div class="fp-fin-title">¡FIN!</div>
-      <div class="fp-fin-sub">Un cuento creado especialmente para<br>
+      <div class="fp-fin-sub">${LANGS[idiomaActual].finSub||'Un cuento creado especialmente para'}<br>
         <strong style="color:rgba(255,255,255,.85);font-size:15px;">${esc(flipNombre)}</strong>
       </div>
     </div></div>`;
@@ -1090,7 +1151,7 @@ function buildPage(p) {
   if (p.tipo === 'contraportada') return `
     <div class="fp-special fp-back"><div>
       <div class="fp-back-icon">🦉</div>
-      <div class="fp-back-phrase">Que la magia de las historias<br>te acompañe siempre.</div>
+      <div class="fp-back-phrase">${(LANGS[idiomaActual].backPhrase||"Que la magia de las historias\nte acompañe siempre.").replace("\n","<br>")}</div>
       <div class="fp-back-line"></div>
       <div class="fp-back-brand">StoryOwl · storyowl.com</div>
     </div></div>`;
@@ -1344,7 +1405,7 @@ async function componerPaginaInterior(imgUrl, numero, titulo, texto) {
   ctx.font = `800 ${szNum}px Arial,sans-serif`;
   ctx.fillStyle = 'rgba(247,185,0,1)'; ctx.textAlign = 'left';
   ctx.shadowColor = 'rgba(0,0,0,0.7)'; ctx.shadowBlur = 6;
-  ctx.fillText(`PÁGINA ${numero}`, pX + 52, cy + szNum); cy += hNum;
+  ctx.fillText(`${LANGS[idiomaActual].pdfPagina||'PÁGINA'} ${numero}`, pX + 52, cy + szNum); cy += hNum;
 
   // Título — cursiva lila con sombra
   ctx.font = `italic bold ${szT}px Georgia,serif`;
@@ -1415,7 +1476,7 @@ async function componerDedicatoria(nombre, dedPersonal) {
   ctx.beginPath(); ctx.moveTo(cx - 230, tZ + 8); ctx.lineTo(cx + 230, tZ + 8); ctx.stroke();
 
   ctx.font = 'italic 38px Georgia,serif'; ctx.fillStyle = '#9b6fd8';
-  ctx.fillText('Para', cx, tZ + 66);
+  ctx.fillText(LANGS[idiomaActual].dedicatoriaPara||'Para', cx, tZ + 66);
 
   const {sz:szN, lines:lN} = fitFontSize(ctx, nombre||'', 'bold SIZEpx Georgia,serif', PX - 220, 1, 50, 96);
   ctx.font = `bold ${szN}px Georgia,serif`; ctx.fillStyle = '#3a2070';
@@ -1438,7 +1499,7 @@ async function componerDedicatoria(nombre, dedPersonal) {
       ctx.beginPath(); ctx.moveTo(cx - 280, ly); ctx.lineTo(cx + 280, ly); ctx.stroke();
     }
     ctx.font = 'italic 24px Georgia,serif'; ctx.fillStyle = 'rgba(160,130,200,0.42)';
-    ctx.fillText('escribe aquí tu dedicatoria', cx, dedY + 4 * 52 + 28);
+    ctx.fillText(LANGS[idiomaActual].dedicatoriaEscribe||'escribe aquí tu dedicatoria', cx, dedY + 4 * 52 + 28);
   }
 
   ctx.font = 'bold 24px Arial,sans-serif'; ctx.fillStyle = 'rgba(107,63,168,0.32)';
@@ -1484,7 +1545,7 @@ async function componerColofonPagina(nombre, fecha) {
   ctx.beginPath(); ctx.moveTo(cx - 240, bY + 52 + szN + 92); ctx.lineTo(cx + 240, bY + 52 + szN + 92); ctx.stroke();
 
   ctx.font = 'italic 32px Georgia,serif'; ctx.fillStyle = '#5a3880';
-  ctx.fillText('Una historia única en el mundo, igual que tú.', cx, bY + 52 + szN + 142);
+  ctx.fillText(LANGS[idiomaActual].pdfFrase||'Una historia única en el mundo, igual que tú.', cx, bY + 52 + szN + 142);
 
   ctx.font = 'bold 24px Arial,sans-serif'; ctx.fillStyle = 'rgba(107,63,168,0.38)';
   ctx.fillText('storyowl.com', cx, PY - 52); ctx.textAlign = 'left';
@@ -1577,7 +1638,7 @@ async function descargarPDF() {
       if (nombreFinal) {
         ctxFin.font = 'italic 60px Georgia,serif';
         ctxFin.fillStyle = 'rgba(255,255,255,0.5)';
-        ctxFin.fillText('Un cuento creado para', PX/2, PY*0.64);
+        ctxFin.fillText(LANGS[idiomaActual].pdfCreadoPara||'Un cuento creado para', PX/2, PY*0.64);
         ctxFin.font = 'bold 80px Georgia,serif';
         ctxFin.fillStyle = 'rgba(192,132,252,0.9)';
         ctxFin.fillText(nombreFinal, PX/2, PY*0.72);
@@ -1613,8 +1674,8 @@ async function descargarPDF() {
       ctxBack.beginPath(); ctxBack.moveTo(PX*0.2, PY*0.42); ctxBack.lineTo(PX*0.8, PY*0.42); ctxBack.stroke();
       ctxBack.font = 'italic bold 72px Georgia,serif'; ctxBack.fillStyle = 'rgba(255,255,255,0.7)';
       ctxBack.shadowColor = 'rgba(0,0,0,0.4)'; ctxBack.shadowBlur = 10;
-      ctxBack.fillText('Que la magia de las historias', PX/2, PY*0.52);
-      ctxBack.fillText('te acompañe siempre.', PX/2, PY*0.60);
+      { const cp=(LANGS[idiomaActual].pdfContraFrase||'Que la magia de las historias\nte acompañe siempre.').split('\n'); ctxBack.fillText(cp[0], PX/2, PY*0.52);
+      ctxBack.fillText(cp[1]||'te acompañe siempre.', PX/2, PY*0.60); }
       ctxBack.shadowBlur = 0;
       ctxBack.strokeStyle = 'rgba(247,201,75,0.2)'; ctxBack.lineWidth = 2;
       ctxBack.beginPath(); ctxBack.moveTo(PX*0.25, PY*0.67); ctxBack.lineTo(PX*0.75, PY*0.67); ctxBack.stroke();
