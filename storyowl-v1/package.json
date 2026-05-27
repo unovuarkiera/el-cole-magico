@@ -2,9 +2,9 @@
   "name": "storyowl-v1",
   "version": "1.0.0",
   "description": "StoryOwl V1",
-  "main": "backend/server.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node backend/server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
