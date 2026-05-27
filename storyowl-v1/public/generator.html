@@ -7,25 +7,18 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --cream:#F7F2E8; --ink:#1C1A14; --ink-soft:#4A4535;
-  --gold:#C9973A; --gold-light:#E8C97A; --paper:#EDE8DA;
-  --paper-dark:#D9D2C0; --white:#FDFBF7; --sage:#4A6741;
-}
+:root{--cream:#F7F2E8;--ink:#1C1A14;--ink-soft:#4A4535;--gold:#C9973A;--gold-light:#E8C97A;--paper:#EDE8DA;--paper-dark:#D9D2C0;--white:#FDFBF7;--sage:#4A6741;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--cream);color:var(--ink);font-family:'Lato',sans-serif;font-weight:300;min-height:100vh;}
-
 header{background:var(--ink);padding:1.2rem 2.5rem;display:flex;align-items:center;justify-content:space-between;}
 .logo{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--gold);}
 .logo span{color:var(--white);font-style:italic;}
 .nav-tag{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--paper-dark);}
-
 .hero{background:var(--ink);padding:3.5rem 2rem 4.5rem;text-align:center;}
 .hero-eyebrow{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;}
 .hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.5rem);color:var(--white);line-height:1.15;margin-bottom:1rem;font-weight:400;}
 .hero h1 em{color:var(--gold);font-style:italic;}
 .hero p{color:var(--paper-dark);font-size:.95rem;line-height:1.7;max-width:460px;margin:0 auto;}
-
 .progress-bar{background:var(--paper);padding:1rem 2.5rem;display:flex;align-items:center;border-bottom:1px solid var(--paper-dark);position:sticky;top:0;z-index:100;}
 .step-pill{display:flex;align-items:center;gap:.5rem;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--paper-dark);flex:1;transition:color .3s;}
 .step-pill.active{color:var(--ink);}
@@ -34,66 +27,50 @@ header{background:var(--ink);padding:1.2rem 2.5rem;display:flex;align-items:cent
 .step-pill.active .step-num{background:var(--ink);border-color:var(--ink);color:var(--gold);}
 .step-pill.done .step-num{background:var(--sage);border-color:var(--sage);color:white;}
 .step-line{flex:1;height:1px;background:var(--paper-dark);margin:0 .4rem;}
-
 .form-container{max-width:720px;margin:0 auto;padding:2.5rem 1.5rem 5rem;}
-
-.form-section{display:none;}
-.form-section.active{display:block;}
-
 .section-title{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:400;color:var(--ink);margin-bottom:.4rem;}
 .section-sub{color:var(--ink-soft);font-size:.88rem;margin-bottom:2rem;line-height:1.6;}
-
 .field{margin-bottom:1.6rem;}
 label{display:block;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.5rem;font-weight:700;}
-input[type=text],input[type=email],select,textarea{width:100%;background:var(--white);border:1.5px solid var(--paper-dark);border-radius:4px;padding:.8rem 1rem;font-family:'Lato',sans-serif;font-size:.92rem;font-weight:300;color:var(--ink);outline:none;transition:border-color .2s;}
-input:focus,select:focus,textarea:focus{border-color:var(--gold);}
+input[type=text],input[type=email],textarea{width:100%;background:var(--white);border:1.5px solid var(--paper-dark);border-radius:4px;padding:.8rem 1rem;font-family:'Lato',sans-serif;font-size:.92rem;font-weight:300;color:var(--ink);outline:none;transition:border-color .2s;}
+input:focus,textarea:focus{border-color:var(--gold);}
 textarea{resize:vertical;min-height:90px;}
-
-.option-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-top:.4rem;}
+.option-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.7rem;margin-top:.4rem;}
 .option-card{border:1.5px solid var(--paper-dark);border-radius:6px;padding:1rem .8rem;cursor:pointer;transition:all .2s;background:var(--white);text-align:center;}
 .option-card:hover{border-color:var(--gold);transform:translateY(-2px);}
 .option-card.selected{border-color:var(--gold);background:#FBF5E8;}
-.option-card .icon{font-size:1.6rem;margin-bottom:.4rem;}
-.option-card .lbl{font-size:.8rem;font-weight:700;letter-spacing:.04em;}
-.option-card .sub{font-size:.7rem;color:var(--ink-soft);margin-top:.2rem;}
-
+.card-icon{font-size:1.6rem;margin-bottom:.4rem;}
+.card-lbl{font-size:.8rem;font-weight:700;}
+.card-sub{font-size:.7rem;color:var(--ink-soft);margin-top:.2rem;}
 .lang-grid{display:flex;gap:.5rem;flex-wrap:wrap;}
-.lang-pill{border:1.5px solid var(--paper-dark);border-radius:100px;padding:.4rem 1rem;cursor:pointer;font-size:.8rem;font-weight:700;letter-spacing:.04em;background:var(--white);transition:all .2s;}
+.lang-pill{border:1.5px solid var(--paper-dark);border-radius:100px;padding:.4rem 1rem;cursor:pointer;font-size:.8rem;font-weight:700;background:var(--white);transition:all .2s;}
 .lang-pill:hover{border-color:var(--gold);}
 .lang-pill.selected{border-color:var(--gold);background:#FBF5E8;color:#8B3A2A;}
-
 .spread-preview{background:var(--white);border:1.5px solid var(--paper-dark);border-radius:8px;padding:1.2rem;margin-top:.8rem;}
-.spread-mock{display:flex;gap:3px;height:140px;border-radius:4px;overflow:hidden;}
-.spread-img{flex:1;background:linear-gradient(135deg,#D4C8A8,#B8AC8A);display:flex;align-items:center;justify-content:center;font-size:2.2rem;}
+.spread-mock{display:flex;gap:3px;height:130px;border-radius:4px;overflow:hidden;}
+.spread-img{flex:1;background:linear-gradient(135deg,#D4C8A8,#B8AC8A);display:flex;align-items:center;justify-content:center;font-size:2rem;}
 .spread-txt{width:36%;background:var(--ink);padding:.8rem;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;}
-.spread-line{height:3px;border-radius:2px;background:rgba(255,255,255,.15);}
+.sline{height:3px;border-radius:2px;background:rgba(255,255,255,.15);}
 .spread-caption{font-size:.7rem;color:var(--ink-soft);text-align:center;margin-top:.6rem;}
-
 .summary-box{background:var(--ink);border-radius:8px;padding:1.8rem;color:var(--white);margin-bottom:1.8rem;}
 .summary-box h3{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--gold);margin-bottom:1rem;font-weight:400;}
-.summary-row{display:flex;justify-content:space-between;align-items:baseline;padding:.55rem 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:.85rem;}
-.summary-row:last-child{border-bottom:none;}
-.summary-key{color:var(--paper-dark);}
-.summary-val{color:var(--white);font-weight:400;}
-
-.status-screen{display:none;text-align:center;padding:4rem 2rem;}
-.status-screen.active{display:block;}
+.srow{display:flex;justify-content:space-between;padding:.55rem 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:.85rem;}
+.srow:last-child{border-bottom:none;}
+.skey{color:var(--paper-dark);}
+.sval{color:var(--white);}
+.btn-row{display:flex;gap:.8rem;margin-top:2rem;}
+.btn-primary{background:var(--gold);color:var(--ink);border:none;border-radius:4px;padding:.85rem 2rem;font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.btn-primary:hover{background:var(--gold-light);}
+.btn-secondary{background:transparent;color:var(--ink-soft);border:1.5px solid var(--paper-dark);border-radius:4px;padding:.85rem 1.4rem;font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.btn-secondary:hover{border-color:var(--ink);color:var(--ink);}
 .owl-spin{font-size:3.5rem;display:block;margin-bottom:1.2rem;animation:owlBob 2s ease-in-out infinite;}
 @keyframes owlBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
 .status-title{font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--ink);margin-bottom:.6rem;}
 .status-msg{color:var(--ink-soft);font-size:.88rem;margin-bottom:1.8rem;}
 .progress-track{background:var(--paper-dark);border-radius:100px;height:4px;max-width:340px;margin:0 auto .7rem;overflow:hidden;}
 .progress-fill{height:100%;background:var(--gold);border-radius:100px;width:0%;transition:width 1.2s ease;}
-.progress-label{font-size:.72rem;color:var(--ink-soft);letter-spacing:.04em;}
-
-.btn-row{display:flex;gap:.8rem;margin-top:2rem;align-items:center;}
-.btn-primary{background:var(--gold);color:var(--ink);border:none;border-radius:4px;padding:.85rem 2rem;font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
-.btn-primary:hover{background:var(--gold-light);transform:translateY(-1px);}
-.btn-secondary{background:transparent;color:var(--ink-soft);border:1.5px solid var(--paper-dark);border-radius:4px;padding:.85rem 1.4rem;font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
-.btn-secondary:hover{border-color:var(--ink);color:var(--ink);}
-
-footer{background:var(--ink);padding:1.8rem 2.5rem;text-align:center;color:var(--paper-dark);font-size:.75rem;letter-spacing:.04em;}
-@media(max-width:600px){header,.progress-bar{padding:1rem 1.2rem;}.hero{padding:2rem 1.2rem 3rem;}.form-container{padding:1.8rem 1.2rem 4rem;}}
+.progress-label{font-size:.72rem;color:var(--ink-soft);}
+footer{background:var(--ink);padding:1.8rem 2.5rem;text-align:center;color:var(--paper-dark);font-size:.75rem;}
 </style>
 </head>
 <body>
@@ -104,13 +81,13 @@ footer{background:var(--ink);padding:1.8rem 2.5rem;text-align:center;color:var(-
 </header>
 
 <div class="hero">
-  <div class="hero-eyebrow">✦ Taller editorial</div>
+  <div class="hero-eyebrow">&#10022; Taller editorial</div>
   <h1>Tu historia,<br><em>ilustrada para siempre</em></h1>
-  <p>Cuentos infantiles únicos con ilustraciones originales. Formato tapa dura 20×20 cm, listo para imprimir.</p>
+  <p>Cuentos infantiles únicos con ilustraciones originales. Formato tapa dura 20x20 cm, listo para imprimir.</p>
 </div>
 
 <div class="progress-bar">
-  <div class="step-pill" id="pill-1"><div class="step-num">1</div><span>Protagonista</span></div>
+  <div class="step-pill active" id="pill-1"><div class="step-num">1</div><span>Protagonista</span></div>
   <div class="step-line"></div>
   <div class="step-pill" id="pill-2"><div class="step-num">2</div><span>Historia</span></div>
   <div class="step-line"></div>
@@ -121,103 +98,106 @@ footer{background:var(--ink);padding:1.8rem 2.5rem;text-align:center;color:var(-
 
 <div class="form-container">
 
-  <div class="form-section active" id="step-1">
+  <!-- STEP 1 -->
+  <div id="step-1">
     <h2 class="section-title">El protagonista</h2>
-    <p class="section-sub">Cuéntanos sobre el niño o niña que será el héroe de esta historia.</p>
+    <p class="section-sub">Cuentanos sobre el nino o nina que sera el heroe de esta historia.</p>
     <div class="field">
       <label>Nombre del protagonista</label>
-      <input type="text" id="child-name" placeholder="ej. Martina, Leo, Sofía…">
+      <input type="text" id="child-name" placeholder="ej. Martina, Leo, Sofia...">
     </div>
     <div class="field">
       <label>Edad</label>
       <div class="option-grid" id="age-grid">
-        <div class="option-card" data-val="3" onclick="pick(this,'age-grid')"><div class="icon">🌱</div><div class="lbl">3 años</div></div>
-        <div class="option-card" data-val="4" onclick="pick(this,'age-grid')"><div class="icon">🌿</div><div class="lbl">4 años</div></div>
-        <div class="option-card" data-val="5" onclick="pick(this,'age-grid')"><div class="icon">🌳</div><div class="lbl">5 años</div></div>
-        <div class="option-card" data-val="6" onclick="pick(this,'age-grid')"><div class="icon">⭐</div><div class="lbl">6 años</div></div>
-        <div class="option-card" data-val="7" onclick="pick(this,'age-grid')"><div class="icon">🚀</div><div class="lbl">7 años</div></div>
-        <div class="option-card" data-val="8" onclick="pick(this,'age-grid')"><div class="icon">🔭</div><div class="lbl">8 años</div></div>
+        <div class="option-card" data-val="3" onclick="pick(this,'age-grid')"><div class="card-icon">&#127807;</div><div class="card-lbl">3 anos</div></div>
+        <div class="option-card" data-val="4" onclick="pick(this,'age-grid')"><div class="card-icon">&#127808;</div><div class="card-lbl">4 anos</div></div>
+        <div class="option-card" data-val="5" onclick="pick(this,'age-grid')"><div class="card-icon">&#127795;</div><div class="card-lbl">5 anos</div></div>
+        <div class="option-card" data-val="6" onclick="pick(this,'age-grid')"><div class="card-icon">&#11088;</div><div class="card-lbl">6 anos</div></div>
+        <div class="option-card" data-val="7" onclick="pick(this,'age-grid')"><div class="card-icon">&#128640;</div><div class="card-lbl">7 anos</div></div>
+        <div class="option-card" data-val="8" onclick="pick(this,'age-grid')"><div class="card-icon">&#128302;</div><div class="card-lbl">8 anos</div></div>
       </div>
     </div>
     <div class="field">
-      <label>Aspecto físico <span style="font-weight:300;text-transform:none;letter-spacing:0">(opcional)</span></label>
-      <input type="text" id="appearance" placeholder="ej. pelo rizado y ojos verdes, pecas, lleva gafas…">
+      <label>Aspecto fisico (opcional)</label>
+      <input type="text" id="appearance" placeholder="ej. pelo rizado y ojos verdes, pecas...">
     </div>
     <div class="field">
       <label>Personalidad o aficiones</label>
-      <input type="text" id="personality" placeholder="ej. le encanta bailar, es muy curiosa, adora los dinosaurios…">
+      <input type="text" id="personality" placeholder="ej. le encanta bailar, adora los dinosaurios...">
     </div>
     <div class="btn-row">
-      <button class="btn-primary" onclick="goStep(2)">Continuar →</button>
+      <button class="btn-primary" onclick="goStep(2)">Continuar &rarr;</button>
     </div>
   </div>
 
-  <div class="form-section" id="step-2" style="display:none">
+  <!-- STEP 2 -->
+  <div id="step-2" style="display:none">
     <h2 class="section-title">La historia</h2>
-    <p class="section-sub">Elige el universo en el que vivirá esta aventura.</p>
+    <p class="section-sub">Elige el universo en el que vivira esta aventura.</p>
     <div class="field">
       <label>Tema del cuento</label>
       <div class="option-grid" id="theme-grid">
-        <div class="option-card" data-val="aventura" onclick="pick(this,'theme-grid')"><div class="icon">🗺️</div><div class="lbl">Aventura</div><div class="sub">Exploraciones</div></div>
-        <div class="option-card" data-val="fantasia" onclick="pick(this,'theme-grid')"><div class="icon">🧚</div><div class="lbl">Fantasía</div><div class="sub">Magia</div></div>
-        <div class="option-card" data-val="naturaleza" onclick="pick(this,'theme-grid')"><div class="icon">🌊</div><div class="lbl">Naturaleza</div><div class="sub">Mar, bosque</div></div>
-        <div class="option-card" data-val="amistad" onclick="pick(this,'theme-grid')"><div class="icon">🤝</div><div class="lbl">Amistad</div><div class="sub">Valores</div></div>
-        <div class="option-card" data-val="espacio" onclick="pick(this,'theme-grid')"><div class="icon">🪐</div><div class="lbl">Espacio</div><div class="sub">Planetas</div></div>
-        <div class="option-card" data-val="personalizado" onclick="pick(this,'theme-grid')"><div class="icon">✏️</div><div class="lbl">A medida</div><div class="sub">Tú decides</div></div>
+        <div class="option-card" data-val="aventura" onclick="pick(this,'theme-grid')"><div class="card-icon">&#128506;</div><div class="card-lbl">Aventura</div></div>
+        <div class="option-card" data-val="fantasia" onclick="pick(this,'theme-grid')"><div class="card-icon">&#129498;</div><div class="card-lbl">Fantasia</div></div>
+        <div class="option-card" data-val="naturaleza" onclick="pick(this,'theme-grid')"><div class="card-icon">&#127754;</div><div class="card-lbl">Naturaleza</div></div>
+        <div class="option-card" data-val="amistad" onclick="pick(this,'theme-grid')"><div class="card-icon">&#129309;</div><div class="card-lbl">Amistad</div></div>
+        <div class="option-card" data-val="espacio" onclick="pick(this,'theme-grid')"><div class="card-icon">&#129680;</div><div class="card-lbl">Espacio</div></div>
+        <div class="option-card" data-val="personalizado" onclick="pick(this,'theme-grid')"><div class="card-icon">&#9999;</div><div class="card-lbl">A medida</div></div>
       </div>
     </div>
-    <div class="field" id="custom-field" style="display:none">
+    <div id="custom-field" style="display:none" class="field">
       <label>Describe tu tema</label>
-      <textarea id="custom-theme" placeholder="Cuéntanos qué tipo de historia quieres…"></textarea>
+      <textarea id="custom-theme" placeholder="Cuentanos que tipo de historia quieres..."></textarea>
     </div>
     <div class="field">
-      <label>Personajes adicionales <span style="font-weight:300;text-transform:none;letter-spacing:0">(opcional)</span></label>
-      <input type="text" id="extra-chars" placeholder="ej. su perro Max, la abuela, una dragona llamada Luma…">
+      <label>Personajes adicionales (opcional)</label>
+      <input type="text" id="extra-chars" placeholder="ej. su perro Max, la abuela...">
     </div>
     <div class="field">
-      <label>Mensaje o valores <span style="font-weight:300;text-transform:none;letter-spacing:0">(opcional)</span></label>
-      <input type="text" id="message" placeholder="ej. ser valiente, el poder de la imaginación…">
+      <label>Mensaje o valores (opcional)</label>
+      <input type="text" id="message" placeholder="ej. ser valiente, el poder de la imaginacion...">
     </div>
     <div class="btn-row">
-      <button class="btn-secondary" onclick="goStep(1)">← Atrás</button>
-      <button class="btn-primary" onclick="goStep(3)">Continuar →</button>
+      <button class="btn-secondary" onclick="goStep(1)">&larr; Atras</button>
+      <button class="btn-primary" onclick="goStep(3)">Continuar &rarr;</button>
     </div>
   </div>
 
-  <div class="form-section" id="step-3" style="display:none">
+  <!-- STEP 3 -->
+  <div id="step-3" style="display:none">
     <h2 class="section-title">El libro</h2>
-    <p class="section-sub">Personaliza el formato y el idioma de tu edición.</p>
+    <p class="section-sub">Personaliza el formato y el idioma de tu edicion.</p>
     <div class="field">
       <label>Idioma</label>
       <div class="lang-grid" id="lang-grid">
-        <div class="lang-pill selected" data-val="es" onclick="pickLang(this)">Español</div>
+        <div class="lang-pill selected" data-val="es" onclick="pickLang(this)">Espanol</div>
         <div class="lang-pill" data-val="en" onclick="pickLang(this)">English</div>
         <div class="lang-pill" data-val="de" onclick="pickLang(this)">Deutsch</div>
-        <div class="lang-pill" data-val="fr" onclick="pickLang(this)">Français</div>
-        <div class="lang-pill" data-val="pt" onclick="pickLang(this)">Português</div>
+        <div class="lang-pill" data-val="fr" onclick="pickLang(this)">Francais</div>
+        <div class="lang-pill" data-val="pt" onclick="pickLang(this)">Portugues</div>
       </div>
     </div>
     <div class="field">
-      <label>Estilo de ilustración</label>
+      <label>Estilo de ilustracion</label>
       <div class="option-grid" id="style-grid">
-        <div class="option-card selected" data-val="acuarela" onclick="pick(this,'style-grid')"><div class="icon">🎨</div><div class="lbl">Acuarela</div><div class="sub">Suave y soñador</div></div>
-        <div class="option-card" data-val="cartoon" onclick="pick(this,'style-grid')"><div class="icon">✏️</div><div class="lbl">Cartoon</div><div class="sub">Colorido</div></div>
-        <div class="option-card" data-val="clasico" onclick="pick(this,'style-grid')"><div class="icon">📖</div><div class="lbl">Clásico</div><div class="sub">Ilustración cuento</div></div>
+        <div class="option-card selected" data-val="acuarela" onclick="pick(this,'style-grid')"><div class="card-icon">&#127912;</div><div class="card-lbl">Acuarela</div><div class="card-sub">Suave y sonador</div></div>
+        <div class="option-card" data-val="cartoon" onclick="pick(this,'style-grid')"><div class="card-icon">&#9999;</div><div class="card-lbl">Cartoon</div><div class="card-sub">Colorido</div></div>
+        <div class="option-card" data-val="clasico" onclick="pick(this,'style-grid')"><div class="card-icon">&#128214;</div><div class="card-lbl">Clasico</div><div class="card-sub">Ilustracion cuento</div></div>
       </div>
     </div>
     <div class="field">
       <label>Vista previa del formato</label>
       <div class="spread-preview">
         <div class="spread-mock">
-          <div class="spread-img">🦉</div>
+          <div class="spread-img">&#129417;</div>
           <div class="spread-txt">
-            <div class="spread-line" style="width:80%"></div>
-            <div class="spread-line" style="width:90%"></div>
-            <div class="spread-line" style="width:60%"></div>
-            <div class="spread-line" style="width:80%"></div>
+            <div class="sline" style="width:80%"></div>
+            <div class="sline" style="width:90%"></div>
+            <div class="sline" style="width:60%"></div>
+            <div class="sline" style="width:80%"></div>
           </div>
         </div>
-        <div class="spread-caption">Spread doble · Imagen continua + texto · 20×20 cm tapa dura</div>
+        <div class="spread-caption">Spread doble - Imagen continua + texto - 20x20 cm tapa dura</div>
       </div>
     </div>
     <div class="field">
@@ -225,152 +205,139 @@ footer{background:var(--ink);padding:1.8rem 2.5rem;text-align:center;color:var(-
       <input type="email" id="email" placeholder="tu@email.com">
     </div>
     <div class="btn-row">
-      <button class="btn-secondary" onclick="goStep(2)">← Atrás</button>
-      <button class="btn-primary" onclick="goStep(4)">Revisar pedido →</button>
+      <button class="btn-secondary" onclick="goStep(2)">&larr; Atras</button>
+      <button class="btn-primary" onclick="goStep(4)">Revisar pedido &rarr;</button>
     </div>
   </div>
 
-  <div class="form-section" id="step-4" style="display:none">
+  <!-- STEP 4 -->
+  <div id="step-4" style="display:none">
     <h2 class="section-title">Revisa tu pedido</h2>
     <p class="section-sub">Comprueba los detalles antes de generar tu cuento.</p>
     <div class="summary-box">
-      <h3>✦ Resumen</h3>
-      <div class="summary-row"><span class="summary-key">Protagonista</span><span class="summary-val" id="s-name">—</span></div>
-      <div class="summary-row"><span class="summary-key">Edad</span><span class="summary-val" id="s-age">—</span></div>
-      <div class="summary-row"><span class="summary-key">Tema</span><span class="summary-val" id="s-theme">—</span></div>
-      <div class="summary-row"><span class="summary-key">Idioma</span><span class="summary-val" id="s-lang">—</span></div>
-      <div class="summary-row"><span class="summary-key">Estilo</span><span class="summary-val" id="s-style">—</span></div>
-      <div class="summary-row"><span class="summary-key">Formato</span><span class="summary-val">30 páginas · Tapa dura 20×20 cm · PDF 300dpi</span></div>
-      <div class="summary-row"><span class="summary-key">Entrega</span><span class="summary-val" id="s-email">—</span></div>
+      <h3>&#10022; Resumen</h3>
+      <div class="srow"><span class="skey">Protagonista</span><span class="sval" id="s-name">-</span></div>
+      <div class="srow"><span class="skey">Edad</span><span class="sval" id="s-age">-</span></div>
+      <div class="srow"><span class="skey">Tema</span><span class="sval" id="s-theme">-</span></div>
+      <div class="srow"><span class="skey">Idioma</span><span class="sval" id="s-lang">-</span></div>
+      <div class="srow"><span class="skey">Estilo</span><span class="sval" id="s-style">-</span></div>
+      <div class="srow"><span class="skey">Formato</span><span class="sval">30 paginas - Tapa dura 20x20 cm - PDF 300dpi</span></div>
+      <div class="srow"><span class="skey">Entrega</span><span class="sval" id="s-email">-</span></div>
     </div>
     <div class="btn-row">
-      <button class="btn-secondary" onclick="goStep(3)">← Editar</button>
-      <button class="btn-primary" onclick="startGen()">🦉 Generar mi cuento</button>
+      <button class="btn-secondary" onclick="goStep(3)">&larr; Editar</button>
+      <button class="btn-primary" onclick="startGen()">&#129417; Generar mi cuento</button>
     </div>
   </div>
 
-  <div class="status-screen" id="status-screen" style="display:none">
-    <span class="owl-spin">🦉</span>
-    <h2 class="status-title" id="s-title">Escribiendo tu historia…</h2>
-    <p class="status-msg" id="s-msg">Nuestro búho editorial está dando vida a los personajes</p>
+  <!-- STATUS -->
+  <div id="status-screen" style="display:none;text-align:center;padding:4rem 2rem">
+    <span class="owl-spin">&#129417;</span>
+    <h2 class="status-title" id="s-title">Escribiendo tu historia...</h2>
+    <p class="status-msg" id="s-msg">Nuestro buho editorial esta dando vida a los personajes</p>
     <div class="progress-track"><div class="progress-fill" id="p-fill"></div></div>
     <div class="progress-label" id="p-label">0 / 4 fases</div>
   </div>
 
 </div>
 
-<footer>© 2026 StoryOwl · Libros que duran toda la vida</footer>
+<footer>2026 StoryOwl - Libros que duran toda la vida</footer>
 
 <script>
-var S = { name:'', age:'', appearance:'', personality:'', theme:'', customTheme:'', extraChars:'', message:'', lang:'es', style:'acuarela', email:'' };
-var LANGS = { es:'Español', en:'English', de:'Deutsch', fr:'Français', pt:'Português' };
-var THEMES = { aventura:'Aventura', fantasia:'Fantasía', naturaleza:'Naturaleza', amistad:'Amistad', espacio:'Espacio', personalizado:'A medida' };
+var S={name:'',age:'',appearance:'',personality:'',theme:'',customTheme:'',extraChars:'',message:'',lang:'es',style:'acuarela',email:''};
+var LANGS={es:'Espanol',en:'English',de:'Deutsch',fr:'Francais',pt:'Portugues'};
+var THEMES={aventura:'Aventura',fantasia:'Fantasia',naturaleza:'Naturaleza',amistad:'Amistad',espacio:'Espacio',personalizado:'A medida'};
 
-function pick(el, grid) {
-  document.querySelectorAll('#'+grid+' .option-card').forEach(function(c){ c.classList.remove('selected'); });
+function pick(el,grid){
+  document.querySelectorAll('#'+grid+' .option-card').forEach(function(c){c.classList.remove('selected');});
   el.classList.add('selected');
-  if (grid === 'theme-grid') {
-    S.theme = el.dataset.val;
-    document.getElementById('custom-field').style.display = el.dataset.val === 'personalizado' ? 'block' : 'none';
-  }
-  if (grid === 'style-grid') S.style = el.dataset.val;
-  if (grid === 'age-grid') S.age = el.dataset.val;
+  if(grid==='theme-grid'){S.theme=el.dataset.val;document.getElementById('custom-field').style.display=el.dataset.val==='personalizado'?'block':'none';}
+  if(grid==='style-grid')S.style=el.dataset.val;
+  if(grid==='age-grid')S.age=el.dataset.val;
 }
 
-function pickLang(el) {
-  document.querySelectorAll('#lang-grid .lang-pill').forEach(function(p){ p.classList.remove('selected'); });
+function pickLang(el){
+  document.querySelectorAll('#lang-grid .lang-pill').forEach(function(p){p.classList.remove('selected');});
   el.classList.add('selected');
-  S.lang = el.dataset.val;
+  S.lang=el.dataset.val;
 }
 
-function collect() {
-  S.name = document.getElementById('child-name').value.trim();
-  S.appearance = document.getElementById('appearance').value.trim();
-  S.personality = document.getElementById('personality').value.trim();
-  S.customTheme = document.getElementById('custom-theme').value.trim();
-  S.extraChars = document.getElementById('extra-chars').value.trim();
-  S.message = document.getElementById('message').value.trim();
-  S.email = document.getElementById('email').value.trim();
+function collect(){
+  S.name=document.getElementById('child-name').value.trim();
+  S.appearance=document.getElementById('appearance').value.trim();
+  S.personality=document.getElementById('personality').value.trim();
+  S.customTheme=document.getElementById('custom-theme').value.trim();
+  S.extraChars=document.getElementById('extra-chars').value.trim();
+  S.message=document.getElementById('message').value.trim();
+  S.email=document.getElementById('email').value.trim();
 }
 
-function updatePills(n) {
-  for (var i = 1; i <= 4; i++) {
-    var p = document.getElementById('pill-'+i);
+function updatePills(n){
+  for(var i=1;i<=4;i++){
+    var p=document.getElementById('pill-'+i);
     p.classList.remove('active','done');
-    if (i < n) p.classList.add('done');
-    else if (i === n) p.classList.add('active');
+    if(i<n)p.classList.add('done');
+    else if(i===n)p.classList.add('active');
   }
 }
 
-function showStep(n) {
-  document.querySelectorAll('.form-section').forEach(function(s){ s.classList.remove('active'); });
-  document.getElementById('status-screen').classList.remove('active');
-  var el = document.getElementById('step-'+n);
-  if (el) el.classList.add('active');
+function goStep(n){
+  collect();
+  if(n===2&&!S.name){alert('Escribe el nombre del protagonista');return;}
+  if(n===4){
+    document.getElementById('s-name').textContent=S.name||'-';
+    document.getElementById('s-age').textContent=S.age?S.age+' anos':'-';
+    document.getElementById('s-theme').textContent=THEMES[S.theme]||'-';
+    document.getElementById('s-lang').textContent=LANGS[S.lang];
+    document.getElementById('s-style').textContent=S.style;
+    document.getElementById('s-email').textContent=S.email||'-';
+  }
+  for(var i=1;i<=4;i++){
+    var el=document.getElementById('step-'+i);
+    if(el)el.style.display=i===n?'block':'none';
+  }
+  document.getElementById('status-screen').style.display='none';
   updatePills(n);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function goStep(n) {
+function startGen(){
   collect();
-  if (n === 2 && !S.name) { alert('Escribe el nombre del protagonista'); return; }
-  if (n === 4) {
-    document.getElementById('s-name').textContent = S.name || '—';
-    document.getElementById('s-age').textContent = S.age ? S.age + ' años' : '—';
-    document.getElementById('s-theme').textContent = THEMES[S.theme] || '—';
-    document.getElementById('s-lang').textContent = LANGS[S.lang];
-    document.getElementById('s-style').textContent = S.style;
-    document.getElementById('s-email').textContent = S.email || '—';
-  }
-  showStep(n);
-}
-
-function startGen() {
-  collect();
-  if (!S.email) { alert('Introduce tu email para recibir el PDF'); return; }
-  document.querySelectorAll('.form-section').forEach(function(s){ s.classList.remove('active'); });
-  document.getElementById('status-screen').classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-
-  var phases = [
-    { t:'Creando el personaje…', m:'Definiendo la apariencia y voz de '+S.name, p:15 },
-    { t:'Escribiendo la historia…', m:'Tejiendo los 30 capítulos de la aventura', p:40 },
-    { t:'Generando las ilustraciones…', m:'Pintando 15 spreads dobles a 300 dpi', p:75 },
-    { t:'Componiendo el PDF…', m:'Maquetando el libro en formato 20×20 cm', p:95 }
+  if(!S.email){alert('Introduce tu email para recibir el PDF');return;}
+  for(var i=1;i<=4;i++){var el=document.getElementById('step-'+i);if(el)el.style.display='none';}
+  document.getElementById('status-screen').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+  var phases=[
+    {t:'Creando el personaje...',m:'Definiendo la apariencia y voz de '+S.name,p:15},
+    {t:'Escribiendo la historia...',m:'Tejiendo los 30 capitulos de la aventura',p:40},
+    {t:'Generando las ilustraciones...',m:'Pintando 15 spreads dobles a 300 dpi',p:75},
+    {t:'Componiendo el PDF...',m:'Maquetando el libro en formato 20x20 cm',p:95}
   ];
-  var phase = 0;
-  function next() {
-    if (phase >= phases.length) return;
-    var ph = phases[phase];
-    document.getElementById('s-title').textContent = ph.t;
-    document.getElementById('s-msg').textContent = ph.m;
-    document.getElementById('p-fill').style.width = ph.p + '%';
-    document.getElementById('p-label').textContent = (phase+1) + ' / 4 fases';
+  var phase=0;
+  function next(){
+    if(phase>=phases.length)return;
+    var ph=phases[phase];
+    document.getElementById('s-title').textContent=ph.t;
+    document.getElementById('s-msg').textContent=ph.m;
+    document.getElementById('p-fill').style.width=ph.p+'%';
+    document.getElementById('p-label').textContent=(phase+1)+' / 4 fases';
     phase++;
-    if (phase < phases.length) setTimeout(next, 4000);
+    if(phase<phases.length)setTimeout(next,4000);
   }
   next();
-
-  fetch('/v1/generate', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(S)
+  fetch('/v1/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(S)})
+  .then(function(r){return r.json();})
+  .then(function(){
+    document.getElementById('p-fill').style.width='100%';
+    document.getElementById('s-title').textContent='Tu cuento esta listo!';
+    document.getElementById('s-msg').textContent='Te hemos enviado el PDF a '+S.email;
+    document.getElementById('p-label').textContent='Generacion completa';
   })
-  .then(function(r){ return r.json(); })
-  .then(function() {
-    document.getElementById('p-fill').style.width = '100%';
-    document.getElementById('s-title').textContent = '¡Tu cuento está listo!';
-    document.getElementById('s-msg').textContent = 'Te hemos enviado el PDF a ' + S.email;
-    document.getElementById('p-label').textContent = '✦ Generación completa';
-  })
-  .catch(function() {
-    document.getElementById('s-title').textContent = 'Ups, algo falló';
-    document.getElementById('s-msg').textContent = 'Por favor inténtalo de nuevo';
+  .catch(function(){
+    document.getElementById('s-title').textContent='Ups, algo fallo';
+    document.getElementById('s-msg').textContent='Por favor intentalo de nuevo';
   });
 }
-
-// Inicializar siempre en step 1
-showStep(1);
 </script>
 </body>
 </html>
