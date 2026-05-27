@@ -874,6 +874,14 @@
       document.getElementById('status-msg').textContent = 'Por favor inténtalo de nuevo o contacta con soporte';
     });
   }
+
+  // Reset al cargar — siempre empieza en step 1
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('status-screen').classList.remove('active');
+    document.getElementById('step-1').classList.add('active');
+    updatePills(1);
+  });
 </script>
 </body>
 </html>
