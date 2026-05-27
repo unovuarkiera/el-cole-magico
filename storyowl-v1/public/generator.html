@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StoryOwl — Crea tu cuento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F7F2E8;
+    --ink: #1C1A14;
+    --ink-soft: #4A4535;
+    --gold: #C9973A;
+    --gold-light: #E8C97A;
+    --rust: #8B3A2A;
+    --sage: #4A6741;
+    --paper: #EDE8DA;
+    --paper-dark: #D9D2C0;
+    --white: #FDFBF7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--ink);
+    padding: 1.5rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--gold);
+    letter-spacing: 0.02em;
+  }
+
+  .logo span {
+    color: var(--white);
+    font-style: italic;
+  }
+
+  .nav-tag {
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--paper-dark);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--ink);
+    padding: 4rem 3rem 5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,151,58,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.2rem;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    color: var(--white);
+    line-height: 1.15;
+    margin-bottom: 1rem;
+    font-weight: 400;
+  }
+
+  .hero h1 em {
+    color: var(--gold);
+    font-style: italic;
+  }
+
+  .hero p {
+    color: var(--paper-dark);
+    font-size: 1rem;
+    line-height: 1.7;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* ── PROGRESS ── */
+  .progress-bar {
+    background: var(--paper);
+    padding: 1.2rem 3rem;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border-bottom: 1px solid var(--paper-dark);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .step-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--paper-dark);
+    flex: 1;
+    transition: color 0.3s;
+  }
+
+  .step-pill.active { color: var(--ink); }
+  .step-pill.done { color: var(--sage); }
+
+  .step-num {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 1.5px solid var(--paper-dark);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+
+  .step-pill.active .step-num {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--gold);
+  }
+
+  .step-pill.done .step-num {
+    background: var(--sage);
+    border-color: var(--sage);
+    color: white;
+  }
+
+  .step-line {
+    flex: 1;
+    height: 1px;
+    background: var(--paper-dark);
+    margin: 0 0.5rem;
+  }
+
+  /* ── MAIN FORM ── */
+  .form-container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 3rem 2rem 6rem;
+  }
+
+  .form-section {
+    display: none;
+    animation: fadeSlide 0.4s ease;
+  }
+
+  .form-section.active { display: block; }
+
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 0.4rem;
+  }
+
+  .section-sub {
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+  }
+
+  /* ── FIELD ── */
+  .field {
+    margin-bottom: 1.8rem;
+  }
+
+  label {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 0.6rem;
+    font-weight: 700;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  select,
+  textarea {
+    width: 100%;
+    background: var(--white);
+    border: 1.5px solid var(--paper-dark);
+    border-radius: 4px;
+    padding: 0.9rem 1rem;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--gold);
+  }
+
+  textarea { resize: vertical; min-height: 100px; }
+
+  /* ── OPTION CARDS ── */
+  .option-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.8rem;
+    margin-top: 0.5rem;
+  }
+
+  .option-card {
+    border: 1.5px solid var(--paper-dark);
+    border-radius: 6px;
+    padding: 1.2rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--white);
+    text-align: center;
+  }
+
+  .option-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+  }
+
+  .option-card.selected {
+    border-color: var(--gold);
+    background: #FBF5E8;
+  }
+
+  .option-card .icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+  .option-card .label { font-size: 0.82rem; font-weight: 700; letter-spacing: 0.05em; }
+  .option-card .sub { font-size: 0.72rem; color: var(--ink-soft); margin-top: 0.2rem; }
+
+  /* ── LANGUAGE PILLS ── */
+  .lang-grid {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .lang-pill {
+    border: 1.5px solid var(--paper-dark);
+    border-radius: 100px;
+    padding: 0.45rem 1.1rem;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    background: var(--white);
+    transition: all 0.2s;
+  }
+
+  .lang-pill:hover { border-color: var(--gold); }
+  .lang-pill.selected { border-color: var(--gold); background: #FBF5E8; color: var(--rust); }
+
+  /* ── SPREAD PREVIEW ── */
+  .spread-preview {
+    background: var(--white);
+    border: 1.5px solid var(--paper-dark);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  .spread-mock {
+    display: flex;
+    gap: 4px;
+    height: 160px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .spread-img-side {
+    flex: 1;
+    background: linear-gradient(135deg, #D4C8A8 0%, #B8AC8A 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+  }
+
+  .spread-text-side {
+    width: 38%;
+    background: var(--ink);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 5px;
+  }
+
+  .spread-line {
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.15);
+  }
+
+  .spread-line.w80 { width: 80%; }
+  .spread-line.w60 { width: 60%; }
+  .spread-line.w90 { width: 90%; }
+
+  .spread-caption {
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    text-align: center;
+    margin-top: 0.8rem;
+  }
+
+  /* ── SUMMARY BOX ── */
+  .summary-box {
+    background: var(--ink);
+    border-radius: 8px;
+    padding: 2rem;
+    color: var(--white);
+    margin-bottom: 2rem;
+  }
+
+  .summary-box h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: var(--gold);
+    margin-bottom: 1.2rem;
+    font-weight: 400;
+  }
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    font-size: 0.88rem;
+  }
+
+  .summary-row:last-child { border-bottom: none; }
+  .summary-key { color: var(--paper-dark); }
+  .summary-val { color: var(--white); font-weight: 400; }
+
+  /* ── GENERATION STATUS ── */
+  .status-screen {
+    display: none;
+    text-align: center;
+    padding: 4rem 2rem;
+  }
+
+  .status-screen.active { display: block; }
+
+  .owl-spin {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 1.5rem;
+    animation: owlBob 2s ease-in-out infinite;
+  }
+
+  @keyframes owlBob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .status-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--ink);
+    margin-bottom: 0.8rem;
+  }
+
+  .status-msg {
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+  }
+
+  .progress-track {
+    background: var(--paper-dark);
+    border-radius: 100px;
+    height: 4px;
+    max-width: 360px;
+    margin: 0 auto 0.8rem;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 100px;
+    width: 0%;
+    transition: width 1s ease;
+  }
+
+  .progress-label {
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── BUTTONS ── */
+  .btn-row {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2.5rem;
+    align-items: center;
+  }
+
+  .btn-primary {
+    background: var(--gold);
+    color: var(--ink);
+    border: none;
+    border-radius: 4px;
+    padding: 0.9rem 2.2rem;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--ink-soft);
+    border: 1.5px solid var(--paper-dark);
+    border-radius: 4px;
+    padding: 0.9rem 1.5rem;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover { border-color: var(--ink); color: var(--ink); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    padding: 2rem 3rem;
+    text-align: center;
+    color: var(--paper-dark);
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+  }
+
+  .price-tag {
+    display: inline-block;
+    background: rgba(201,151,58,0.15);
+    border: 1px solid rgba(201,151,58,0.3);
+    border-radius: 4px;
+    padding: 0.3rem 0.8rem;
+    color: var(--gold);
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-left: 0.5rem;
+  }
+
+  @media (max-width: 600px) {
+    header, .progress-bar { padding: 1rem 1.2rem; }
+    .hero { padding: 2.5rem 1.5rem 3.5rem; }
+    .form-container { padding: 2rem 1.2rem 5rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Story<span>Owl</span></div>
+  <div class="nav-tag">Cuentos personalizados · Edición limitada</div>
+</header>
+
+<div class="hero">
+  <div class="hero-eyebrow">✦ Taller editorial</div>
+  <h1>Tu historia,<br><em>ilustrada para siempre</em></h1>
+  <p>Cuentos infantiles únicos con ilustraciones originales. Formato tapa dura 20×20 cm, listo para imprimir.</p>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-bar">
+  <div class="step-pill active" id="pill-1">
+    <div class="step-num">1</div>
+    <span>El protagonista</span>
+  </div>
+  <div class="step-line"></div>
+  <div class="step-pill" id="pill-2">
+    <div class="step-num">2</div>
+    <span>La historia</span>
+  </div>
+  <div class="step-line"></div>
+  <div class="step-pill" id="pill-3">
+    <div class="step-num">3</div>
+    <span>El libro</span>
+  </div>
+  <div class="step-line"></div>
+  <div class="step-pill" id="pill-4">
+    <div class="step-num">4</div>
+    <span>Confirmar</span>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="form-container">
+
+  <!-- STEP 1: Protagonista -->
+  <div class="form-section active" id="step-1">
+    <h2 class="section-title">El protagonista</h2>
+    <p class="section-sub">Cuéntanos sobre el niño o niña que será el héroe de esta historia.</p>
+
+    <div class="field">
+      <label>Nombre del protagonista</label>
+      <input type="text" id="child-name" placeholder="ej. Martina, Leo, Sofía…">
+    </div>
+
+    <div class="field">
+      <label>Edad</label>
+      <div class="option-grid" id="age-grid">
+        <div class="option-card" data-val="3" onclick="selectOption(this,'age-grid')">
+          <div class="icon">🌱</div>
+          <div class="label">3 años</div>
+        </div>
+        <div class="option-card" data-val="4" onclick="selectOption(this,'age-grid')">
+          <div class="icon">🌿</div>
+          <div class="label">4 años</div>
+        </div>
+        <div class="option-card" data-val="5" onclick="selectOption(this,'age-grid')">
+          <div class="icon">🌳</div>
+          <div class="label">5 años</div>
+        </div>
+        <div class="option-card" data-val="6" onclick="selectOption(this,'age-grid')">
+          <div class="icon">⭐</div>
+          <div class="label">6 años</div>
+        </div>
+        <div class="option-card" data-val="7" onclick="selectOption(this,'age-grid')">
+          <div class="icon">🚀</div>
+          <div class="label">7 años</div>
+        </div>
+        <div class="option-card" data-val="8" onclick="selectOption(this,'age-grid')">
+          <div class="icon">🔭</div>
+          <div class="label">8 años</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Aspecto físico <span style="font-weight:300;text-transform:none;letter-spacing:0">(opcional)</span></label>
+      <input type="text" id="appearance" placeholder="ej. pelo rizado y ojos verdes, pecas, lleva gafas…">
+    </div>
+
+    <div class="field">
+      <label>Personalidad o aficiones</label>
+      <input type="text" id="personality" placeholder="ej. le encanta bailar, es muy curiosa, adora los dinosaurios…">
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-primary" onclick="goStep(2)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Historia -->
+  <div class="form-section" id="step-2">
+    <h2 class="section-title">La historia</h2>
+    <p class="section-sub">Elige el universo en el que vivirá esta aventura.</p>
+
+    <div class="field">
+      <label>Tema del cuento</label>
+      <div class="option-grid" id="theme-grid">
+        <div class="option-card" data-val="aventura" onclick="selectOption(this,'theme-grid')">
+          <div class="icon">🗺️</div>
+          <div class="label">Aventura</div>
+          <div class="sub">Exploraciones y viajes</div>
+        </div>
+        <div class="option-card" data-val="fantasia" onclick="selectOption(this,'theme-grid')">
+          <div class="icon">🧚</div>
+          <div class="label">Fantasía</div>
+          <div class="sub">Magia y criaturas</div>
+        </div>
+        <div class="option-card" data-val="naturaleza" onclick="selectOption(this,'theme-grid')">
+          <div class="icon">🌊</div>
+          <div class="label">Naturaleza</div>
+          <div class="sub">Mar, bosque, cielo</div>
+        </div>
+        <div class="option-card" data-val="amistad" onclick="selectOption(this,'theme-grid')">
+          <div class="icon">🤝</div>
+          <div class="label">Amistad</div>
+          <div class="sub">Vínculos y valores</div>
+        </div>
+        <div class="option-card" data-val="espacio" onclick="selectOption(this,'theme-grid')">
+          <div class="icon">🪐</div>
+          <div class="label">Espacio</div>
+          <div class="sub">Planetas y estrellas</div>
+        </div>
+        <div class="option-card" data-val="personalizado" onclick="selectOption(this,'theme-grid')">
+          <div class="icon">✏️</div>
+          <div class="label">A medida</div>
+          <div class="sub">Tú decides</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field" id="custom-theme-field" style="display:none">
+      <label>Describe tu tema</label>
+      <textarea id="custom-theme" placeholder="Cuéntanos qué tipo de historia quieres…"></textarea>
+    </div>
+
+    <div class="field">
+      <label>Personajes adicionales <span style="font-weight:300;text-transform:none;letter-spacing:0">(opcional)</span></label>
+      <input type="text" id="extra-chars" placeholder="ej. su perro Max, la abuela, una dragona llamada Luma…">
+    </div>
+
+    <div class="field">
+      <label>Mensaje o valores que quieres transmitir <span style="font-weight:300;text-transform:none;letter-spacing:0">(opcional)</span></label>
+      <input type="text" id="message" placeholder="ej. ser valiente, el poder de la imaginación, querer la diferencia…">
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="goStep(1)">← Atrás</button>
+      <button class="btn-primary" onclick="goStep(3)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: El libro -->
+  <div class="form-section" id="step-3">
+    <h2 class="section-title">El libro</h2>
+    <p class="section-sub">Personaliza el formato y el idioma de tu edición.</p>
+
+    <div class="field">
+      <label>Idioma</label>
+      <div class="lang-grid" id="lang-grid">
+        <div class="lang-pill selected" data-val="es" onclick="selectLang(this)">Español</div>
+        <div class="lang-pill" data-val="en" onclick="selectLang(this)">English</div>
+        <div class="lang-pill" data-val="de" onclick="selectLang(this)">Deutsch</div>
+        <div class="lang-pill" data-val="fr" onclick="selectLang(this)">Français</div>
+        <div class="lang-pill" data-val="pt" onclick="selectLang(this)">Português</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Estilo de ilustración</label>
+      <div class="option-grid" id="style-grid">
+        <div class="option-card selected" data-val="acuarela" onclick="selectOption(this,'style-grid')">
+          <div class="icon">🎨</div>
+          <div class="label">Acuarela</div>
+          <div class="sub">Suave y soñador</div>
+        </div>
+        <div class="option-card" data-val="cartoon" onclick="selectOption(this,'style-grid')">
+          <div class="icon">✏️</div>
+          <div class="label">Cartoon</div>
+          <div class="sub">Colorido y divertido</div>
+        </div>
+        <div class="option-card" data-val="clasico" onclick="selectOption(this,'style-grid')">
+          <div class="icon">📖</div>
+          <div class="label">Clásico</div>
+          <div class="sub">Ilustración de cuento</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Vista previa del formato</label>
+      <div class="spread-preview">
+        <div class="spread-mock">
+          <div class="spread-img-side">🦉</div>
+          <div class="spread-text-side">
+            <div class="spread-line w80"></div>
+            <div class="spread-line w90"></div>
+            <div class="spread-line w60"></div>
+            <div class="spread-line w80"></div>
+          </div>
+        </div>
+        <div class="spread-caption">Spread doble · Imagen continua + texto inferior · 20×20 cm tapa dura</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Email para recibir el PDF</label>
+      <input type="email" id="email" placeholder="tu@email.com">
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="goStep(2)">← Atrás</button>
+      <button class="btn-primary" onclick="goStep(4)">Revisar pedido →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: Confirmar -->
+  <div class="form-section" id="step-4">
+    <h2 class="section-title">Revisa tu pedido</h2>
+    <p class="section-sub">Comprueba los detalles antes de generar tu cuento.</p>
+
+    <div class="summary-box">
+      <h3>✦ Resumen</h3>
+      <div class="summary-row"><span class="summary-key">Protagonista</span><span class="summary-val" id="sum-name">—</span></div>
+      <div class="summary-row"><span class="summary-key">Edad</span><span class="summary-val" id="sum-age">—</span></div>
+      <div class="summary-row"><span class="summary-key">Tema</span><span class="summary-val" id="sum-theme">—</span></div>
+      <div class="summary-row"><span class="summary-key">Idioma</span><span class="summary-val" id="sum-lang">—</span></div>
+      <div class="summary-row"><span class="summary-key">Estilo</span><span class="summary-val" id="sum-style">—</span></div>
+      <div class="summary-row"><span class="summary-key">Formato</span><span class="summary-val">30 páginas · Tapa dura 20×20 cm · PDF 300dpi</span></div>
+      <div class="summary-row"><span class="summary-key">Entrega</span><span class="summary-val" id="sum-email">—</span></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="goStep(3)">← Editar</button>
+      <button class="btn-primary" onclick="startGeneration()">🦉 Generar mi cuento</button>
+    </div>
+  </div>
+
+  <!-- STATUS SCREEN -->
+  <div class="status-screen" id="status-screen">
+    <span class="owl-spin">🦉</span>
+    <h2 class="status-title" id="status-title">Escribiendo tu historia…</h2>
+    <p class="status-msg" id="status-msg">Nuestro búho editorial está dando vida a los personajes</p>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+    <div class="progress-label" id="progress-label">0 / 4 fases</div>
+  </div>
+
+</div><!-- /form-container -->
+
+<footer>
+  © 2026 StoryOwl · Libros que duran toda la vida
+</footer>
+
+<script>
+  const state = {
+    name: '', age: '', appearance: '', personality: '',
+    theme: '', customTheme: '', extraChars: '', message: '',
+    lang: 'es', style: 'acuarela', email: ''
+  };
+
+  const langNames = { es: 'Español', en: 'English', de: 'Deutsch', fr: 'Français', pt: 'Português' };
+  const themeNames = { aventura: 'Aventura', fantasia: 'Fantasía', naturaleza: 'Naturaleza', amistad: 'Amistad', espacio: 'Espacio', personalizado: 'A medida' };
+
+  function selectOption(el, gridId) {
+    document.querySelectorAll('#' + gridId + ' .option-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    if (gridId === 'theme-grid') {
+      state.theme = el.dataset.val;
+      document.getElementById('custom-theme-field').style.display = el.dataset.val === 'personalizado' ? 'block' : 'none';
+    }
+    if (gridId === 'style-grid') state.style = el.dataset.val;
+    if (gridId === 'age-grid') state.age = el.dataset.val;
+  }
+
+  function selectLang(el) {
+    document.querySelectorAll('#lang-grid .lang-pill').forEach(p => p.classList.remove('selected'));
+    el.classList.add('selected');
+    state.lang = el.dataset.val;
+  }
+
+  function updatePills(current) {
+    for (let i = 1; i <= 4; i++) {
+      const p = document.getElementById('pill-' + i);
+      p.classList.remove('active', 'done');
+      if (i < current) p.classList.add('done');
+      else if (i === current) p.classList.add('active');
+    }
+  }
+
+  function goStep(n) {
+    // collect
+    state.name = document.getElementById('child-name').value.trim();
+    state.appearance = document.getElementById('appearance').value.trim();
+    state.personality = document.getElementById('personality').value.trim();
+    state.customTheme = document.getElementById('custom-theme').value.trim();
+    state.extraChars = document.getElementById('extra-chars').value.trim();
+    state.message = document.getElementById('message').value.trim();
+    state.email = document.getElementById('email').value.trim();
+
+    if (n === 2 && !state.name) { alert('Escribe el nombre del protagonista'); return; }
+    if (n === 4) {
+      document.getElementById('sum-name').textContent = state.name || '—';
+      document.getElementById('sum-age').textContent = state.age ? state.age + ' años' : '—';
+      document.getElementById('sum-theme').textContent = themeNames[state.theme] || '—';
+      document.getElementById('sum-lang').textContent = langNames[state.lang];
+      document.getElementById('sum-style').textContent = state.style;
+      document.getElementById('sum-email').textContent = state.email || '—';
+    }
+
+    document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('step-' + n).classList.add('active');
+    updatePills(n);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  const phases = [
+    { title: 'Creando el personaje…', msg: 'Definiendo la apariencia y voz de ' + (state.name || 'tu protagonista'), pct: 15 },
+    { title: 'Escribiendo la historia…', msg: 'Tejiendo los 30 capítulos de la aventura', pct: 40 },
+    { title: 'Generando las ilustraciones…', msg: 'Pintando 15 spreads dobles a 300 dpi', pct: 75 },
+    { title: 'Componiendo el PDF…', msg: 'Maquetando el libro en formato 20×20 cm', pct: 95 },
+  ];
+
+  function startGeneration() {
+    if (!state.email) { alert('Introduce tu email para recibir el PDF'); return; }
+
+    document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('status-screen').classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    let phase = 0;
+    function runPhase() {
+      if (phase >= phases.length) return;
+      const p = phases[phase];
+      document.getElementById('status-title').textContent = p.title;
+      document.getElementById('status-msg').textContent = p.msg;
+      document.getElementById('progress-fill').style.width = p.pct + '%';
+      document.getElementById('progress-label').textContent = (phase + 1) + ' / ' + phases.length + ' fases';
+      phase++;
+      if (phase < phases.length) setTimeout(runPhase, 4000);
+    }
+
+    runPhase();
+
+    // API call
+    fetch('/v1/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(state)
+    })
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('progress-fill').style.width = '100%';
+      document.getElementById('status-title').textContent = '¡Tu cuento está listo!';
+      document.getElementById('status-msg').textContent = 'Te hemos enviado el PDF a ' + state.email;
+      document.getElementById('progress-label').textContent = '✦ Generación completa';
+    })
+    .catch(() => {
+      document.getElementById('status-title').textContent = 'Ups, algo falló';
+      document.getElementById('status-msg').textContent = 'Por favor inténtalo de nuevo o contacta con soporte';
+    });
+  }
+</script>
+</body>
+</html>

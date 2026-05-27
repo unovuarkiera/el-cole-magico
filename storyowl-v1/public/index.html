@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StoryOwl — Libros que duran toda la vida</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F7F2E8;
+    --ink: #1C1A14;
+    --ink-soft: #4A4535;
+    --gold: #C9973A;
+    --gold-light: #E8C97A;
+    --rust: #8B3A2A;
+    --paper: #EDE8DA;
+    --paper-dark: #D9D2C0;
+    --white: #FDFBF7;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--cream); color: var(--ink); font-family: 'Lato', sans-serif; font-weight: 300; }
+
+  nav {
+    background: var(--ink);
+    padding: 1.2rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--gold); }
+  .logo em { color: var(--white); font-style: italic; }
+  .nav-cta {
+    background: var(--gold);
+    color: var(--ink);
+    text-decoration: none;
+    padding: 0.6rem 1.4rem;
+    border-radius: 3px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: background 0.2s;
+  }
+  .nav-cta:hover { background: var(--gold-light); }
+
+  /* HERO */
+  .hero {
+    background: var(--ink);
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '🦉';
+    position: absolute;
+    font-size: 28rem;
+    opacity: 0.03;
+    bottom: -4rem;
+    right: -4rem;
+    pointer-events: none;
+    line-height: 1;
+  }
+  .hero-inner { max-width: 680px; position: relative; z-index: 1; }
+  .eyebrow {
+    font-size: 0.68rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    color: var(--white);
+    line-height: 1.1;
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 em { color: var(--gold); font-style: italic; }
+  .hero p {
+    color: var(--paper-dark);
+    font-size: 1.05rem;
+    line-height: 1.75;
+    margin-bottom: 2.5rem;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero-btn {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--ink);
+    text-decoration: none;
+    padding: 1rem 2.8rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    margin-right: 1rem;
+  }
+  .hero-btn:hover { background: var(--gold-light); transform: translateY(-2px); }
+  .hero-btn.ghost {
+    background: transparent;
+    color: var(--paper-dark);
+    border: 1.5px solid rgba(255,255,255,0.2);
+  }
+  .hero-btn.ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* STATS */
+  .stats {
+    background: var(--gold);
+    padding: 1.5rem 3rem;
+    display: flex;
+    justify-content: center;
+    gap: 4rem;
+  }
+  .stat { text-align: center; }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--ink); font-weight: 700; }
+  .stat-label { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+
+  /* HOW */
+  .how { padding: 6rem 3rem; max-width: 960px; margin: 0 auto; }
+  .section-eyebrow {
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.8rem;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 400;
+    margin-bottom: 3.5rem;
+    line-height: 1.2;
+  }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; }
+  .step { position: relative; }
+  .step-n {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    color: var(--paper-dark);
+    line-height: 1;
+    margin-bottom: 0.8rem;
+    font-weight: 700;
+  }
+  .step h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: 0.05em; }
+  .step p { font-size: 0.88rem; color: var(--ink-soft); line-height: 1.65; }
+
+  /* FORMATS */
+  .formats { background: var(--ink); padding: 6rem 3rem; }
+  .formats-inner { max-width: 960px; margin: 0 auto; }
+  .formats-inner .section-title { color: var(--white); }
+  .format-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+  .format-card {
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 2rem;
+    background: rgba(255,255,255,0.04);
+    transition: border-color 0.2s;
+  }
+  .format-card:hover { border-color: rgba(201,151,58,0.4); }
+  .format-icon { font-size: 2rem; margin-bottom: 1rem; }
+  .format-card h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--white); font-weight: 400; margin-bottom: 0.6rem; }
+  .format-card p { font-size: 0.85rem; color: var(--paper-dark); line-height: 1.65; }
+  .format-tag {
+    display: inline-block;
+    margin-top: 1rem;
+    background: rgba(201,151,58,0.15);
+    border: 1px solid rgba(201,151,58,0.3);
+    border-radius: 3px;
+    padding: 0.25rem 0.7rem;
+    font-size: 0.72rem;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  /* CTA */
+  .cta-section {
+    padding: 7rem 2rem;
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .cta-section .section-title { margin-bottom: 1rem; }
+  .cta-section p { color: var(--ink-soft); line-height: 1.7; margin-bottom: 2.5rem; }
+
+  footer {
+    background: var(--ink);
+    padding: 2rem 3rem;
+    text-align: center;
+    color: var(--paper-dark);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 600px) {
+    nav, .stats, .how, .formats { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .stats { gap: 2rem; flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Story<em>Owl</em></div>
+  <a href="/crear" class="nav-cta">Crear mi cuento →</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">✦ Editorial personalizada</div>
+    <h1>El cuento donde<br><em>tu hijo es el héroe</em></h1>
+    <p>Cuentos infantiles únicos generados con inteligencia artificial. Ilustraciones originales, formato tapa dura 20×20 cm, listos para imprimir.</p>
+    <a href="/crear" class="hero-btn">Crear mi cuento</a>
+    <a href="#como" class="hero-btn ghost">Ver cómo funciona</a>
+  </div>
+</section>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">30</div>
+    <div class="stat-label">Páginas ilustradas</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">5</div>
+    <div class="stat-label">Idiomas</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">20×20</div>
+    <div class="stat-label">cm tapa dura</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">300</div>
+    <div class="stat-label">dpi calidad imprenta</div>
+  </div>
+</div>
+
+<section class="how" id="como">
+  <div class="section-eyebrow">✦ El proceso</div>
+  <h2 class="section-title">De tu idea a un libro<br>en cuatro pasos</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-n">01</div>
+      <h3>El protagonista</h3>
+      <p>Nos cuentas el nombre, edad y personalidad del niño o niña que protagonizará la historia.</p>
+    </div>
+    <div class="step">
+      <div class="step-n">02</div>
+      <h3>La aventura</h3>
+      <p>Eliges el tema — fantasía, naturaleza, espacio, amistad — y los personajes secundarios.</p>
+    </div>
+    <div class="step">
+      <div class="step-n">03</div>
+      <h3>La magia</h3>
+      <p>Nuestra IA escribe e ilustra 30 páginas únicas con el estilo artístico que elijas.</p>
+    </div>
+    <div class="step">
+      <div class="step-n">04</div>
+      <h3>Tu libro</h3>
+      <p>Recibes el PDF de calidad imprenta listo para imprimir en cualquier imprenta local o en línea.</p>
+    </div>
+  </div>
+</section>
+
+<section class="formats">
+  <div class="formats-inner">
+    <div class="section-eyebrow" style="color:var(--gold)">✦ Formatos</div>
+    <h2 class="section-title">Hecho para durar<br>toda una vida</h2>
+    <div class="format-grid">
+      <div class="format-card">
+        <div class="format-icon">📐</div>
+        <h3>Formato cuadrado</h3>
+        <p>20×20 cm, el formato clásico de los grandes álbumes ilustrados. Spreads dobles con imagen continua y texto.</p>
+        <span class="format-tag">Tapa dura</span>
+      </div>
+      <div class="format-card">
+        <div class="format-icon">🎨</div>
+        <h3>Ilustraciones originales</h3>
+        <p>Cada spread es una ilustración única generada específicamente para tu historia. Nunca se repite.</p>
+        <span class="format-tag">IA generativa</span>
+      </div>
+      <div class="format-card">
+        <div class="format-icon">🖨️</div>
+        <h3>Listo para imprimir</h3>
+        <p>PDF 300 dpi con bleed incluido, compatible con Gelato, Lulu, Blurb y cualquier imprenta profesional.</p>
+        <span class="format-tag">300 dpi</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="section-eyebrow">✦ Empieza ahora</div>
+  <h2 class="section-title">Un regalo que<br>recordará siempre</h2>
+  <p>En menos de 10 minutos tendrás listo un cuento personalizado con tu hijo o hija como protagonista absoluto.</p>
+  <a href="/crear" class="hero-btn" style="display:inline-block">Crear mi cuento →</a>
+</section>
+
+<footer>
+  © 2026 StoryOwl · Libros que duran toda la vida
+</footer>
+
+</body>
+</html>
