@@ -81,7 +81,7 @@ footer{background:var(--ink);padding:1.5rem 2rem;text-align:center;color:var(--p
 </nav>
 
 <div class="hero">
-  <div class="tag">&#10022; Taller editorial</div>
+  <div class="tag">* Taller editorial</div>
   <h1>Tu historia,<br><em>ilustrada para siempre</em></h1>
   <p>Cuentos infantiles con ilustraciones originales. Formato tapa dura 20x20 cm, listo para imprimir.</p>
 </div>
@@ -96,7 +96,7 @@ footer{background:var(--ink);padding:1.5rem 2rem;text-align:center;color:var(--p
   <div class="sp" id="p4"><div class="sn">4</div><span>Confirmar</span></div>
 </div>
 
-<div class="wrap" id="app">
+<div class="wrap">
 
   <div id="s1">
     <h2 class="stitle">El protagonista</h2>
@@ -125,7 +125,7 @@ footer{background:var(--ink);padding:1.5rem 2rem;text-align:center;color:var(--p
       <input type="text" id="perso" placeholder="ej. le encanta bailar, adora los dinosaurios...">
     </div>
     <div class="btns">
-      <button class="bp" id="btn1">Continuar &rarr;</button>
+      <button class="bp" id="btn1">Continuar</button>
     </div>
   </div>
 
@@ -140,7 +140,7 @@ footer{background:var(--ink);padding:1.5rem 2rem;text-align:center;color:var(--p
         <div class="card" data-v="naturaleza"><div class="ci">&#127754;</div><div class="cl">Naturaleza</div></div>
         <div class="card" data-v="amistad"><div class="ci">&#129309;</div><div class="cl">Amistad</div></div>
         <div class="card" data-v="espacio"><div class="ci">&#129680;</div><div class="cl">Espacio</div></div>
-        <div class="card" data-v="libre"><div class="ci">&#9999;&#65039;</div><div class="cl">A medida</div></div>
+        <div class="card" data-v="libre"><div class="ci">&#9999;</div><div class="cl">A medida</div></div>
       </div>
     </div>
     <div class="f" id="ftema" style="display:none">
@@ -156,8 +156,8 @@ footer{background:var(--ink);padding:1.5rem 2rem;text-align:center;color:var(--p
       <input type="text" id="valores" placeholder="ej. ser valiente, la imaginacion...">
     </div>
     <div class="btns">
-      <button class="bs" id="btn2b">&larr; Atras</button>
-      <button class="bp" id="btn2">Continuar &rarr;</button>
+      <button class="bs" id="btn2b">Atras</button>
+      <button class="bp" id="btn2">Continuar</button>
     </div>
   </div>
 
@@ -178,7 +178,7 @@ footer{background:var(--ink);padding:1.5rem 2rem;text-align:center;color:var(--p
       <span class="lbl">Estilo de ilustracion</span>
       <div class="grid" id="gestilo">
         <div class="card sel" data-v="acuarela"><div class="ci">&#127912;</div><div class="cl">Acuarela</div><div class="cs">Suave</div></div>
-        <div class="card" data-v="cartoon"><div class="ci">&#9999;&#65039;</div><div class="cl">Cartoon</div><div class="cs">Colorido</div></div>
+        <div class="card" data-v="cartoon"><div class="ci">&#9999;</div><div class="cl">Cartoon</div><div class="cs">Colorido</div></div>
         <div class="card" data-v="clasico"><div class="ci">&#128214;</div><div class="cl">Clasico</div><div class="cs">Elegante</div></div>
       </div>
     </div>
@@ -202,8 +202,8 @@ footer{background:var(--ink);padding:1.5rem 2rem;text-align:center;color:var(--p
       <input type="email" id="email" placeholder="tu@email.com">
     </div>
     <div class="btns">
-      <button class="bs" id="btn3b">&larr; Atras</button>
-      <button class="bp" id="btn3">Revisar pedido &rarr;</button>
+      <button class="bs" id="btn3b">Atras</button>
+      <button class="bp" id="btn3">Revisar pedido</button>
     </div>
   </div>
 
@@ -211,7 +211,7 @@ footer{background:var(--ink);padding:1.5rem 2rem;text-align:center;color:var(--p
     <h2 class="stitle">Revisa tu pedido</h2>
     <p class="ssub">Comprueba los detalles antes de generar tu cuento.</p>
     <div class="sumbox">
-      <h3>&#10022; Resumen</h3>
+      <h3>Resumen</h3>
       <div class="sr"><span class="sk">Protagonista</span><span class="sv" id="rn">-</span></div>
       <div class="sr"><span class="sk">Edad</span><span class="sv" id="re">-</span></div>
       <div class="sr"><span class="sk">Tema</span><span class="sv" id="rt">-</span></div>
@@ -221,8 +221,8 @@ footer{background:var(--ink);padding:1.5rem 2rem;text-align:center;color:var(--p
       <div class="sr"><span class="sk">Entrega</span><span class="sv" id="rem">-</span></div>
     </div>
     <div class="btns">
-      <button class="bs" id="btn4b">&larr; Editar</button>
-      <button class="bp" id="btn4">&#129417; Generar mi cuento</button>
+      <button class="bs" id="btn4b">Editar</button>
+      <button class="bp" id="btn4">Generar mi cuento</button>
     </div>
   </div>
 
@@ -241,167 +241,126 @@ footer{background:var(--ink);padding:1.5rem 2rem;text-align:center;color:var(--p
 <footer>2026 StoryOwl - Libros que duran toda la vida</footer>
 
 <script>
-(function() {
+var APP = {};
+APP.data = {nombre:'',edad:'',aspecto:'',perso:'',tema:'',temalib:'',extras:'',valores:'',idioma:'es',estilo:'acuarela',email:''};
+APP.temas = {aventura:'Aventura',fantasia:'Fantasia',naturaleza:'Naturaleza',amistad:'Amistad',espacio:'Espacio',libre:'A medida'};
+APP.idiomas = {es:'Espanol',en:'English',de:'Deutsch',fr:'Francais',pt:'Portugues'};
 
-  var D = {
-    nombre: '', edad: '', aspecto: '', perso: '',
-    tema: '', temalib: '', extras: '', valores: '',
-    idioma: 'es', estilo: 'acuarela', email: ''
-  };
-
-  var TEMAS = {aventura:'Aventura',fantasia:'Fantasia',naturaleza:'Naturaleza',amistad:'Amistad',espacio:'Espacio',libre:'A medida'};
-  var IDIOMAS = {es:'Espanol',en:'English',de:'Deutsch',fr:'Francais',pt:'Portugues'};
-
-  function show(id) {
-    var ids = ['s1','s2','s3','s4','sg'];
-    for (var i = 0; i < ids.length; i++) {
-      var el = document.getElementById(ids[i]);
-      if (el) el.style.display = ids[i] === id ? 'block' : 'none';
-    }
+APP.show = function(id) {
+  var all = ['s1','s2','s3','s4','sg'];
+  for (var i=0;i<all.length;i++) {
+    var el = document.getElementById(all[i]);
+    if (el) el.style.display = (all[i]===id) ? 'block' : 'none';
   }
+  window.scrollTo(0,0);
+};
 
-  function pills(n) {
-    for (var i = 1; i <= 4; i++) {
-      var p = document.getElementById('p' + i);
-      if (!p) continue;
-      p.className = 'sp' + (i < n ? ' done' : i === n ? ' on' : '');
-    }
+APP.pills = function(n) {
+  for (var i=1;i<=4;i++) {
+    var p = document.getElementById('p'+i);
+    if (!p) continue;
+    p.className = 'sp' + (i<n?' done':i===n?' on':'');
   }
+};
 
-  function go(n) {
-    show('s' + n);
-    pills(n);
-    window.scrollTo(0, 0);
+APP.collect = function() {
+  APP.data.nombre = document.getElementById('nombre').value.trim();
+  APP.data.aspecto = document.getElementById('aspecto').value.trim();
+  APP.data.perso = document.getElementById('perso').value.trim();
+  APP.data.temalib = document.getElementById('temalib').value.trim();
+  APP.data.extras = document.getElementById('extras').value.trim();
+  APP.data.valores = document.getElementById('valores').value.trim();
+  APP.data.email = document.getElementById('email').value.trim();
+};
+
+APP.go = function(n) {
+  APP.collect();
+  if (n===2 && !APP.data.nombre) { alert('Escribe el nombre del protagonista'); return; }
+  if (n===4) {
+    document.getElementById('rn').textContent = APP.data.nombre||'-';
+    document.getElementById('re').textContent = APP.data.edad ? APP.data.edad+' anos' : '-';
+    document.getElementById('rt').textContent = APP.temas[APP.data.tema]||'-';
+    document.getElementById('ri').textContent = APP.idiomas[APP.data.idioma];
+    document.getElementById('res').textContent = APP.data.estilo;
+    document.getElementById('rem').textContent = APP.data.email||'-';
   }
+  APP.show('s'+n);
+  APP.pills(n);
+};
 
-  function collect() {
-    D.nombre = document.getElementById('nombre').value.trim();
-    D.aspecto = document.getElementById('aspecto').value.trim();
-    D.perso = document.getElementById('perso').value.trim();
-    D.temalib = document.getElementById('temalib').value.trim();
-    D.extras = document.getElementById('extras').value.trim();
-    D.valores = document.getElementById('valores').value.trim();
-    D.email = document.getElementById('email').value.trim();
-  }
+APP.gen = function() {
+  APP.collect();
+  if (!APP.data.email) { alert('Introduce tu email para recibir el PDF'); return; }
+  APP.show('sg');
+  APP.pills(4);
+  var phases = [
+    {t:'Creando el personaje...',m:'Definiendo la apariencia y voz de '+APP.data.nombre,p:15},
+    {t:'Escribiendo la historia...',m:'Tejiendo los 30 capitulos de la aventura',p:40},
+    {t:'Generando las ilustraciones...',m:'Pintando 15 spreads dobles a 300 dpi',p:75},
+    {t:'Componiendo el PDF...',m:'Maquetando el libro en formato 20x20 cm',p:95}
+  ];
+  var n=0;
+  var timer = setInterval(function() {
+    if (n>=phases.length) { clearInterval(timer); return; }
+    document.getElementById('gt').textContent = phases[n].t;
+    document.getElementById('gm').textContent = phases[n].m;
+    document.getElementById('pf').style.width = phases[n].p+'%';
+    document.getElementById('pl').textContent = (n+1)+' / 4 fases';
+    n++;
+  }, 4000);
+  fetch('/v1/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(APP.data)})
+  .then(function(r){return r.json();})
+  .then(function(){
+    clearInterval(timer);
+    document.getElementById('pf').style.width='100%';
+    document.getElementById('gt').textContent='Tu cuento esta listo!';
+    document.getElementById('gm').textContent='Te hemos enviado el PDF a '+APP.data.email;
+    document.getElementById('pl').textContent='Generacion completa';
+  })
+  .catch(function(){
+    clearInterval(timer);
+    document.getElementById('gt').textContent='Ups, algo fallo';
+    document.getElementById('gm').textContent='Por favor intentalo de nuevo';
+  });
+};
 
+// Botones
+document.getElementById('btn1').onclick = function(){ APP.go(2); };
+document.getElementById('btn2b').onclick = function(){ APP.go(1); };
+document.getElementById('btn2').onclick = function(){ APP.go(3); };
+document.getElementById('btn3b').onclick = function(){ APP.go(2); };
+document.getElementById('btn3').onclick = function(){ APP.go(4); };
+document.getElementById('btn4b').onclick = function(){ APP.go(3); };
+document.getElementById('btn4').onclick = function(){ APP.gen(); };
+
+// Grids de seleccion
+(function(){
   function setupGrid(gridId, key) {
-    var cards = document.querySelectorAll('#' + gridId + ' .card');
-    for (var i = 0; i < cards.length; i++) {
-      (function(card) {
-        card.addEventListener('click', function() {
-          for (var j = 0; j < cards.length; j++) cards[j].classList.remove('sel');
-          card.classList.add('sel');
-          D[key] = card.getAttribute('data-v');
-          if (key === 'tema') {
-            document.getElementById('ftema').style.display = D.tema === 'libre' ? 'block' : 'none';
-          }
-        });
+    var cards = document.querySelectorAll('#'+gridId+' .card');
+    for (var i=0;i<cards.length;i++) {
+      (function(c){
+        c.onclick = function(){
+          for (var j=0;j<cards.length;j++) cards[j].classList.remove('sel');
+          c.classList.add('sel');
+          APP.data[key] = c.getAttribute('data-v');
+          if (key==='tema') document.getElementById('ftema').style.display = APP.data.tema==='libre'?'block':'none';
+        };
       })(cards[i]);
     }
   }
-
-  function setupLangs() {
-    var pills = document.querySelectorAll('#gidioma .lp');
-    for (var i = 0; i < pills.length; i++) {
-      (function(p) {
-        p.addEventListener('click', function() {
-          for (var j = 0; j < pills.length; j++) pills[j].classList.remove('sel');
-          p.classList.add('sel');
-          D.idioma = p.getAttribute('data-v');
-        });
-      })(pills[i]);
-    }
+  setupGrid('gedad','edad');
+  setupGrid('gtema','tema');
+  setupGrid('gestilo','estilo');
+  var lps = document.querySelectorAll('#gidioma .lp');
+  for (var i=0;i<lps.length;i++) {
+    (function(p){
+      p.onclick = function(){
+        for (var j=0;j<lps.length;j++) lps[j].classList.remove('sel');
+        p.classList.add('sel');
+        APP.data.idioma = p.getAttribute('data-v');
+      };
+    })(lps[i]);
   }
-
-  function fillSummary() {
-    document.getElementById('rn').textContent = D.nombre || '-';
-    document.getElementById('re').textContent = D.edad ? D.edad + ' anos' : '-';
-    document.getElementById('rt').textContent = TEMAS[D.tema] || '-';
-    document.getElementById('ri').textContent = IDIOMAS[D.idioma];
-    document.getElementById('res').textContent = D.estilo;
-    document.getElementById('rem').textContent = D.email || '-';
-  }
-
-  function startGen() {
-    show('sg');
-    window.scrollTo(0, 0);
-
-    var phases = [
-      {t:'Creando el personaje...', m:'Definiendo la apariencia y voz de ' + D.nombre, p:15},
-      {t:'Escribiendo la historia...', m:'Tejiendo los 30 capitulos de la aventura', p:40},
-      {t:'Generando las ilustraciones...', m:'Pintando 15 spreads dobles a 300 dpi', p:75},
-      {t:'Componiendo el PDF...', m:'Maquetando el libro en formato 20x20 cm', p:95}
-    ];
-    var n = 0;
-    function next() {
-      if (n >= phases.length) return;
-      document.getElementById('gt').textContent = phases[n].t;
-      document.getElementById('gm').textContent = phases[n].m;
-      document.getElementById('pf').style.width = phases[n].p + '%';
-      document.getElementById('pl').textContent = (n+1) + ' / 4 fases';
-      n++;
-      if (n < phases.length) setTimeout(next, 4000);
-    }
-    next();
-
-    fetch('/v1/generate', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(D)
-    })
-    .then(function(r) { return r.json(); })
-    .then(function() {
-      document.getElementById('pf').style.width = '100%';
-      document.getElementById('gt').textContent = 'Tu cuento esta listo!';
-      document.getElementById('gm').textContent = 'Te hemos enviado el PDF a ' + D.email;
-      document.getElementById('pl').textContent = 'Generacion completa';
-    })
-    .catch(function() {
-      document.getElementById('gt').textContent = 'Ups, algo fallo';
-      document.getElementById('gm').textContent = 'Por favor intentalo de nuevo';
-    });
-  }
-
-  // Botones
-  document.getElementById('btn1').addEventListener('click', function() {
-    collect();
-    if (!D.nombre) { alert('Escribe el nombre del protagonista'); return; }
-    go(2);
-  });
-
-  document.getElementById('btn2b').addEventListener('click', function() { go(1); });
-
-  document.getElementById('btn2').addEventListener('click', function() {
-    collect();
-    go(3);
-  });
-
-  document.getElementById('btn3b').addEventListener('click', function() { go(2); });
-
-  document.getElementById('btn3').addEventListener('click', function() {
-    collect();
-    go(4);
-    fillSummary();
-  });
-
-  document.getElementById('btn4b').addEventListener('click', function() { go(3); });
-
-  document.getElementById('btn4').addEventListener('click', function() {
-    collect();
-    if (!D.email) { alert('Introduce tu email para recibir el PDF'); return; }
-    startGen();
-  });
-
-  // Grids
-  setupGrid('gedad', 'edad');
-  setupGrid('gtema', 'tema');
-  setupGrid('gestilo', 'estilo');
-  setupLangs();
-
-  // Arrancar en step 1
-  show('s1');
-  pills(1);
-
 })();
 </script>
 </body>
