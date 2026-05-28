@@ -4,239 +4,236 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>StoryOwl — Crea tu cuento</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
-:root{--cream:#F7F2E8;--ink:#1C1A14;--ink-soft:#4A4535;--gold:#C9973A;--gold-light:#E8C97A;--paper:#EDE8DA;--paper-dark:#D9D2C0;--white:#FDFBF7;--sage:#4A6741;}
+:root{--cream:#F7F2E8;--ink:#1C1A14;--soft:#4A4535;--gold:#C9973A;--gold2:#E8C97A;--paper:#EDE8DA;--paperd:#D9D2C0;--white:#FDFBF7;--sage:#4A6741;}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--cream);color:var(--ink);font-family:'Lato',sans-serif;font-weight:300;min-height:100vh;}
-header{background:var(--ink);padding:1.2rem 2.5rem;display:flex;align-items:center;justify-content:space-between;}
+body{background:var(--cream);color:var(--ink);font-family:'Lato',sans-serif;font-weight:300;}
+nav{background:var(--ink);padding:1.2rem 2.5rem;display:flex;align-items:center;justify-content:space-between;}
 .logo{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--gold);}
-.logo span{color:var(--white);font-style:italic;}
-.nav-tag{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--paper-dark);}
-.hero{background:var(--ink);padding:3.5rem 2rem 4.5rem;text-align:center;}
-.hero-eyebrow{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;}
-.hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.5rem);color:var(--white);line-height:1.15;margin-bottom:1rem;font-weight:400;}
+.logo i{color:var(--white);font-style:italic;}
+.navsub{font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--paperd);}
+.hero{background:var(--ink);padding:3rem 2rem 4rem;text-align:center;}
+.tag{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,5vw,3.2rem);color:var(--white);line-height:1.15;font-weight:400;margin-bottom:1rem;}
 .hero h1 em{color:var(--gold);font-style:italic;}
-.hero p{color:var(--paper-dark);font-size:.95rem;line-height:1.7;max-width:460px;margin:0 auto;}
-.progress-bar{background:var(--paper);padding:1rem 2.5rem;display:flex;align-items:center;border-bottom:1px solid var(--paper-dark);position:sticky;top:0;z-index:100;}
-.step-pill{display:flex;align-items:center;gap:.5rem;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--paper-dark);flex:1;transition:color .3s;}
-.step-pill.active{color:var(--ink);}
-.step-pill.done{color:var(--sage);}
-.step-num{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--paper-dark);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0;transition:all .3s;}
-.step-pill.active .step-num{background:var(--ink);border-color:var(--ink);color:var(--gold);}
-.step-pill.done .step-num{background:var(--sage);border-color:var(--sage);color:white;}
-.step-line{flex:1;height:1px;background:var(--paper-dark);margin:0 .4rem;}
-.form-container{max-width:720px;margin:0 auto;padding:2.5rem 1.5rem 5rem;}
-.section-title{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:400;color:var(--ink);margin-bottom:.4rem;}
-.section-sub{color:var(--ink-soft);font-size:.88rem;margin-bottom:2rem;line-height:1.6;}
-.field{margin-bottom:1.6rem;}
-label{display:block;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.5rem;font-weight:700;}
-input[type=text],input[type=email],textarea{width:100%;background:var(--white);border:1.5px solid var(--paper-dark);border-radius:4px;padding:.8rem 1rem;font-family:'Lato',sans-serif;font-size:.92rem;font-weight:300;color:var(--ink);outline:none;transition:border-color .2s;}
+.hero p{color:var(--paperd);font-size:.9rem;line-height:1.7;max-width:440px;margin:0 auto;}
+.steps{background:var(--paper);padding:.9rem 2rem;display:flex;align-items:center;border-bottom:1px solid var(--paperd);position:sticky;top:0;z-index:50;}
+.sp{display:flex;align-items:center;gap:.4rem;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--paperd);flex:1;}
+.sp.on{color:var(--ink);}
+.sp.done{color:var(--sage);}
+.sn{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--paperd);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0;}
+.sp.on .sn{background:var(--ink);border-color:var(--ink);color:var(--gold);}
+.sp.done .sn{background:var(--sage);border-color:var(--sage);color:#fff;}
+.sl{flex:1;height:1px;background:var(--paperd);margin:0 .3rem;}
+.wrap{max-width:700px;margin:0 auto;padding:2.5rem 1.5rem 5rem;}
+.stitle{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:400;margin-bottom:.3rem;}
+.ssub{color:var(--soft);font-size:.85rem;margin-bottom:1.8rem;line-height:1.6;}
+.f{margin-bottom:1.5rem;}
+.lbl{display:block;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin-bottom:.45rem;font-weight:700;}
+input[type=text],input[type=email],textarea{width:100%;background:var(--white);border:1.5px solid var(--paperd);border-radius:4px;padding:.75rem .9rem;font-family:'Lato',sans-serif;font-size:.9rem;font-weight:300;color:var(--ink);outline:none;transition:border-color .2s;}
 input:focus,textarea:focus{border-color:var(--gold);}
-textarea{resize:vertical;min-height:90px;}
-.option-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.7rem;margin-top:.4rem;}
-.option-card{border:1.5px solid var(--paper-dark);border-radius:6px;padding:1rem .8rem;cursor:pointer;transition:all .2s;background:var(--white);text-align:center;}
-.option-card:hover{border-color:var(--gold);transform:translateY(-2px);}
-.option-card.selected{border-color:var(--gold);background:#FBF5E8;}
-.card-icon{font-size:1.6rem;margin-bottom:.4rem;}
-.card-lbl{font-size:.8rem;font-weight:700;}
-.card-sub{font-size:.7rem;color:var(--ink-soft);margin-top:.2rem;}
-.lang-grid{display:flex;gap:.5rem;flex-wrap:wrap;}
-.lang-pill{border:1.5px solid var(--paper-dark);border-radius:100px;padding:.4rem 1rem;cursor:pointer;font-size:.8rem;font-weight:700;background:var(--white);transition:all .2s;}
-.lang-pill:hover{border-color:var(--gold);}
-.lang-pill.selected{border-color:var(--gold);background:#FBF5E8;color:#8B3A2A;}
-.spread-preview{background:var(--white);border:1.5px solid var(--paper-dark);border-radius:8px;padding:1.2rem;margin-top:.8rem;}
-.spread-mock{display:flex;gap:3px;height:130px;border-radius:4px;overflow:hidden;}
-.spread-img{flex:1;background:linear-gradient(135deg,#D4C8A8,#B8AC8A);display:flex;align-items:center;justify-content:center;font-size:2rem;}
-.spread-txt{width:36%;background:var(--ink);padding:.8rem;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;}
-.sline{height:3px;border-radius:2px;background:rgba(255,255,255,.15);}
-.spread-caption{font-size:.7rem;color:var(--ink-soft);text-align:center;margin-top:.6rem;}
-.summary-box{background:var(--ink);border-radius:8px;padding:1.8rem;color:var(--white);margin-bottom:1.8rem;}
-.summary-box h3{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--gold);margin-bottom:1rem;font-weight:400;}
-.srow{display:flex;justify-content:space-between;padding:.55rem 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:.85rem;}
-.srow:last-child{border-bottom:none;}
-.skey{color:var(--paper-dark);}
-.sval{color:var(--white);}
-.btn-row{display:flex;gap:.8rem;margin-top:2rem;}
-.btn-primary{background:var(--gold);color:var(--ink);border:none;border-radius:4px;padding:.85rem 2rem;font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
-.btn-primary:hover{background:var(--gold-light);}
-.btn-secondary{background:transparent;color:var(--ink-soft);border:1.5px solid var(--paper-dark);border-radius:4px;padding:.85rem 1.4rem;font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
-.btn-secondary:hover{border-color:var(--ink);color:var(--ink);}
-.owl-spin{font-size:3.5rem;display:block;margin-bottom:1.2rem;animation:owlBob 2s ease-in-out infinite;}
-@keyframes owlBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
-.status-title{font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--ink);margin-bottom:.6rem;}
-.status-msg{color:var(--ink-soft);font-size:.88rem;margin-bottom:1.8rem;}
-.progress-track{background:var(--paper-dark);border-radius:100px;height:4px;max-width:340px;margin:0 auto .7rem;overflow:hidden;}
-.progress-fill{height:100%;background:var(--gold);border-radius:100px;width:0%;transition:width 1.2s ease;}
-.progress-label{font-size:.72rem;color:var(--ink-soft);}
-footer{background:var(--ink);padding:1.8rem 2.5rem;text-align:center;color:var(--paper-dark);font-size:.75rem;}
+textarea{resize:vertical;min-height:80px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.6rem;margin-top:.3rem;}
+.card{border:1.5px solid var(--paperd);border-radius:6px;padding:.9rem .7rem;cursor:pointer;background:var(--white);text-align:center;transition:all .2s;user-select:none;}
+.card:hover{border-color:var(--gold);transform:translateY(-2px);}
+.card.sel{border-color:var(--gold);background:#FBF5E8;}
+.card .ci{font-size:1.5rem;margin-bottom:.3rem;}
+.card .cl{font-size:.78rem;font-weight:700;}
+.card .cs{font-size:.68rem;color:var(--soft);margin-top:.15rem;}
+.langs{display:flex;gap:.5rem;flex-wrap:wrap;}
+.lp{border:1.5px solid var(--paperd);border-radius:100px;padding:.35rem .9rem;cursor:pointer;font-size:.78rem;font-weight:700;background:var(--white);transition:all .2s;user-select:none;}
+.lp:hover{border-color:var(--gold);}
+.lp.sel{border-color:var(--gold);background:#FBF5E8;color:#8B3A2A;}
+.preview{background:var(--white);border:1.5px solid var(--paperd);border-radius:8px;padding:1.1rem;margin-top:.7rem;}
+.pmock{display:flex;gap:3px;height:120px;border-radius:3px;overflow:hidden;}
+.pimg{flex:1;background:linear-gradient(135deg,#D4C8A8,#B8AC8A);display:flex;align-items:center;justify-content:center;font-size:1.8rem;}
+.ptxt{width:35%;background:var(--ink);padding:.7rem;display:flex;flex-direction:column;justify-content:flex-end;gap:3px;}
+.pl{height:3px;border-radius:2px;background:rgba(255,255,255,.15);}
+.pcap{font-size:.68rem;color:var(--soft);text-align:center;margin-top:.5rem;}
+.sumbox{background:var(--ink);border-radius:8px;padding:1.6rem;color:var(--white);margin-bottom:1.6rem;}
+.sumbox h3{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold);margin-bottom:.9rem;font-weight:400;}
+.sr{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:.82rem;}
+.sr:last-child{border-bottom:none;}
+.sk{color:var(--paperd);}
+.sv{color:var(--white);}
+.btns{display:flex;gap:.7rem;margin-top:1.8rem;}
+.bp{background:var(--gold);color:var(--ink);border:none;border-radius:4px;padding:.8rem 1.8rem;font-family:'Lato',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.bp:hover{background:var(--gold2);}
+.bs{background:transparent;color:var(--soft);border:1.5px solid var(--paperd);border-radius:4px;padding:.8rem 1.3rem;font-family:'Lato',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.bs:hover{border-color:var(--ink);color:var(--ink);}
+.genbox{text-align:center;padding:3.5rem 2rem;}
+.owl{font-size:3.2rem;display:block;margin-bottom:1rem;animation:bob 2s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+.gt{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--ink);margin-bottom:.5rem;}
+.gm{color:var(--soft);font-size:.85rem;margin-bottom:1.5rem;}
+.ptrack{background:var(--paperd);border-radius:100px;height:4px;max-width:320px;margin:0 auto .6rem;overflow:hidden;}
+.pfill{height:100%;background:var(--gold);border-radius:100px;width:0;transition:width 1.2s ease;}
+.plbl{font-size:.7rem;color:var(--soft);}
+footer{background:var(--ink);padding:1.5rem 2rem;text-align:center;color:var(--paperd);font-size:.72rem;}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">Story<span>Owl</span></div>
-  <div class="nav-tag">Cuentos personalizados</div>
-</header>
+<nav>
+  <div class="logo">Story<i>Owl</i></div>
+  <div class="navsub">Cuentos personalizados</div>
+</nav>
 
 <div class="hero">
-  <div class="hero-eyebrow">&#10022; Taller editorial</div>
+  <div class="tag">&#10022; Taller editorial</div>
   <h1>Tu historia,<br><em>ilustrada para siempre</em></h1>
-  <p>Cuentos infantiles únicos con ilustraciones originales. Formato tapa dura 20x20 cm, listo para imprimir.</p>
+  <p>Cuentos infantiles con ilustraciones originales. Formato tapa dura 20x20 cm, listo para imprimir.</p>
 </div>
 
-<div class="progress-bar">
-  <div class="step-pill active" id="pill-1"><div class="step-num">1</div><span>Protagonista</span></div>
-  <div class="step-line"></div>
-  <div class="step-pill" id="pill-2"><div class="step-num">2</div><span>Historia</span></div>
-  <div class="step-line"></div>
-  <div class="step-pill" id="pill-3"><div class="step-num">3</div><span>El libro</span></div>
-  <div class="step-line"></div>
-  <div class="step-pill" id="pill-4"><div class="step-num">4</div><span>Confirmar</span></div>
+<div class="steps">
+  <div class="sp on" id="p1"><div class="sn">1</div><span>Protagonista</span></div>
+  <div class="sl"></div>
+  <div class="sp" id="p2"><div class="sn">2</div><span>Historia</span></div>
+  <div class="sl"></div>
+  <div class="sp" id="p3"><div class="sn">3</div><span>El libro</span></div>
+  <div class="sl"></div>
+  <div class="sp" id="p4"><div class="sn">4</div><span>Confirmar</span></div>
 </div>
 
-<div class="form-container">
+<div class="wrap" id="app">
 
-  <!-- STEP 1 -->
-  <div id="step-1">
-    <h2 class="section-title">El protagonista</h2>
-    <p class="section-sub">Cuentanos sobre el nino o nina que sera el heroe de esta historia.</p>
-    <div class="field">
-      <label>Nombre del protagonista</label>
-      <input type="text" id="child-name" placeholder="ej. Martina, Leo, Sofia...">
+  <div id="s1">
+    <h2 class="stitle">El protagonista</h2>
+    <p class="ssub">Cuentanos sobre el nino o nina que sera el heroe de esta historia.</p>
+    <div class="f">
+      <span class="lbl">Nombre</span>
+      <input type="text" id="nombre" placeholder="ej. Martina, Leo, Sofia...">
     </div>
-    <div class="field">
-      <label>Edad</label>
-      <div class="option-grid" id="age-grid">
-        <div class="option-card" data-val="3" onclick="pick(this,'age-grid')"><div class="card-icon">&#127807;</div><div class="card-lbl">3 anos</div></div>
-        <div class="option-card" data-val="4" onclick="pick(this,'age-grid')"><div class="card-icon">&#127808;</div><div class="card-lbl">4 anos</div></div>
-        <div class="option-card" data-val="5" onclick="pick(this,'age-grid')"><div class="card-icon">&#127795;</div><div class="card-lbl">5 anos</div></div>
-        <div class="option-card" data-val="6" onclick="pick(this,'age-grid')"><div class="card-icon">&#11088;</div><div class="card-lbl">6 anos</div></div>
-        <div class="option-card" data-val="7" onclick="pick(this,'age-grid')"><div class="card-icon">&#128640;</div><div class="card-lbl">7 anos</div></div>
-        <div class="option-card" data-val="8" onclick="pick(this,'age-grid')"><div class="card-icon">&#128302;</div><div class="card-lbl">8 anos</div></div>
+    <div class="f">
+      <span class="lbl">Edad</span>
+      <div class="grid" id="gedad">
+        <div class="card" data-v="3"><div class="ci">&#127807;</div><div class="cl">3 anos</div></div>
+        <div class="card" data-v="4"><div class="ci">&#127808;</div><div class="cl">4 anos</div></div>
+        <div class="card" data-v="5"><div class="ci">&#127795;</div><div class="cl">5 anos</div></div>
+        <div class="card" data-v="6"><div class="ci">&#11088;</div><div class="cl">6 anos</div></div>
+        <div class="card" data-v="7"><div class="ci">&#128640;</div><div class="cl">7 anos</div></div>
+        <div class="card" data-v="8"><div class="ci">&#128302;</div><div class="cl">8 anos</div></div>
       </div>
     </div>
-    <div class="field">
-      <label>Aspecto fisico (opcional)</label>
-      <input type="text" id="appearance" placeholder="ej. pelo rizado y ojos verdes, pecas...">
+    <div class="f">
+      <span class="lbl">Aspecto fisico (opcional)</span>
+      <input type="text" id="aspecto" placeholder="ej. pelo rizado, ojos verdes, pecas...">
     </div>
-    <div class="field">
-      <label>Personalidad o aficiones</label>
-      <input type="text" id="personality" placeholder="ej. le encanta bailar, adora los dinosaurios...">
+    <div class="f">
+      <span class="lbl">Personalidad o aficiones</span>
+      <input type="text" id="perso" placeholder="ej. le encanta bailar, adora los dinosaurios...">
     </div>
-    <div class="btn-row">
-      <button class="btn-primary" onclick="goStep(2)">Continuar &rarr;</button>
+    <div class="btns">
+      <button class="bp" id="btn1">Continuar &rarr;</button>
     </div>
   </div>
 
-  <!-- STEP 2 -->
-  <div id="step-2" style="display:none">
-    <h2 class="section-title">La historia</h2>
-    <p class="section-sub">Elige el universo en el que vivira esta aventura.</p>
-    <div class="field">
-      <label>Tema del cuento</label>
-      <div class="option-grid" id="theme-grid">
-        <div class="option-card" data-val="aventura" onclick="pick(this,'theme-grid')"><div class="card-icon">&#128506;</div><div class="card-lbl">Aventura</div></div>
-        <div class="option-card" data-val="fantasia" onclick="pick(this,'theme-grid')"><div class="card-icon">&#129498;</div><div class="card-lbl">Fantasia</div></div>
-        <div class="option-card" data-val="naturaleza" onclick="pick(this,'theme-grid')"><div class="card-icon">&#127754;</div><div class="card-lbl">Naturaleza</div></div>
-        <div class="option-card" data-val="amistad" onclick="pick(this,'theme-grid')"><div class="card-icon">&#129309;</div><div class="card-lbl">Amistad</div></div>
-        <div class="option-card" data-val="espacio" onclick="pick(this,'theme-grid')"><div class="card-icon">&#129680;</div><div class="card-lbl">Espacio</div></div>
-        <div class="option-card" data-val="personalizado" onclick="pick(this,'theme-grid')"><div class="card-icon">&#9999;</div><div class="card-lbl">A medida</div></div>
+  <div id="s2" style="display:none">
+    <h2 class="stitle">La historia</h2>
+    <p class="ssub">Elige el universo en el que vivira esta aventura.</p>
+    <div class="f">
+      <span class="lbl">Tema</span>
+      <div class="grid" id="gtema">
+        <div class="card" data-v="aventura"><div class="ci">&#128506;</div><div class="cl">Aventura</div></div>
+        <div class="card" data-v="fantasia"><div class="ci">&#129498;</div><div class="cl">Fantasia</div></div>
+        <div class="card" data-v="naturaleza"><div class="ci">&#127754;</div><div class="cl">Naturaleza</div></div>
+        <div class="card" data-v="amistad"><div class="ci">&#129309;</div><div class="cl">Amistad</div></div>
+        <div class="card" data-v="espacio"><div class="ci">&#129680;</div><div class="cl">Espacio</div></div>
+        <div class="card" data-v="libre"><div class="ci">&#9999;&#65039;</div><div class="cl">A medida</div></div>
       </div>
     </div>
-    <div id="custom-field" style="display:none" class="field">
-      <label>Describe tu tema</label>
-      <textarea id="custom-theme" placeholder="Cuentanos que tipo de historia quieres..."></textarea>
+    <div class="f" id="ftema" style="display:none">
+      <span class="lbl">Describe tu tema</span>
+      <textarea id="temalib" placeholder="Cuentanos que tipo de historia quieres..."></textarea>
     </div>
-    <div class="field">
-      <label>Personajes adicionales (opcional)</label>
-      <input type="text" id="extra-chars" placeholder="ej. su perro Max, la abuela...">
+    <div class="f">
+      <span class="lbl">Personajes adicionales (opcional)</span>
+      <input type="text" id="extras" placeholder="ej. su perro Max, la abuela...">
     </div>
-    <div class="field">
-      <label>Mensaje o valores (opcional)</label>
-      <input type="text" id="message" placeholder="ej. ser valiente, el poder de la imaginacion...">
+    <div class="f">
+      <span class="lbl">Mensaje o valores (opcional)</span>
+      <input type="text" id="valores" placeholder="ej. ser valiente, la imaginacion...">
     </div>
-    <div class="btn-row">
-      <button class="btn-secondary" onclick="goStep(1)">&larr; Atras</button>
-      <button class="btn-primary" onclick="goStep(3)">Continuar &rarr;</button>
+    <div class="btns">
+      <button class="bs" id="btn2b">&larr; Atras</button>
+      <button class="bp" id="btn2">Continuar &rarr;</button>
     </div>
   </div>
 
-  <!-- STEP 3 -->
-  <div id="step-3" style="display:none">
-    <h2 class="section-title">El libro</h2>
-    <p class="section-sub">Personaliza el formato y el idioma de tu edicion.</p>
-    <div class="field">
-      <label>Idioma</label>
-      <div class="lang-grid" id="lang-grid">
-        <div class="lang-pill selected" data-val="es" onclick="pickLang(this)">Espanol</div>
-        <div class="lang-pill" data-val="en" onclick="pickLang(this)">English</div>
-        <div class="lang-pill" data-val="de" onclick="pickLang(this)">Deutsch</div>
-        <div class="lang-pill" data-val="fr" onclick="pickLang(this)">Francais</div>
-        <div class="lang-pill" data-val="pt" onclick="pickLang(this)">Portugues</div>
+  <div id="s3" style="display:none">
+    <h2 class="stitle">El libro</h2>
+    <p class="ssub">Personaliza el formato y el idioma.</p>
+    <div class="f">
+      <span class="lbl">Idioma</span>
+      <div class="langs" id="gidioma">
+        <div class="lp sel" data-v="es">Espanol</div>
+        <div class="lp" data-v="en">English</div>
+        <div class="lp" data-v="de">Deutsch</div>
+        <div class="lp" data-v="fr">Francais</div>
+        <div class="lp" data-v="pt">Portugues</div>
       </div>
     </div>
-    <div class="field">
-      <label>Estilo de ilustracion</label>
-      <div class="option-grid" id="style-grid">
-        <div class="option-card selected" data-val="acuarela" onclick="pick(this,'style-grid')"><div class="card-icon">&#127912;</div><div class="card-lbl">Acuarela</div><div class="card-sub">Suave y sonador</div></div>
-        <div class="option-card" data-val="cartoon" onclick="pick(this,'style-grid')"><div class="card-icon">&#9999;</div><div class="card-lbl">Cartoon</div><div class="card-sub">Colorido</div></div>
-        <div class="option-card" data-val="clasico" onclick="pick(this,'style-grid')"><div class="card-icon">&#128214;</div><div class="card-lbl">Clasico</div><div class="card-sub">Ilustracion cuento</div></div>
+    <div class="f">
+      <span class="lbl">Estilo de ilustracion</span>
+      <div class="grid" id="gestilo">
+        <div class="card sel" data-v="acuarela"><div class="ci">&#127912;</div><div class="cl">Acuarela</div><div class="cs">Suave</div></div>
+        <div class="card" data-v="cartoon"><div class="ci">&#9999;&#65039;</div><div class="cl">Cartoon</div><div class="cs">Colorido</div></div>
+        <div class="card" data-v="clasico"><div class="ci">&#128214;</div><div class="cl">Clasico</div><div class="cs">Elegante</div></div>
       </div>
     </div>
-    <div class="field">
-      <label>Vista previa del formato</label>
-      <div class="spread-preview">
-        <div class="spread-mock">
-          <div class="spread-img">&#129417;</div>
-          <div class="spread-txt">
-            <div class="sline" style="width:80%"></div>
-            <div class="sline" style="width:90%"></div>
-            <div class="sline" style="width:60%"></div>
-            <div class="sline" style="width:80%"></div>
+    <div class="f">
+      <span class="lbl">Vista previa del formato</span>
+      <div class="preview">
+        <div class="pmock">
+          <div class="pimg">&#129417;</div>
+          <div class="ptxt">
+            <div class="pl" style="width:80%"></div>
+            <div class="pl" style="width:90%"></div>
+            <div class="pl" style="width:60%"></div>
+            <div class="pl" style="width:75%"></div>
           </div>
         </div>
-        <div class="spread-caption">Spread doble - Imagen continua + texto - 20x20 cm tapa dura</div>
+        <div class="pcap">Spread doble 20x20 cm - Imagen + texto - Tapa dura</div>
       </div>
     </div>
-    <div class="field">
-      <label>Email para recibir el PDF</label>
+    <div class="f">
+      <span class="lbl">Email para recibir el PDF</span>
       <input type="email" id="email" placeholder="tu@email.com">
     </div>
-    <div class="btn-row">
-      <button class="btn-secondary" onclick="goStep(2)">&larr; Atras</button>
-      <button class="btn-primary" onclick="goStep(4)">Revisar pedido &rarr;</button>
+    <div class="btns">
+      <button class="bs" id="btn3b">&larr; Atras</button>
+      <button class="bp" id="btn3">Revisar pedido &rarr;</button>
     </div>
   </div>
 
-  <!-- STEP 4 -->
-  <div id="step-4" style="display:none">
-    <h2 class="section-title">Revisa tu pedido</h2>
-    <p class="section-sub">Comprueba los detalles antes de generar tu cuento.</p>
-    <div class="summary-box">
+  <div id="s4" style="display:none">
+    <h2 class="stitle">Revisa tu pedido</h2>
+    <p class="ssub">Comprueba los detalles antes de generar tu cuento.</p>
+    <div class="sumbox">
       <h3>&#10022; Resumen</h3>
-      <div class="srow"><span class="skey">Protagonista</span><span class="sval" id="s-name">-</span></div>
-      <div class="srow"><span class="skey">Edad</span><span class="sval" id="s-age">-</span></div>
-      <div class="srow"><span class="skey">Tema</span><span class="sval" id="s-theme">-</span></div>
-      <div class="srow"><span class="skey">Idioma</span><span class="sval" id="s-lang">-</span></div>
-      <div class="srow"><span class="skey">Estilo</span><span class="sval" id="s-style">-</span></div>
-      <div class="srow"><span class="skey">Formato</span><span class="sval">30 paginas - Tapa dura 20x20 cm - PDF 300dpi</span></div>
-      <div class="srow"><span class="skey">Entrega</span><span class="sval" id="s-email">-</span></div>
+      <div class="sr"><span class="sk">Protagonista</span><span class="sv" id="rn">-</span></div>
+      <div class="sr"><span class="sk">Edad</span><span class="sv" id="re">-</span></div>
+      <div class="sr"><span class="sk">Tema</span><span class="sv" id="rt">-</span></div>
+      <div class="sr"><span class="sk">Idioma</span><span class="sv" id="ri">-</span></div>
+      <div class="sr"><span class="sk">Estilo</span><span class="sv" id="res">-</span></div>
+      <div class="sr"><span class="sk">Formato</span><span class="sv">30 paginas - 20x20 cm - PDF 300dpi</span></div>
+      <div class="sr"><span class="sk">Entrega</span><span class="sv" id="rem">-</span></div>
     </div>
-    <div class="btn-row">
-      <button class="btn-secondary" onclick="goStep(3)">&larr; Editar</button>
-      <button class="btn-primary" onclick="startGen()">&#129417; Generar mi cuento</button>
+    <div class="btns">
+      <button class="bs" id="btn4b">&larr; Editar</button>
+      <button class="bp" id="btn4">&#129417; Generar mi cuento</button>
     </div>
   </div>
 
-  <!-- STATUS -->
-  <div id="status-screen" style="display:none;text-align:center;padding:4rem 2rem">
-    <span class="owl-spin">&#129417;</span>
-    <h2 class="status-title" id="s-title">Escribiendo tu historia...</h2>
-    <p class="status-msg" id="s-msg">Nuestro buho editorial esta dando vida a los personajes</p>
-    <div class="progress-track"><div class="progress-fill" id="p-fill"></div></div>
-    <div class="progress-label" id="p-label">0 / 4 fases</div>
+  <div id="sg" style="display:none">
+    <div class="genbox">
+      <span class="owl">&#129417;</span>
+      <h2 class="gt" id="gt">Escribiendo tu historia...</h2>
+      <p class="gm" id="gm">Nuestro buho editorial esta dando vida a los personajes</p>
+      <div class="ptrack"><div class="pfill" id="pf"></div></div>
+      <div class="plbl" id="pl">0 / 4 fases</div>
+    </div>
   </div>
 
 </div>
@@ -244,100 +241,168 @@ footer{background:var(--ink);padding:1.8rem 2.5rem;text-align:center;color:var(-
 <footer>2026 StoryOwl - Libros que duran toda la vida</footer>
 
 <script>
-var S={name:'',age:'',appearance:'',personality:'',theme:'',customTheme:'',extraChars:'',message:'',lang:'es',style:'acuarela',email:''};
-var LANGS={es:'Espanol',en:'English',de:'Deutsch',fr:'Francais',pt:'Portugues'};
-var THEMES={aventura:'Aventura',fantasia:'Fantasia',naturaleza:'Naturaleza',amistad:'Amistad',espacio:'Espacio',personalizado:'A medida'};
+(function() {
 
-function pick(el,grid){
-  document.querySelectorAll('#'+grid+' .option-card').forEach(function(c){c.classList.remove('selected');});
-  el.classList.add('selected');
-  if(grid==='theme-grid'){S.theme=el.dataset.val;document.getElementById('custom-field').style.display=el.dataset.val==='personalizado'?'block':'none';}
-  if(grid==='style-grid')S.style=el.dataset.val;
-  if(grid==='age-grid')S.age=el.dataset.val;
-}
+  var D = {
+    nombre: '', edad: '', aspecto: '', perso: '',
+    tema: '', temalib: '', extras: '', valores: '',
+    idioma: 'es', estilo: 'acuarela', email: ''
+  };
 
-function pickLang(el){
-  document.querySelectorAll('#lang-grid .lang-pill').forEach(function(p){p.classList.remove('selected');});
-  el.classList.add('selected');
-  S.lang=el.dataset.val;
-}
+  var TEMAS = {aventura:'Aventura',fantasia:'Fantasia',naturaleza:'Naturaleza',amistad:'Amistad',espacio:'Espacio',libre:'A medida'};
+  var IDIOMAS = {es:'Espanol',en:'English',de:'Deutsch',fr:'Francais',pt:'Portugues'};
 
-function collect(){
-  S.name=document.getElementById('child-name').value.trim();
-  S.appearance=document.getElementById('appearance').value.trim();
-  S.personality=document.getElementById('personality').value.trim();
-  S.customTheme=document.getElementById('custom-theme').value.trim();
-  S.extraChars=document.getElementById('extra-chars').value.trim();
-  S.message=document.getElementById('message').value.trim();
-  S.email=document.getElementById('email').value.trim();
-}
-
-function updatePills(n){
-  for(var i=1;i<=4;i++){
-    var p=document.getElementById('pill-'+i);
-    p.classList.remove('active','done');
-    if(i<n)p.classList.add('done');
-    else if(i===n)p.classList.add('active');
+  function show(id) {
+    var ids = ['s1','s2','s3','s4','sg'];
+    for (var i = 0; i < ids.length; i++) {
+      var el = document.getElementById(ids[i]);
+      if (el) el.style.display = ids[i] === id ? 'block' : 'none';
+    }
   }
-}
 
-function goStep(n){
-  collect();
-  if(n===2&&!S.name){alert('Escribe el nombre del protagonista');return;}
-  if(n===4){
-    document.getElementById('s-name').textContent=S.name||'-';
-    document.getElementById('s-age').textContent=S.age?S.age+' anos':'-';
-    document.getElementById('s-theme').textContent=THEMES[S.theme]||'-';
-    document.getElementById('s-lang').textContent=LANGS[S.lang];
-    document.getElementById('s-style').textContent=S.style;
-    document.getElementById('s-email').textContent=S.email||'-';
+  function pills(n) {
+    for (var i = 1; i <= 4; i++) {
+      var p = document.getElementById('p' + i);
+      if (!p) continue;
+      p.className = 'sp' + (i < n ? ' done' : i === n ? ' on' : '');
+    }
   }
-  for(var i=1;i<=4;i++){
-    var el=document.getElementById('step-'+i);
-    if(el)el.style.display=i===n?'block':'none';
-  }
-  document.getElementById('status-screen').style.display='none';
-  updatePills(n);
-  window.scrollTo({top:0,behavior:'smooth'});
-}
 
-function startGen(){
-  collect();
-  if(!S.email){alert('Introduce tu email para recibir el PDF');return;}
-  for(var i=1;i<=4;i++){var el=document.getElementById('step-'+i);if(el)el.style.display='none';}
-  document.getElementById('status-screen').style.display='block';
-  window.scrollTo({top:0,behavior:'smooth'});
-  var phases=[
-    {t:'Creando el personaje...',m:'Definiendo la apariencia y voz de '+S.name,p:15},
-    {t:'Escribiendo la historia...',m:'Tejiendo los 30 capitulos de la aventura',p:40},
-    {t:'Generando las ilustraciones...',m:'Pintando 15 spreads dobles a 300 dpi',p:75},
-    {t:'VERSION NUEVA OK',m:'Maquetando el libro en formato 20x20 cm',p:95}
-  ];
-  var phase=0;
-  function next(){
-    if(phase>=phases.length)return;
-    var ph=phases[phase];
-    document.getElementById('s-title').textContent=ph.t;
-    document.getElementById('s-msg').textContent=ph.m;
-    document.getElementById('p-fill').style.width=ph.p+'%';
-    document.getElementById('p-label').textContent=(phase+1)+' / 4 fases';
-    phase++;
-    if(phase<phases.length)setTimeout(next,4000);
+  function go(n) {
+    show('s' + n);
+    pills(n);
+    window.scrollTo(0, 0);
   }
-  next();
-  fetch('/v1/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(S)})
-  .then(function(r){return r.json();})
-  .then(function(){
-    document.getElementById('p-fill').style.width='100%';
-    document.getElementById('s-title').textContent='Tu cuento esta listo!';
-    document.getElementById('s-msg').textContent='Te hemos enviado el PDF a '+S.email;
-    document.getElementById('p-label').textContent='Generacion completa';
-  })
-  .catch(function(){
-    document.getElementById('s-title').textContent='Ups, algo fallo';
-    document.getElementById('s-msg').textContent='Por favor intentalo de nuevo';
+
+  function collect() {
+    D.nombre = document.getElementById('nombre').value.trim();
+    D.aspecto = document.getElementById('aspecto').value.trim();
+    D.perso = document.getElementById('perso').value.trim();
+    D.temalib = document.getElementById('temalib').value.trim();
+    D.extras = document.getElementById('extras').value.trim();
+    D.valores = document.getElementById('valores').value.trim();
+    D.email = document.getElementById('email').value.trim();
+  }
+
+  function setupGrid(gridId, key) {
+    var cards = document.querySelectorAll('#' + gridId + ' .card');
+    for (var i = 0; i < cards.length; i++) {
+      (function(card) {
+        card.addEventListener('click', function() {
+          for (var j = 0; j < cards.length; j++) cards[j].classList.remove('sel');
+          card.classList.add('sel');
+          D[key] = card.getAttribute('data-v');
+          if (key === 'tema') {
+            document.getElementById('ftema').style.display = D.tema === 'libre' ? 'block' : 'none';
+          }
+        });
+      })(cards[i]);
+    }
+  }
+
+  function setupLangs() {
+    var pills = document.querySelectorAll('#gidioma .lp');
+    for (var i = 0; i < pills.length; i++) {
+      (function(p) {
+        p.addEventListener('click', function() {
+          for (var j = 0; j < pills.length; j++) pills[j].classList.remove('sel');
+          p.classList.add('sel');
+          D.idioma = p.getAttribute('data-v');
+        });
+      })(pills[i]);
+    }
+  }
+
+  function fillSummary() {
+    document.getElementById('rn').textContent = D.nombre || '-';
+    document.getElementById('re').textContent = D.edad ? D.edad + ' anos' : '-';
+    document.getElementById('rt').textContent = TEMAS[D.tema] || '-';
+    document.getElementById('ri').textContent = IDIOMAS[D.idioma];
+    document.getElementById('res').textContent = D.estilo;
+    document.getElementById('rem').textContent = D.email || '-';
+  }
+
+  function startGen() {
+    show('sg');
+    window.scrollTo(0, 0);
+
+    var phases = [
+      {t:'Creando el personaje...', m:'Definiendo la apariencia y voz de ' + D.nombre, p:15},
+      {t:'Escribiendo la historia...', m:'Tejiendo los 30 capitulos de la aventura', p:40},
+      {t:'Generando las ilustraciones...', m:'Pintando 15 spreads dobles a 300 dpi', p:75},
+      {t:'Componiendo el PDF...', m:'Maquetando el libro en formato 20x20 cm', p:95}
+    ];
+    var n = 0;
+    function next() {
+      if (n >= phases.length) return;
+      document.getElementById('gt').textContent = phases[n].t;
+      document.getElementById('gm').textContent = phases[n].m;
+      document.getElementById('pf').style.width = phases[n].p + '%';
+      document.getElementById('pl').textContent = (n+1) + ' / 4 fases';
+      n++;
+      if (n < phases.length) setTimeout(next, 4000);
+    }
+    next();
+
+    fetch('/v1/generate', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(D)
+    })
+    .then(function(r) { return r.json(); })
+    .then(function() {
+      document.getElementById('pf').style.width = '100%';
+      document.getElementById('gt').textContent = 'Tu cuento esta listo!';
+      document.getElementById('gm').textContent = 'Te hemos enviado el PDF a ' + D.email;
+      document.getElementById('pl').textContent = 'Generacion completa';
+    })
+    .catch(function() {
+      document.getElementById('gt').textContent = 'Ups, algo fallo';
+      document.getElementById('gm').textContent = 'Por favor intentalo de nuevo';
+    });
+  }
+
+  // Botones
+  document.getElementById('btn1').addEventListener('click', function() {
+    collect();
+    if (!D.nombre) { alert('Escribe el nombre del protagonista'); return; }
+    go(2);
   });
-}
+
+  document.getElementById('btn2b').addEventListener('click', function() { go(1); });
+
+  document.getElementById('btn2').addEventListener('click', function() {
+    collect();
+    go(3);
+  });
+
+  document.getElementById('btn3b').addEventListener('click', function() { go(2); });
+
+  document.getElementById('btn3').addEventListener('click', function() {
+    collect();
+    go(4);
+    fillSummary();
+  });
+
+  document.getElementById('btn4b').addEventListener('click', function() { go(3); });
+
+  document.getElementById('btn4').addEventListener('click', function() {
+    collect();
+    if (!D.email) { alert('Introduce tu email para recibir el PDF'); return; }
+    startGen();
+  });
+
+  // Grids
+  setupGrid('gedad', 'edad');
+  setupGrid('gtema', 'tema');
+  setupGrid('gestilo', 'estilo');
+  setupLangs();
+
+  // Arrancar en step 1
+  show('s1');
+  pills(1);
+
+})();
 </script>
 </body>
 </html>
