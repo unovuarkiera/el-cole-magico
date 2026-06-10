@@ -583,3 +583,136 @@ app.post('/generar-verano', async (req, res) => {
     res.end();
   }
 });
+
+// =============================================
+// V0-DOBLE: GENERADOR LIBRE CON DIBUJO DOBLE (SPREADS)
+// 8 imágenes panorámicas 1536x1024, cada una cubre 2 páginas
+// No toca ninguna ruta existente
+// =============================================
+
+app.post('/generar-cuento-doble', async (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
+  const send = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
+
+  try {
+    const { nombre, edad, tema, personaje, opciones, estilo, dedicatoriaPersonal, idioma } = req.body;
+    const id = Date.now();
+
+    const genero = opciones?.genero || 'protagonista';
+    const piel = opciones?.piel || 'light, fair skin';
+    const pelo = opciones?.pelo || 'brown';
+    const tipopelo = opciones?.tipopelo || 'straight';
+    const ojos = opciones?.ojos || 'brown';
+    const gafas = opciones?.gafas || 'without glasses';
+    const pecas = opciones?.pecas || '';
+    const estiloIlustracion = estilo || 'Pixar CGI quality, 3D animation style, vibrant and detailed';
+    const estiloBase = `${estiloIlustracion}, family-friendly children's book illustration, cheerful and safe for children, warm lighting`;
+
+    const LANG_NAMES = { es:'Spanish', en:'English', de:'German', fr:'French', pt:'Portuguese' };
+    const idiomaCuento = LANG_NAMES[idioma] || 'Spanish';
+
+    const protagonistaDesc = `a ${edad}-year-old ${genero} named ${nombre} with ${tipopelo} ${pelo} hair, ${ojos} eyes, ${piel}, ${gafas}${pecas ? ', ' + pecas : ''}, always wearing a yellow t-shirt and blue dungarees`;
+
+    send({ tipo: 'estado', mensaje: '🦉 El búho está creando los personajes...' });
+
+    const anthropic = new Anthropic({ apiKey: ANTHROPIC_KEY });
+
+    // PASO 1: descripción visual fija del personaje secundario
+    const msgPersonaje = await anthropic.messages.create({
+      model: 'claude-sonnet-4-5',
+      max_tokens: 300,
+      messages: [{ role: 'user', content: `Genera una descripción visual detallada y consistente en inglés para este personaje de cuento infantil: "${personaje}".
+La descripción debe incluir: colores exactos, ropa o características físicas fijas, rasgos distintivos.
+Debe ser suficientemente detallada para que un generador de imágenes lo dibuje IGUAL en todas las ilustraciones.
+Responde SOLO con la descripción en inglés, sin explicaciones, máximo 40 palabras.` }]
+    });
+
+    const personajeDesc = msgPersonaje.content[0].text.trim();
+
+    send({ tipo: 'estado', mensaje: '🦉 El búho está escribiendo el cuento...' });
+
+    // PASO 2: Claude genera el cuento en 8 spreads (16 páginas)
+    const msg = await anthropic.messages.create({
+      model: 'claude-sonnet-4-5',
+      max_tokens: 5000,
+      messages: [{ role: 'user', content: `You are an expert children's book author. Write a magical story in ${idiomaCuento}.
+Main character: ${nombre}, ${edad} years old, ${genero}
+Special character: ${personaje}
+Theme: ${tema}
+Language level: adapted for a ${edad}-year-old child — short sentences, simple vocabulary, 2-4 sentences per page maximum.
+
+The story is told in 8 DOUBLE-PAGE SPREADS (16 pages total). Each spread has a LEFT page and a RIGHT page, and ONE single panoramic illustration that covers BOTH pages seamlessly. Narrative arc: introduction (spreads 1-2), development (spreads 3-6), climax (spread 7), resolution (spread 8).
+
+The "escena" field describes ONE wide panoramic scene in English: what happens on the LEFT side and what happens on the RIGHT side, with a seamlessly connected background. No split frames, no borders — one continuous landscape illustration.
+
+RESPOND ONLY WITH VALID JSON. No text before or after. No backticks. No apostrophes inside string values (rephrase to avoid them). Use only double quotes. All "titulo" and "texto" must be in ${idiomaCuento}. The "escena" field must always be in English.
+
+{"titulo":"poetic title in ${idiomaCuento}","dedicatoria":"emotional dedication for ${nombre} in ${idiomaCuento}","spreads":[
+{"spread":1,"titulo_izq":"...","texto_izq":"...","titulo_der":"...","texto_der":"...","escena":"wide panoramic scene in English: left side ... right side ... seamlessly connected background"},
+{"spread":2,"titulo_izq":"...","texto_izq":"...","titulo_der":"...","texto_der":"...","escena":"..."},
+{"spread":3,"titulo_izq":"...","texto_izq":"...","titulo_der":"...","texto_der":"...","escena":"..."},
+{"spread":4,"titulo_izq":"...","texto_izq":"...","titulo_der":"...","texto_der":"...","escena":"..."},
+{"spread":5,"titulo_izq":"...","texto_izq":"...","titulo_der":"...","texto_der":"...","escena":"..."},
+{"spread":6,"titulo_izq":"...","texto_izq":"...","titulo_der":"...","texto_der":"...","escena":"..."},
+{"spread":7,"titulo_izq":"...","texto_izq":"...","titulo_der":"...","texto_der":"...","escena":"..."},
+{"spread":8,"titulo_izq":"...","texto_izq":"...","titulo_der":"...","texto_der":"...","escena":"..."}
+]}` }]
+    });
+
+    const text = msg.content[0].text.trim();
+    const match = text.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('No JSON encontrado en respuesta de Claude');
+    let cuento;
+    try {
+      cuento = JSON.parse(match[0]);
+    } catch(e) {
+      const cleaned = match[0]
+        .replace(/[\u0000-\u001F\u007F]/g, ' ')
+        .replace(/,\s*([}\]])/g, '$1');
+      cuento = JSON.parse(cleaned);
+    }
+
+    send({ tipo: 'cuento', titulo: cuento.titulo, dedicatoria: cuento.dedicatoria });
+
+    // PASO 3: Portada vertical 1024x1536 (igual que V0)
+    send({ tipo: 'estado', mensaje: '🎨 Generando portada...' });
+    try {
+      const portadaUrl = await generarImagen(
+        `${estiloBase}. Book cover: ${protagonistaDesc} with ${personajeDesc} in a magical glowing forest at sunset. Spanish title text: "${cuento.titulo}". Professional children's book cover, portrait format.`,
+        '1024x1536', `portadad_${id}.png`
+      );
+      send({ tipo: 'imagen', url: portadaUrl });
+    } catch (e) {
+      console.error('Error portada:', e.message);
+      send({ tipo: 'imagen', url: '' });
+    }
+
+    // PASO 4: 8 dibujos dobles panorámicos 1536x1024
+    for (const sp of cuento.spreads) {
+      send({ tipo: 'estado', mensaje: `🎨 Generando dibujo doble ${sp.spread} de 8...` });
+      let imgUrl = '';
+      try {
+        imgUrl = await generarImagen(
+          `${estiloBase}. ${protagonistaDesc} and ${personajeDesc}. Wide panoramic double-page book illustration, one single continuous scene spanning the full width, seamlessly connected background, no split frames, no borders, keep main characters and faces away from the exact horizontal center. Scene: ${sp.escena}. Consistent character design throughout the book.`,
+          '1536x1024', `spread_${id}_${sp.spread}.png`
+        );
+      } catch (e) {
+        console.error(`Error dibujo doble ${sp.spread}:`, e.message);
+      }
+      const numIzq = sp.spread * 2 - 1;
+      const numDer = sp.spread * 2;
+      send({ tipo: 'pagina', numero: numIzq, titulo: sp.titulo_izq, texto: sp.texto_izq, url: imgUrl, mitad: 'izq' });
+      send({ tipo: 'pagina', numero: numDer, titulo: sp.titulo_der, texto: sp.texto_der, url: imgUrl, mitad: 'der' });
+    }
+
+    send({ tipo: 'completado', dedicatoriaPersonal: dedicatoriaPersonal || '', nombre, fecha: new Date().toLocaleDateString('es-ES', {day:'numeric', month:'long', year:'numeric'}) });
+    res.end();
+
+  } catch (err) {
+    send({ tipo: 'error', mensaje: err.message });
+    res.end();
+  }
+});

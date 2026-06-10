@@ -1,0 +1,1836 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>StoryOwl — Crear cuento personalizado</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --purple:#3a2070;--purple-l:#6b3fa8;--gold:#f7c94b;--gold-d:#e5a800;
+  --cream:#fffdf7;--dark:#1a0f30;--muted:#7a6a9a;--teal:#0ea5a0;--teal-l:#2dd4bf;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--dark);overflow-x:hidden;}
+
+/* ── SELECTOR DE IDIOMA ── */
+.hero-nav{position:absolute;top:18px;left:0;right:0;display:flex;align-items:center;
+  justify-content:space-between;padding:0 24px;z-index:10;}
+.lang-selector{position:relative;display:inline-flex;align-items:center;}
+.lang-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  border-radius:20px;padding:6px 14px;color:white;font-size:13px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;font-family:'Nunito',sans-serif;}
+.lang-btn:hover{background:rgba(255,255,255,.18);}
+.lang-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#1a0840;
+  border:1px solid rgba(255,255,255,.15);border-radius:14px;overflow:hidden;
+  box-shadow:0 12px 40px rgba(0,0,0,.4);z-index:999;min-width:140px;display:none;}
+.lang-dropdown.open{display:block;}
+.lang-option{padding:10px 16px;cursor:pointer;font-size:14px;font-weight:700;color:rgba(255,255,255,.7);
+  transition:all .15s;display:flex;align-items:center;gap:8px;font-family:'Nunito',sans-serif;}
+.lang-option:hover{background:rgba(255,255,255,.08);color:white;}
+.lang-option.active{color:#f7c94b;}
+/* HERO */
+.hero{background:linear-gradient(150deg,#0d1a40 0%,#2a1060 50%,#0d1a40 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;text-align:center;position:relative;overflow:hidden;}
+.stars{position:absolute;inset:0;pointer-events:none;}
+.star{position:absolute;background:white;border-radius:50%;animation:twinkle var(--d) var(--dl) infinite alternate;}
+@keyframes twinkle{from{opacity:.1;transform:scale(.7)}to{opacity:.9;transform:scale(1.3)}}
+.owl-emoji{font-size:72px;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 0 24px rgba(107,63,168,.6));margin-bottom:12px;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.hero h1{font-family:'Fraunces',serif;font-size:clamp(32px,6vw,64px);font-weight:900;color:white;line-height:1.1;margin-bottom:10px;}
+.hero h1 em{font-style:italic;color:var(--gold);display:block;}
+.hero p{font-size:17px;color:rgba(255,255,255,.7);max-width:500px;}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,.45);font-size:13px;text-decoration:none;margin-top:20px;transition:color .2s;}
+.back-link:hover{color:white;}
+
+/* FORM */
+.form-section{padding:64px 24px;max-width:780px;margin:0 auto;}
+.form-title{font-family:'Fraunces',serif;font-size:34px;font-weight:900;color:var(--purple);text-align:center;margin-bottom:6px;}
+.form-title em{font-style:italic;color:var(--teal);}
+.form-sub{text-align:center;color:var(--muted);font-size:16px;margin-bottom:44px;}
+.form-card{background:white;border-radius:28px;padding:44px;box-shadow:0 8px 40px rgba(58,32,112,.09);}
+.section-label{font-weight:800;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--purple);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.section-label::after{content:'';flex:1;height:1px;background:rgba(58,32,112,.1);}
+.field{margin-bottom:26px;}
+.label{display:block;font-weight:800;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--purple);margin-bottom:10px;}
+.input{width:100%;padding:13px 17px;border:2px solid rgba(58,32,112,.12);border-radius:14px;font-family:'Nunito',sans-serif;font-size:16px;color:var(--dark);background:var(--cream);outline:none;transition:border-color .2s;}
+.input:focus{border-color:var(--purple-l);}
+.input::placeholder{color:rgba(26,15,48,.3);}
+.btn-group{display:flex;flex-wrap:wrap;gap:10px;}
+.opt-btn{padding:10px 18px;border-radius:20px;border:2px solid rgba(58,32,112,.15);background:white;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s;}
+.opt-btn:hover{border-color:var(--purple-l);color:var(--purple);}
+.opt-btn.active{background:var(--purple);border-color:var(--purple);color:white;}
+.color-group{display:flex;flex-wrap:wrap;gap:10px;}
+.color-btn{width:40px;height:40px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:all .2s;position:relative;}
+.color-btn:hover{transform:scale(1.1);}
+.color-btn.active{border-color:var(--purple);box-shadow:0 0 0 3px rgba(58,32,112,.2);transform:scale(1.15);}
+.color-btn .check{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;opacity:0;}
+.color-btn.active .check{opacity:1;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.style-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;}
+.style-card{border:2px solid rgba(58,32,112,.12);border-radius:16px;padding:16px 12px;text-align:center;cursor:pointer;transition:all .2s;background:white;}
+.style-card:hover{border-color:var(--purple-l);}
+.style-card.active{border-color:var(--teal);background:rgba(14,165,160,.05);}
+.style-icon{font-size:30px;margin-bottom:6px;}
+.style-name{font-weight:800;font-size:13px;color:var(--dark);}
+.style-desc{font-size:11px;color:var(--muted);margin-top:3px;}
+.edad-display{font-family:'Fraunces',serif;font-size:64px;font-weight:900;color:var(--teal);text-align:center;margin-bottom:2px;line-height:1;}
+.edad-sub{text-align:center;color:var(--muted);font-size:13px;margin-bottom:14px;}
+input[type=range]{width:100%;accent-color:var(--teal);height:6px;border-radius:3px;}
+.btn-generate{width:100%;padding:20px;background:linear-gradient(135deg,var(--teal-l),var(--teal));color:white;font-family:'Fraunces',serif;font-size:22px;font-weight:900;border:none;border-radius:16px;cursor:pointer;margin-top:8px;box-shadow:0 8px 30px rgba(14,165,160,.3);transition:all .3s;}
+.btn-generate:hover:not(:disabled){transform:translateY(-2px);}
+.btn-generate:disabled{opacity:.5;cursor:not-allowed;}
+
+/* BOOK */
+.book-section{display:none;padding:60px 24px;max-width:700px;margin:0 auto;}
+.book-header{text-align:center;margin-bottom:44px;}
+.book-title{font-family:'Fraunces',serif;font-size:clamp(26px,5vw,48px);font-weight:900;color:var(--purple);line-height:1.1;margin-bottom:8px;}
+.book-ded{font-family:'Fraunces',serif;font-style:italic;font-size:17px;color:var(--muted);}
+.cover-img{width:100%;max-width:340px;border-radius:20px;box-shadow:0 20px 60px rgba(107,63,168,.22);display:block;margin:0 auto 44px;}
+.page{background:white;border-radius:22px;overflow:hidden;margin-bottom:28px;box-shadow:0 4px 24px rgba(58,32,112,.08);opacity:0;transform:translateY(20px);transition:all .5s;}
+.page.visible{opacity:1;transform:translateY(0);}
+.page-img{width:100%;aspect-ratio:2/3;object-fit:cover;}
+.page-body{padding:22px 26px 26px;background:linear-gradient(135deg,#f0fbfa,#f5f0ff);}
+.page-num{font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--teal);margin-bottom:4px;}
+.page-title{font-family:'Fraunces',serif;font-size:19px;font-style:italic;color:var(--purple);margin-bottom:8px;}
+.page-text{font-size:15px;line-height:1.8;color:#3a3050;}
+.end-section{text-align:center;padding:40px 0 80px;}
+.end-icon{font-size:48px;margin-bottom:14px;display:block;}
+.end-title{font-family:'Fraunces',serif;font-size:26px;color:var(--purple);margin-bottom:22px;}
+.btn-dl{background:linear-gradient(135deg,var(--teal-l),var(--teal));color:white;font-family:'Fraunces',serif;font-weight:900;font-size:18px;padding:16px 40px;border-radius:50px;border:none;cursor:pointer;transition:all .25s;box-shadow:0 6px 24px rgba(14,165,160,.3);}
+.btn-dl:hover{transform:translateY(-2px);}
+.btn-dl:disabled{opacity:.5;cursor:not-allowed;}
+.btn-nuevo{background:var(--purple);color:white;font-family:'Fraunces',serif;font-weight:700;font-size:17px;padding:15px 36px;border-radius:50px;border:none;cursor:pointer;transition:all .25s;}
+.btn-nuevo:hover{background:var(--purple-l);transform:translateY(-2px);}
+
+/* ── FLIPBOOK ─────────────────────────────────────────── */
+#flipbookSection{display:none;padding:40px 16px 80px;background:radial-gradient(ellipse at 50% 0%,#1a0840 0%,#080318 60%);}
+.flipbook-title{text-align:center;font-family:'Fraunces',serif;font-size:clamp(20px,4vw,36px);font-weight:900;color:white;margin-bottom:4px;}
+.flipbook-subtitle{text-align:center;font-size:13px;color:rgba(255,255,255,.38);margin-bottom:28px;letter-spacing:1px;}
+
+/* ── PORTADA CERRADA ── */
+.book-closed{position:relative;max-width:300px;margin:0 auto;cursor:pointer;
+  filter:drop-shadow(-12px 20px 40px rgba(0,0,0,.75));}
+.book-closed:hover .book-closed-img{transform:scale(1.02) rotateY(-2deg);}
+.book-closed-img{width:100%;border-radius:4px 14px 14px 4px;display:block;transition:transform .4s ease;
+  box-shadow:-8px 12px 40px rgba(0,0,0,.7),4px 0 12px rgba(0,0,0,.4);}
+.book-closed-overlay{position:absolute;inset:0;border-radius:4px 14px 14px 4px;
+  background:linear-gradient(160deg,rgba(255,255,255,.06) 0%,transparent 40%,rgba(0,0,0,.2) 100%);}
+.watermark-overlay{position:absolute;inset:0;pointer-events:none;z-index:10;overflow:hidden;border-radius:inherit;}
+.watermark-overlay::before{content:'PREVIEW · StoryOwl · PREVIEW · StoryOwl';
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);
+  font-family:'Fraunces',serif;font-size:clamp(12px,2vw,16px);font-weight:900;
+  color:rgba(255,255,255,0.15);letter-spacing:3px;white-space:nowrap;user-select:none;width:200%;text-align:center;}
+.watermark-overlay::after{content:'🦉 storyowl.com';position:absolute;bottom:10px;right:14px;
+  font-size:10px;color:rgba(255,255,255,.25);font-weight:700;user-select:none;}
+.cover-title-panel{position:absolute;bottom:0;left:0;right:0;padding:18px 16px 22px;
+  background:linear-gradient(0deg,rgba(6,2,16,.98) 0%,rgba(6,2,16,.55) 70%,transparent 100%);
+  text-align:center;border-radius:0 0 14px 14px;}
+.cover-title-text{font-family:'Fraunces',serif;font-size:clamp(12px,2vw,16px);font-weight:900;
+  color:white;text-shadow:0 2px 8px rgba(0,0,0,.9);line-height:1.25;}
+.cover-brand-text{font-size:10px;color:rgba(247,201,75,.65);font-weight:700;letter-spacing:2px;margin-top:5px;}
+
+/* Botón abrir libro */
+.btn-open-book{display:block;margin:22px auto 0;background:linear-gradient(135deg,#f7c94b,#e5a800);
+  color:#1a0840;font-family:'Fraunces',serif;font-weight:900;font-size:16px;padding:13px 36px;
+  border-radius:50px;border:none;cursor:pointer;box-shadow:0 6px 24px rgba(247,201,75,.35);
+  transition:all .25s;animation:pulse-cta 2s ease-in-out infinite;}
+@keyframes pulse-cta{0%,100%{box-shadow:0 6px 24px rgba(247,201,75,.35)}50%{box-shadow:0 8px 32px rgba(247,201,75,.6)}}
+.btn-open-book:hover{transform:translateY(-3px);}
+
+/* ── LIBRO ABIERTO ── */
+@keyframes openBook{0%{opacity:0;transform:scale(.94)}100%{opacity:1;transform:scale(1)}}
+
+/* Controles */
+.flipbook-controls{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:20px;}
+.flip-btn{width:50px;height:50px;border-radius:50%;border:2px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.06);color:white;font-size:22px;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);}
+.flip-btn:hover:not(:disabled){background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.38);transform:scale(1.1);}
+.flip-btn:disabled{opacity:.2;cursor:not-allowed;}
+.flip-counter{font-family:'Fraunces',serif;font-size:14px;color:rgba(255,255,255,.5);min-width:80px;text-align:center;}
+
+/* ── BOOK VIEWER — doble página en desktop, simple en móvil ── */
+
+/* Contenedor general: flex column para que dots queden pegados al libro */
+.book-viewer-wrap{display:flex;flex-direction:column;align-items:center;max-width:860px;margin:0 auto;}
+
+/* El libro en sí */
+.book-viewer{position:relative;width:100%;
+  box-shadow:0 40px 80px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.05);
+  border-radius:8px 14px 14px 8px;overflow:hidden;}
+
+/* Dots: siempre centrados debajo del libro, mismo ancho */
+.flip-dots{display:flex;gap:6px;align-items:center;flex-wrap:wrap;
+  justify-content:center;width:100%;margin:14px 0 20px;padding:0;}
+.flip-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.18);
+  transition:all .3s;cursor:pointer;flex-shrink:0;}
+.flip-dot.active{background:#f7c94b;transform:scale(1.6);}
+
+/* Vista doble — desktop */
+.book-double{display:flex;gap:0;width:100%;}
+.book-page-left,.book-page-right{flex:1;position:relative;background:#080318;overflow:hidden;
+  display:flex;flex-direction:column;}
+.book-page-left > *,.book-page-right > *{flex:1;}
+.book-page-left{border-radius:8px 0 0 8px;box-shadow:inset -6px 0 18px rgba(0,0,0,.4);}
+.book-page-right{border-radius:0 14px 14px 0;box-shadow:inset 6px 0 18px rgba(0,0,0,.4);}
+.book-spine{width:6px;flex-shrink:0;background:linear-gradient(90deg,#08031a,#1a0840,#08031a);}
+
+/* Vista simple — móvil */
+.book-single{display:none;position:relative;background:#080318;border-radius:8px;}
+
+/* Página individual: imagen + texto */
+.fp-page{position:relative;width:100%;background:#080318;}
+.fp-page img{width:100%;height:auto;display:block;object-fit:contain;max-height:none;}
+.fp-wm{position:absolute;inset:0;pointer-events:none;z-index:8;overflow:hidden;}
+.fp-wm::before{
+  content:var(--wm-text,'Vista previa · StoryOwl · Vista previa · StoryOwl · Vista previa · StoryOwl');
+  position:absolute;top:40%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);
+  font-family:'Fraunces',serif;font-size:clamp(11px,1.8vw,17px);font-weight:900;
+  color:rgba(255,255,255,0.22);letter-spacing:4px;white-space:nowrap;
+  user-select:none;width:220%;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.4);}
+.fp-wm::after{
+  content:var(--wm-footer,'🦉 storyowl.com · Vista previa · 🦉 storyowl.com · Vista previa · 🦉');
+  position:absolute;bottom:0;left:0;right:0;
+  padding:6px 0;text-align:center;
+  font-size:clamp(9px,1.2vw,13px);color:rgba(255,255,255,.28);
+  font-weight:800;letter-spacing:2px;user-select:none;
+  background:linear-gradient(0deg,rgba(0,0,0,.35) 0%,transparent 100%);}
+.fp-text{position:absolute;bottom:0;left:0;right:0;
+  padding:8px 14px 14px;
+  background:linear-gradient(0deg,rgba(4,1,12,.97) 0%,rgba(4,1,12,.75) 50%,transparent 100%);z-index:6;}
+.fp-num{font-size:8px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#b88000;margin-bottom:2px;}
+.fp-title{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(9px,1.3vw,13px);
+  color:#c084fc;margin-bottom:3px;line-height:1.2;}
+.fp-body{font-size:clamp(8px,1.1vw,12px);color:rgba(255,255,255,.75);line-height:1.5;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;}
+
+/* Dedicatoria en visor */
+.fp-ded{width:100%;background:linear-gradient(160deg,#fff9f0,#fdf4ff);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 24px;text-align:center;min-height:420px;flex:1;}
+.fp-ded-para{font-family:'Fraunces',serif;font-size:clamp(16px,2vw,22px);font-style:italic;color:#9b6fd8;margin-bottom:8px;}
+.fp-ded-nombre{font-family:'Fraunces',serif;font-size:clamp(22px,3.5vw,38px);font-weight:900;color:#3a2070;margin-bottom:16px;}
+.fp-ded-texto{font-size:clamp(12px,1.4vw,15px);color:#5a3880;font-style:italic;line-height:1.8;max-width:260px;}
+.fp-ded-line{width:50px;height:2px;background:rgba(247,201,75,.5);margin:18px auto 0;}
+
+/* Página portada */
+.fp-cover-panel{position:absolute;bottom:0;left:0;right:0;padding:16px;
+  background:linear-gradient(0deg,rgba(4,1,12,.97) 0%,rgba(4,1,12,.5) 70%,transparent 100%);
+  text-align:center;z-index:6;}
+.fp-cover-title{font-family:'Fraunces',serif;font-size:clamp(11px,1.8vw,17px);font-weight:900;
+  color:white;text-shadow:0 2px 10px rgba(0,0,0,.9);line-height:1.2;}
+.fp-cover-brand{font-size:9px;color:rgba(247,201,75,.65);font-weight:700;letter-spacing:2px;margin-top:4px;}
+
+/* Páginas especiales FIN / contraportada — página completa como las demás */
+.fp-special{width:100%;min-height:420px;display:flex;align-items:center;
+  justify-content:center;text-align:center;padding:40px;box-sizing:border-box;}
+.fp-fin{background:linear-gradient(160deg,#0d0820,#160a35);}
+.fp-fin-icon{font-size:48px;margin-bottom:14px;}
+.fp-fin-title{font-family:'Fraunces',serif;font-size:clamp(26px,4vw,44px);font-weight:900;color:white;margin-bottom:10px;}
+.fp-fin-sub{font-size:13px;color:rgba(255,255,255,.5);line-height:1.7;}
+.fp-back{background:linear-gradient(160deg,#0d0820,#1a0840);}
+.fp-back-icon{font-size:36px;margin-bottom:14px;opacity:.8;}
+.fp-back-phrase{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(14px,1.8vw,19px);
+  color:rgba(255,255,255,.78);line-height:1.7;margin-bottom:16px;max-width:260px;}
+.fp-back-line{width:46px;height:2px;background:rgba(247,201,75,.4);margin:0 auto 12px;}
+.fp-back-brand{font-size:11px;color:rgba(247,201,75,.5);font-weight:700;letter-spacing:2px;}
+
+/* Skeleton */
+.fp-skeleton{width:100%;min-height:400px;
+  background:linear-gradient(90deg,#0d0820 25%,#1a0840 50%,#0d0820 75%);
+  background-size:200% 100%;animation:skelshimmer 1.5s infinite;}
+@keyframes skelshimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* Animación flip */
+.fp-flip{animation:fpFlip .4s cubic-bezier(.4,0,.2,1);}
+@keyframes fpFlip{0%{opacity:1;transform:scale(1)}40%{opacity:0;transform:scale(.97)}100%{opacity:1;transform:scale(1)}}
+
+/* Skeleton portada cerrada */
+.flip-skeleton{width:100%;min-height:440px;border-radius:4px 14px 14px 4px;
+  background:linear-gradient(90deg,#0d0820 25%,#1a0840 50%,#0d0820 75%);
+  background-size:200% 100%;animation:skelshimmer 1.5s infinite;}
+
+/* Responsive */
+@media(max-width:640px){
+  .book-double{display:none!important;}
+  .book-single{display:block!important;}
+  .fp-body{-webkit-line-clamp:3;}
+  .fp-special{min-height:320px;}
+}
+@media(min-width:641px){
+  .book-double{display:flex!important;}
+  .book-single{display:none!important;}
+}
+
+/* CTA */
+.flipbook-cta{text-align:center;padding:0 16px;}
+.flipbook-cta-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+  border-radius:24px;padding:36px 28px;max-width:460px;margin:0 auto;backdrop-filter:blur(12px);}
+.flipbook-cta-icon{font-size:46px;margin-bottom:12px;}
+.flipbook-cta-title{font-family:'Fraunces',serif;font-size:24px;color:white;margin-bottom:8px;}
+.flipbook-cta-sub{font-size:14px;color:rgba(255,255,255,.45);margin-bottom:26px;line-height:1.6;}
+.btn-comprar{background:linear-gradient(135deg,#f7c94b,#e5a800);color:#1a0840;font-family:'Fraunces',serif;
+  font-weight:900;font-size:19px;padding:17px 50px;border-radius:50px;border:none;cursor:pointer;
+  box-shadow:0 8px 32px rgba(247,201,75,.35);transition:all .25s;display:inline-block;}
+.btn-comprar:hover{transform:translateY(-3px);box-shadow:0 14px 44px rgba(247,201,75,.5);}
+.btn-crear-otro{display:block;background:transparent;color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.1);
+  font-size:14px;padding:11px 28px;border-radius:50px;cursor:pointer;margin:12px auto 0;transition:all .2s;font-family:'Nunito',sans-serif;}
+.btn-crear-otro:hover{color:white;border-color:rgba(255,255,255,.28);}
+
+/* Móvil: spread ocupa pantalla completa */
+@media(max-width:600px){
+  .spread-texts{grid-template-columns:1fr;}
+  .spread-text-der{display:none;}
+  .spread-text-izq{padding:8px 12px 14px;}
+  .spread-pbody{-webkit-line-clamp:3;}
+  .spread-img{max-height:280px;}
+  .spread-special{min-height:260px;}
+}
+
+/* Status */
+.generating-indicator{display:flex;align-items:center;gap:10px;padding:14px 18px;background:rgba(14,165,160,.06);border-radius:12px;margin-bottom:14px;font-size:14px;color:var(--muted);border:1px solid rgba(14,165,160,.12);}
+.generating-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);animation:pulse 1s infinite;flex-shrink:0;}
+@keyframes pulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+#progress-bar{position:fixed;top:0;left:0;height:4px;width:0%;background:linear-gradient(90deg,var(--teal),var(--teal-l),var(--teal));background-size:200% 100%;animation:shimmer 2s infinite;z-index:9999;transition:width 0.5s ease;}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+#status-bar{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(13,26,64,.92);backdrop-filter:blur(12px);color:white;padding:12px 24px;border-radius:50px;font-size:14px;font-weight:700;z-index:9998;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);white-space:nowrap;}
+#status-bar .status-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);animation:pulse 1s infinite;flex-shrink:0;}
+
+@media(max-width:600px){.row2{grid-template-columns:1fr}.form-card{padding:26px 18px}.style-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="stars" id="stars"></div>
+  <div class="hero-nav">
+    <a href="/" class="back-link">← Volver a StoryOwl</a>
+    <div class="lang-selector" id="langSelector">
+      <button class="lang-btn" onclick="toggleLang()">
+        <span id="langFlag">🇪🇸</span>
+        <span id="langCode">ES</span>
+        <span style="font-size:10px;opacity:.6">▼</span>
+      </button>
+      <div class="lang-dropdown" id="langDropdown">
+        <div class="lang-option active" onclick="setLang('es')">🇪🇸 Español</div>
+        <div class="lang-option" onclick="setLang('en')">🇬🇧 English</div>
+        <div class="lang-option" onclick="setLang('de')">🇩🇪 Deutsch</div>
+        <div class="lang-option" onclick="setLang('fr')">🇫🇷 Français</div>
+        <div class="lang-option" onclick="setLang('pt')">🇵🇹 Português</div>
+      </div>
+    </div>
+  </div>
+  <div class="owl-emoji">🦉</div>
+  <h1>Cuento<em>a tu medida</em></h1>
+  <p>Tú eliges el protagonista, el tema y el personaje especial. La IA hace el resto.</p>
+  <a href="/index.html" class="back-link">← Volver al inicio</a>
+</section>
+
+<section class="form-section" id="crear">
+  <h2 class="form-title">Diseña tu <em>aventura</em></h2>
+  <p class="form-sub">Personaliza cada detalle — el cuento tardará unos minutos en generarse</p>
+
+  <div class="form-card">
+    <div class="section-label" id="secProtagonista">🦸 El protagonista</div>
+
+    <div class="field">
+      <label class="label" id="lblNombre">¿Cómo se llama?</label>
+      <input class="input" id="nombre" placeholder="Ej: Lucas, Sofía, Martina..."/>
+    </div>
+
+    <div class="field">
+      <label class="label" id="lblEdad">¿Cuántos años tiene?</label>
+      <div class="edad-display" id="edadDisplay">6</div>
+      <div class="edad-sub" id="lblEdadSub">El tono del cuento se adapta a esta edad</div>
+      <input type="range" id="edad" min="1" max="15" value="6" oninput="document.getElementById('edadDisplay').textContent=this.value"/>
+    </div>
+
+    <div class="field">
+      <label class="label" id="lblGenero">Es un...</label>
+      <div class="btn-group">
+        <button class="opt-btn active" id="btnNina" onclick="setOpt(this,'genero','niña')">👧 Niña</button>
+        <button class="opt-btn" id="btnNino" onclick="setOpt(this,'genero','niño')">👦 Niño</button>
+        <button class="opt-btn" onclick="setOpt(this,'genero','protagonista')">🌟 Sorpresa</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label" id="lblPiel">Tono de piel</label>
+      <div class="color-group">
+        <div class="color-btn active" style="background:#FDDBB4" onclick="setColor(this,'piel','light, fair skin')"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#F0C08A" onclick="setColor(this,'piel','medium light skin')"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#C68642" onclick="setColor(this,'piel','medium brown skin')"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#8D5524" onclick="setColor(this,'piel','dark brown skin')"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#4A2912" onclick="setColor(this,'piel','deep dark skin')"><span class="check">✓</span></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label" id="lblPelo">Color de pelo</label>
+      <div class="color-group">
+        <div class="color-btn active" style="background:#F5E6A3" onclick="setColor(this,'pelo','bright blonde')"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#D4A017" onclick="setColor(this,'pelo','golden blonde')"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#A0522D" onclick="setColor(this,'pelo','light brown')"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#6B3A2A" onclick="setColor(this,'pelo','dark brown')"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#1C1C1C" onclick="setColor(this,'pelo','black')"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#C0392B" onclick="setColor(this,'pelo','red')"><span class="check">✓</span></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label" id="lblTipoPelo">Tipo de pelo</label>
+      <div class="btn-group">
+        <button class="opt-btn active" id="btnLiso" onclick="setOpt(this,'tipopelo','straight')">〰️ Liso</button>
+        <button class="opt-btn" id="btnRizado" onclick="setOpt(this,'tipopelo','curly')">🌀 Rizado</button>
+        <button class="opt-btn" id="btnOndulado" onclick="setOpt(this,'tipopelo','wavy')">〜 Ondulado</button>
+        <button class="opt-btn" onclick="setOpt(this,'tipopelo','very short')">✂️ Muy corto</button>
+        <button class="opt-btn" onclick="setOpt(this,'tipopelo','long braided')">💈 Trenzas</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label" id="lblOjos">Color de ojos</label>
+      <div class="color-group">
+        <div class="color-btn active" style="background:#6B4226" onclick="setColor(this,'ojos','brown')"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#4A90D9" onclick="setColor(this,'ojos','blue')"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#2E8B57" onclick="setColor(this,'ojos','green')"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#708090" onclick="setColor(this,'ojos','grey')"><span class="check">✓</span></div>
+        <div class="color-btn" style="background:#1C1C1C" onclick="setColor(this,'ojos','dark black')"><span class="check">✓</span></div>
+      </div>
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label class="label" id="lblGafas">¿Lleva gafas?</label>
+        <div class="btn-group">
+          <button class="opt-btn active" id="btnGafasNo" onclick="setOpt(this,'gafas','without glasses')">😊 No</button>
+          <button class="opt-btn" id="btnGafasSi" onclick="setOpt(this,'gafas','wearing round glasses')">🤓 Sí</button>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label" id="lblPecas">¿Tiene pecas?</label>
+        <div class="btn-group">
+          <button class="opt-btn active" id="btnPecasNo" onclick="setOpt(this,'pecas','')">✨ No</button>
+          <button class="opt-btn" id="btnPecasSi" onclick="setOpt(this,'pecas','with cute freckles on the nose')">🌟 Sí</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label" id="secCuento">✨ El cuento</div>
+
+    <div class="field">
+      <label class="label" id="lblTema">¿De qué trata la aventura?</label>
+      <input class="input" id="tema" placeholder="Ej: encontrar un dragón perdido, salvar el bosque mágico, un viaje al espacio..."/>
+    </div>
+
+    <div class="field">
+      <label class="label" id="lblPersonaje">¿Quién le acompaña? (personaje especial)</label>
+      <input class="input" id="personaje" placeholder="Ej: su perro Toby, una hada traviesa, un robot amigo..."/>
+    </div>
+
+    <div class="section-label" id="secEstilo">🎨 Estilo de ilustración</div>
+    <div class="field">
+      <div class="style-grid">
+        <div class="style-card active" onclick="setEstilo(this,'Pixar CGI quality, 3D animation style, vibrant and detailed')">
+          <div class="style-icon">🎬</div><div class="style-name">Pixar</div><div class="style-desc">3D vivo y colorido</div>
+        </div>
+        <div class="style-card" onclick="setEstilo(this,'soft watercolor illustration style, delicate brushstrokes, pastel colors')">
+          <div class="style-icon">🎨</div><div class="style-name">Acuarela</div><div class="style-desc">Suave y soñador</div>
+        </div>
+        <div class="style-card" onclick="setEstilo(this,'comic book illustration style, bold outlines, flat colors, fun and dynamic')">
+          <div class="style-icon">💥</div><div class="style-name">Cómic</div><div class="style-desc">Dinámico y divertido</div>
+        </div>
+        <div class="style-card" onclick="setEstilo(this,'classic storybook illustration, detailed painted style, warm golden tones')">
+          <div class="style-icon">📖</div><div class="style-name">Clásico</div><div class="style-desc">Cuento tradicional</div>
+        </div>
+        <div class="style-card" onclick="setEstilo(this,'anime manga style illustration, expressive eyes, clean lines, Japanese animation')">
+          <div class="style-icon">⛩️</div><div class="style-name">Manga</div><div class="style-desc">Estilo japonés</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label" id="secDedicatoria" style="margin-top:8px">💌 Dedicatoria personal</div>
+    <div class="field">
+      <label class="label" id="lblDedicatoriaTexto">Palabras para tu peque <span id="lblOpcional" style="color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none;font-size:11px">(opcional)</span></label>
+      <textarea class="input" id="dedicatoriaPersonal" rows="3" placeholder="Ej: Para mi niña Sofía, que llena nuestra vida de magia. Con todo nuestro amor, mamá y papá" style="resize:vertical;font-family:inherit;"></textarea>
+    </div>
+
+    <button class="btn-generate" id="btnGenerar" onclick="generar()">🦉 ¡Crear el cuento!</button>
+  </div>
+
+  <!-- Datos ocultos para el PDF -->
+  <div id="dedicatoriaPersonalTexto" style="display:none"></div>
+  <div id="nombreFinalTexto" style="display:none"></div>
+  <div id="fechaFinalTexto" style="display:none"></div>
+</section>
+
+<!-- Datos ocultos del cuento (para PDF) -->
+<div id="bookSection" style="display:none">
+  <h2 id="bookTitle"></h2>
+  <p id="bookDed"></p>
+  <img id="coverImg" style="display:none"/>
+  <div id="pagesContainer"></div>
+</div>
+
+<!-- FLIPBOOK SECTION -->
+<section id="flipbookSection">
+  <h2 class="flipbook-title" id="flipTitle"></h2>
+  <p class="flipbook-subtitle">Vista previa · Descarga el PDF para la versión completa en alta resolución</p>
+
+  <!-- PORTADA CERRADA (estado inicial) -->
+  <div id="bookClosed" style="text-align:center;padding-bottom:8px;">
+    <div class="book-closed" id="bookClosedInner" onclick="abrirLibro()">
+      <div class="flip-skeleton" id="coverSkeleton" style="min-height:420px;"></div>
+      <img id="coverPreviewImg" src="" alt="Portada"
+           style="display:none;width:100%;border-radius:4px 14px 14px 4px;"
+           oncontextmenu="return false" ondragstart="return false"/>
+      <div class="book-closed-overlay"></div>
+      <div class="watermark-overlay"></div>
+      <div class="cover-title-panel" id="coverTitlePanel" style="display:none">
+        <div class="cover-title-text" id="coverTitleText"></div>
+        <div class="cover-brand-text">🦉 StoryOwl</div>
+      </div>
+    </div>
+    <button class="btn-open-book" id="btnOpenBook" onclick="abrirLibro()" style="display:none">📖 Abrir libro</button>
+  </div>
+
+  <!-- LIBRO ABIERTO -->
+  <div id="bookOpen" style="display:none">
+    <!-- Controles -->
+    <div class="flipbook-controls">
+      <button class="flip-btn" id="flipPrev" onclick="flipPage(-1)" disabled>&#8592;</button>
+      <span class="flip-counter" id="flipCounter">1 / 1</span>
+      <button class="flip-btn" id="flipNext" onclick="flipPage(1)">&#8594;</button>
+    </div>
+
+    <div class="book-viewer-wrap">
+      <div class="book-viewer" id="bookViewer">
+        <!-- Desktop: doble página -->
+        <div class="book-double" id="bookDouble">
+          <div class="book-page-left"  id="pageLeft"></div>
+          <div class="book-spine"></div>
+          <div class="book-page-right" id="pageRight"></div>
+        </div>
+        <!-- Móvil: página única -->
+        <div class="book-single" id="bookSingle">
+          <div id="pageSingle"></div>
+        </div>
+      </div>
+      <!-- Dots justo debajo del libro, centrados -->
+      <div class="flip-dots" id="flipDots"></div>
+    </div>
+  </div>
+
+  <!-- CTA comprar -->
+  <div class="flipbook-cta" id="flipCta" style="display:none">
+    <div class="flipbook-cta-card">
+      <div class="flipbook-cta-icon">🦉</div>
+      <h3 class="flipbook-cta-title">¡Tu cuento está listo!</h3>
+      <p class="flipbook-cta-sub">Descarga el PDF de alta calidad, sin marca de agua, listo para imprimir y regalar.</p>
+      <button class="btn-comprar" id="btnPdf" onclick="descargarPDF()">📄 Descargar PDF</button>
+      <button class="btn-crear-otro" onclick="location.reload()">✨ Crear otro cuento</button>
+    </div>
+  </div>
+</section>
+
+<script>
+// ── Estado ─────────────────────────────────────────────
+let estilo = 'Pixar CGI quality, 3D animation style, vibrant and detailed';
+let opciones = {
+  genero: 'niña', tipopelo: 'straight', gafas: 'without glasses',
+  pecas: '', piel: 'light, fair skin', pelo: 'bright blonde', ojos: 'brown'
+};
+
+// ── MULTIIDIOMA ─────────────────────────────────────────
+let idiomaActual = localStorage.getItem('storyowl_lang') || 'es';
+
+const LANGS = {
+  es: {
+    flag:'🇪🇸', code:'ES',
+    heroTitle:'Crea el cuento', heroEm:'de tu peque',
+    formTitle:'Personaliza', formTitleEm:'el protagonista',
+    formSub:'Cada detalle importa. Así el cuento será realmente suyo.',
+    labelNombre:'Nombre del protagonista', placeholderNombre:'Ej: Sofía, Lucas, Martina...',
+    labelEdad:'Edad',
+    labelGenero:'¿Niño o niña?', btnNino:'👦 Niño', btnNina:'👧 Niña',
+    labelPiel:'Tono de piel',
+    labelPelo:'Color de pelo',
+    labelTipoPelo:'Tipo de pelo', btnLiso:'〰 Liso', btnOndulado:'〜 Ondulado', btnRizado:'✦ Rizado',
+    labelOjos:'Color de ojos',
+    labelGafas:'¿Lleva gafas?', btnGafasNo:'😊 No', btnGafasSi:'🤓 Sí',
+    labelPecas:'¿Tiene pecas?', btnPecasNo:'✨ No', btnPecasSi:'🌟 Sí',
+    labelSeccionCuento:'✨ El cuento',
+    labelTema:'¿De qué trata la aventura?', placeholderTema:'Ej: encontrar un dragón perdido, salvar el bosque mágico...',
+    labelPersonaje:'¿Quién le acompaña? (personaje especial)', placeholderPersonaje:'Ej: su perro Toby, una hada traviesa, un robot amigo...',
+    labelEstilo:'🎨 Estilo de ilustración',
+    labelDedicatoria:'💌 Dedicatoria personal',
+    labelDedicatoriaTexto:'Palabras para tu peque', labelOpcional:'(opcional)',
+    placeholderDedicatoria:'Ej: Para mi niña Sofía, que llena nuestra vida de magia. Con todo nuestro amor, mamá y papá',
+    btnGenerar:'🦉 ¡Crear el cuento!',
+    secProtagonista:'🦸 El protagonista',
+    lblNombre:'¿Cómo se llama?',
+    lblEdad:'¿Cuántos años tiene?',
+    lblEdadSub:'El tono del cuento se adapta a esta edad',
+    lblGenero:'Es un...',
+    lblGeneroSorpresa:'🌟 Sorpresa',
+    lblPiel:'Tono de piel', lblPelo:'Color de pelo',
+    lblTipoPelo:'Tipo de pelo',
+    btnMuyCorto:'✂️ Muy corto', btnTrenzas:'💈 Trenzas',
+    lblOjos:'Color de ojos',
+    lblGafas:'¿Lleva gafas?', lblPecas:'¿Tiene pecas?',
+    secEstilo:'🎨 Estilo de ilustración',
+    secDedicatoria:'💌 Dedicatoria personal',
+    estilos:[
+      {nombre:'Pixar', desc:'3D vivo y colorido'},
+      {nombre:'Acuarela', desc:'Suave y soñador'},
+      {nombre:'Cómic', desc:'Dinámico y divertido'},
+      {nombre:'Clásico', desc:'Cuento tradicional'},
+      {nombre:'Manga', desc:'Estilo japonés'}
+    ],
+    alertNombre:'Escribe el nombre del protagonista',
+    alertTema:'Escribe el tema de la aventura',
+    alertPersonaje:'Escribe el personaje especial',
+    estadoPersonajes:'🦉 El búho está creando los personajes...',
+    estadoCuento:'🦉 El búho está escribiendo el cuento...',
+    estadoPortada:'🎨 Generando portada...',
+    estadoPagina:'🎨 Generando página',
+    estadoDe:'de',
+    ctaListo:'¡Tu cuento está listo!',
+    ctaSub:'Descarga el PDF de alta calidad, sin marca de agua, listo para imprimir y regalar.',
+    btnDescargar:'📄 Descargar PDF',
+    btnCrearOtro:'✨ Crear otro cuento',
+    backLink:'← Volver a StoryOwl',
+    subtituloFlip:'Vista previa · Descarga el PDF para la versión completa en alta resolución',
+    watermark:'Vista previa · StoryOwl · Vista previa · StoryOwl · Vista previa · StoryOwl',
+    watermarkFooter:'🦉 storyowl.com · Vista previa · 🦉 storyowl.com · Vista previa · 🦉',
+    finSub:'Un cuento creado especialmente para',
+    backPhrase:'Que la magia de las historias\nte acompañe siempre.',
+    dedicatoriaPara:'Para',
+    dedicatoriaEscribe:'escribe aquí tu dedicatoria',
+    pdfPagina:'PÁGINA',
+    pdfCreadoPara:'Un cuento creado para',
+    pdfFrase:'Una historia única en el mundo, igual que tú.',
+    pdfContraFrase:'Que la magia de las historias\nte acompañe siempre.',
+  },
+  en: {
+    flag:'🇬🇧', code:'EN',
+    heroTitle:'Create the story', heroEm:'of your little one',
+    formTitle:'Customize', formTitleEm:'the main character',
+    formSub:'Every detail matters. This way the story will truly be theirs.',
+    labelNombre:'Character name', placeholderNombre:'E.g.: Emma, Jack, Lily...',
+    labelEdad:'Age',
+    labelGenero:'Boy or girl?', btnNino:'👦 Boy', btnNina:'👧 Girl',
+    labelPiel:'Skin tone',
+    labelPelo:'Hair color',
+    labelTipoPelo:'Hair type', btnLiso:'〰 Straight', btnOndulado:'〜 Wavy', btnRizado:'✦ Curly',
+    labelOjos:'Eye color',
+    labelGafas:'Wears glasses?', btnGafasNo:'😊 No', btnGafasSi:'🤓 Yes',
+    labelPecas:'Has freckles?', btnPecasNo:'✨ No', btnPecasSi:'🌟 Yes',
+    labelSeccionCuento:'✨ The story',
+    labelTema:'What is the adventure about?', placeholderTema:'E.g.: finding a lost dragon, saving the magic forest, a space journey...',
+    labelPersonaje:'Who joins them? (special character)', placeholderPersonaje:'E.g.: their dog Buddy, a mischievous fairy, a robot friend...',
+    labelEstilo:'🎨 Illustration style',
+    labelDedicatoria:'💌 Personal dedication',
+    labelDedicatoriaTexto:'Words for your little one', labelOpcional:'(optional)',
+    placeholderDedicatoria:'E.g.: For my girl Emma, who fills our lives with magic. With all our love, mum and dad',
+    btnGenerar:'🦉 Create the story!',
+    secProtagonista:'🦸 The character',
+    lblNombre:'What is their name?',
+    lblEdad:'How old are they?',
+    lblEdadSub:'The story tone adapts to this age',
+    lblGenero:'They are a...',
+    lblGeneroSorpresa:'🌟 Surprise',
+    lblPiel:'Skin tone', lblPelo:'Hair color',
+    lblTipoPelo:'Hair type',
+    btnMuyCorto:'✂️ Very short', btnTrenzas:'💈 Braids',
+    lblOjos:'Eye color',
+    lblGafas:'Wears glasses?', lblPecas:'Has freckles?',
+    secEstilo:'🎨 Illustration style',
+    secDedicatoria:'💌 Personal dedication',
+    estilos:[
+      {nombre:'Pixar', desc:'3D vivid & colorful'},
+      {nombre:'Watercolor', desc:'Soft & dreamy'},
+      {nombre:'Comic', desc:'Dynamic & fun'},
+      {nombre:'Classic', desc:'Traditional storybook'},
+      {nombre:'Manga', desc:'Japanese style'}
+    ],
+    alertNombre:'Enter the character\'s name',
+    alertTema:'Enter the adventure theme',
+    alertPersonaje:'Enter the special character',
+    estadoPersonajes:'🦉 The owl is creating the characters...',
+    estadoCuento:'🦉 The owl is writing the story...',
+    estadoPortada:'🎨 Generating cover...',
+    estadoPagina:'🎨 Generating page',
+    estadoDe:'of',
+    ctaListo:'Your story is ready!',
+    ctaSub:'Download the high-quality PDF, watermark-free, ready to print and gift.',
+    btnDescargar:'📄 Download PDF',
+    btnCrearOtro:'✨ Create another story',
+    backLink:'← Back to StoryOwl',
+    subtituloFlip:'Preview · Download the PDF for the full high-resolution version',
+    watermark:'Preview · StoryOwl · Preview · StoryOwl · Preview · StoryOwl',
+    watermarkFooter:'🦉 storyowl.com · Preview · 🦉 storyowl.com · Preview · 🦉',
+    finSub:'A story created especially for',
+    backPhrase:'May the magic of stories\nbe with you always.',
+    dedicatoriaPara:'For',
+    dedicatoriaEscribe:'write your dedication here',
+    pdfPagina:'PAGE',
+    pdfCreadoPara:'A story created for',
+    pdfFrase:'A unique story in the world, just like you.',
+    pdfContraFrase:'May the magic of stories\nbe with you always.',
+  },
+  de: {
+    flag:'🇩🇪', code:'DE',
+    heroTitle:'Erstelle das Buch', heroEm:'für dein Kind',
+    formTitle:'Gestalte', formTitleEm:'die Hauptfigur',
+    formSub:'Jedes Detail zählt. So wird die Geschichte wirklich einzigartig.',
+    labelNombre:'Name der Hauptfigur', placeholderNombre:'Z.B.: Emma, Luca, Mia...',
+    labelEdad:'Alter',
+    labelGenero:'Junge oder Mädchen?', btnNino:'👦 Junge', btnNina:'👧 Mädchen',
+    labelPiel:'Hautton',
+    labelPelo:'Haarfarbe',
+    labelTipoPelo:'Haartyp', btnLiso:'〰 Glatt', btnOndulado:'〜 Wellig', btnRizado:'✦ Lockig',
+    labelOjos:'Augenfarbe',
+    labelGafas:'Trägt Brille?', btnGafasNo:'😊 Nein', btnGafasSi:'🤓 Ja',
+    labelPecas:'Hat Sommersprossen?', btnPecasNo:'✨ Nein', btnPecasSi:'🌟 Ja',
+    labelSeccionCuento:'✨ Die Geschichte',
+    labelTema:'Worum geht es im Abenteuer?', placeholderTema:'Z.B.: einen verlorenen Drachen finden, den Zauberwald retten...',
+    labelPersonaje:'Wer begleitet sie? (besondere Figur)', placeholderPersonaje:'Z.B.: ihr Hund Bello, eine freche Fee, ein Roboterfreund...',
+    labelEstilo:'🎨 Illustrationsstil',
+    labelDedicatoria:'💌 Persönliche Widmung',
+    labelDedicatoriaTexto:'Worte für dein Kind', labelOpcional:'(optional)',
+    placeholderDedicatoria:'Z.B.: Für meine Emma, die unser Leben mit Magie füllt. In Liebe, Mama und Papa',
+    btnGenerar:'🦉 Geschichte erstellen!',
+    secProtagonista:'🦸 Die Figur',
+    lblNombre:'Wie heißt sie/er?',
+    lblEdad:'Wie alt ist sie/er?',
+    lblEdadSub:'Der Ton der Geschichte passt sich dem Alter an',
+    lblGenero:'Es ist ein...',
+    lblGeneroSorpresa:'🌟 Überraschung',
+    lblPiel:'Hautton', lblPelo:'Haarfarbe',
+    lblTipoPelo:'Haartyp',
+    btnMuyCorto:'✂️ Sehr kurz', btnTrenzas:'💈 Zöpfe',
+    lblOjos:'Augenfarbe',
+    lblGafas:'Trägt Brille?', lblPecas:'Hat Sommersprossen?',
+    secEstilo:'🎨 Illustrationsstil',
+    secDedicatoria:'💌 Persönliche Widmung',
+    estilos:[
+      {nombre:'Pixar', desc:'3D lebendig & bunt'},
+      {nombre:'Aquarell', desc:'Sanft & verträumt'},
+      {nombre:'Comic', desc:'Dynamisch & lustig'},
+      {nombre:'Klassisch', desc:'Traditionelles Bilderbuch'},
+      {nombre:'Manga', desc:'Japanischer Stil'}
+    ],
+    alertNombre:'Gib den Namen der Hauptfigur ein',
+    alertTema:'Gib das Abenteuer-Thema ein',
+    alertPersonaje:'Gib die besondere Figur ein',
+    estadoPersonajes:'🦉 Die Eule erstellt die Charaktere...',
+    estadoCuento:'🦉 Die Eule schreibt die Geschichte...',
+    estadoPortada:'🎨 Cover wird erstellt...',
+    estadoPagina:'🎨 Seite wird erstellt',
+    estadoDe:'von',
+    ctaListo:'Dein Buch ist fertig!',
+    ctaSub:'Lade das hochauflösende PDF herunter — ohne Wasserzeichen, druckfertig.',
+    btnDescargar:'📄 PDF herunterladen',
+    btnCrearOtro:'✨ Neue Geschichte erstellen',
+    backLink:'← Zurück zu StoryOwl',
+    subtituloFlip:'Vorschau · PDF für die vollständige hochauflösende Version herunterladen',
+    watermark:'Vorschau · StoryOwl · Vorschau · StoryOwl · Vorschau · StoryOwl',
+    watermarkFooter:'🦉 storyowl.com · Vorschau · 🦉 storyowl.com · Vorschau · 🦉',
+    finSub:'Eine Geschichte, die speziell für',
+    backPhrase:'Möge die Magie der Geschichten\nimmer bei dir sein.',
+    dedicatoriaPara:'Für',
+    dedicatoriaEscribe:'Hier deine Widmung eintragen',
+    pdfPagina:'SEITE',
+    pdfCreadoPara:'Eine Geschichte für',
+    pdfFrase:'Eine einzigartige Geschichte, genau wie du.',
+    pdfContraFrase:'Möge die Magie der Geschichten\nimmer bei dir sein.',
+  },
+  fr: {
+    flag:'🇫🇷', code:'FR',
+    heroTitle:'Crée le livre', heroEm:'de ton enfant',
+    formTitle:'Personnalise', formTitleEm:'le personnage principal',
+    formSub:'Chaque détail compte. Ainsi, l\'histoire sera vraiment la sienne.',
+    labelNombre:'Prénom du personnage', placeholderNombre:'Ex: Emma, Lucas, Chloé...',
+    labelEdad:'Âge',
+    labelGenero:'Garçon ou fille?', btnNino:'👦 Garçon', btnNina:'👧 Fille',
+    labelPiel:'Teint',
+    labelPelo:'Couleur des cheveux',
+    labelTipoPelo:'Type de cheveux', btnLiso:'〰 Lisses', btnOndulado:'〜 Ondulés', btnRizado:'✦ Bouclés',
+    labelOjos:'Couleur des yeux',
+    labelGafas:'Porte des lunettes?', btnGafasNo:'😊 Non', btnGafasSi:'🤓 Oui',
+    labelPecas:'A des taches de rousseur?', btnPecasNo:'✨ Non', btnPecasSi:'🌟 Oui',
+    labelSeccionCuento:'✨ L\'histoire',
+    labelTema:'De quoi parle l\'aventure?', placeholderTema:'Ex: trouver un dragon perdu, sauver la forêt magique...',
+    labelPersonaje:'Qui l\'accompagne? (personnage spécial)', placeholderPersonaje:'Ex: son chien Filou, une fée espiègle, un robot ami...',
+    labelEstilo:'🎨 Style d\'illustration',
+    labelDedicatoria:'💌 Dédicace personnelle',
+    labelDedicatoriaTexto:'Mots pour ton enfant', labelOpcional:'(optionnel)',
+    placeholderDedicatoria:'Ex: Pour ma petite Emma, qui remplit notre vie de magie. Avec tout notre amour, maman et papa',
+    btnGenerar:'🦉 Créer le livre!',
+    secProtagonista:'🦸 Le personnage',
+    lblNombre:"Comment s'appelle-t-il/elle?",
+    lblEdad:"Quel âge a-t-il/elle?",
+    lblEdadSub:"Le ton de l'histoire s'adapte à cet âge",
+    lblGenero:"C'est un...",
+    lblGeneroSorpresa:'🌟 Surprise',
+    lblPiel:'Teint', lblPelo:'Couleur des cheveux',
+    lblTipoPelo:'Type de cheveux',
+    btnMuyCorto:'✂️ Très court', btnTrenzas:'💈 Tresses',
+    lblOjos:'Couleur des yeux',
+    lblGafas:'Porte des lunettes?', lblPecas:"A des taches de rousseur?",
+    secEstilo:"🎨 Style d'illustration",
+    secDedicatoria:'💌 Dédicace personnelle',
+    estilos:[
+      {nombre:'Pixar', desc:'3D vif & coloré'},
+      {nombre:'Aquarelle', desc:'Doux & onirique'},
+      {nombre:'BD', desc:'Dynamique & amusant'},
+      {nombre:'Classique', desc:'Livre traditionnel'},
+      {nombre:'Manga', desc:'Style japonais'}
+    ],
+    alertNombre:'Entre le prénom du personnage',
+    alertTema:'Entre le thème de l\'aventure',
+    alertPersonaje:'Entre le personnage spécial',
+    estadoPersonajes:'🦉 Le hibou crée les personnages...',
+    estadoCuento:'🦉 Le hibou écrit l\'histoire...',
+    estadoPortada:'🎨 Génération de la couverture...',
+    estadoPagina:'🎨 Génération de la page',
+    estadoDe:'sur',
+    ctaListo:'Ton livre est prêt!',
+    ctaSub:'Télécharge le PDF haute qualité, sans filigrane, prêt à imprimer et offrir.',
+    btnDescargar:'📄 Télécharger le PDF',
+    btnCrearOtro:'✨ Créer une autre histoire',
+    backLink:'← Retour à StoryOwl',
+    subtituloFlip:"Aperçu · Téléchargez le PDF pour la version complète en haute résolution",
+    watermark:"Aperçu · StoryOwl · Aperçu · StoryOwl · Aperçu · StoryOwl",
+    watermarkFooter:"🦉 storyowl.com · Aperçu · 🦉 storyowl.com · Aperçu · 🦉",
+    finSub:"Une histoire créée spécialement pour",
+    backPhrase:"Que la magie des histoires\nte soit toujours fidèle.",
+    dedicatoriaPara:'Pour',
+    dedicatoriaEscribe:"écris ta dédicace ici",
+    pdfPagina:'PAGE',
+    pdfCreadoPara:"Une histoire créée pour",
+    pdfFrase:"Une histoire unique au monde, tout comme toi.",
+    pdfContraFrase:"Que la magie des histoires\nte soit toujours fidèle.",
+  },
+  pt: {
+    flag:'🇵🇹', code:'PT',
+    heroTitle:'Crie o livro', heroEm:'do seu pequeno',
+    formTitle:'Personalize', formTitleEm:'o personagem principal',
+    formSub:'Cada detalhe importa. Assim a história será verdadeiramente dele.',
+    labelNombre:'Nome do personagem', placeholderNombre:'Ex: Sofia, Lucas, Ana...',
+    labelEdad:'Idade',
+    labelGenero:'Menino ou menina?', btnNino:'👦 Menino', btnNina:'👧 Menina',
+    labelPiel:'Tom de pele',
+    labelPelo:'Cor do cabelo',
+    labelTipoPelo:'Tipo de cabelo', btnLiso:'〰 Liso', btnOndulado:'〜 Ondulado', btnRizado:'✦ Cacheado',
+    labelOjos:'Cor dos olhos',
+    labelGafas:'Usa óculos?', btnGafasNo:'😊 Não', btnGafasSi:'🤓 Sim',
+    labelPecas:'Tem sardas?', btnPecasNo:'✨ Não', btnPecasSi:'🌟 Sim',
+    labelSeccionCuento:'✨ A história',
+    labelTema:'Sobre o que é a aventura?', placeholderTema:'Ex: encontrar um dragão perdido, salvar a floresta mágica...',
+    labelPersonaje:'Quem o acompanha? (personagem especial)', placeholderPersonaje:'Ex: seu cachorro Rex, uma fada travessa, um robô amigo...',
+    labelEstilo:'🎨 Estilo de ilustração',
+    labelDedicatoria:'💌 Dedicatória pessoal',
+    labelDedicatoriaTexto:'Palavras para o seu pequeno', labelOpcional:'(opcional)',
+    placeholderDedicatoria:'Ex: Para a minha Sofia, que enche a nossa vida de magia. Com todo o nosso amor, mamã e papá',
+    btnGenerar:'🦉 Criar a história!',
+    secProtagonista:'🦸 O personagem',
+    lblNombre:'Como se chama?',
+    lblEdad:'Quantos anos tem?',
+    lblEdadSub:'O tom da história adapta-se a esta idade',
+    lblGenero:'É um...',
+    lblGeneroSorpresa:'🌟 Surpresa',
+    lblPiel:'Tom de pele', lblPelo:'Cor do cabelo',
+    lblTipoPelo:'Tipo de cabelo',
+    btnMuyCorto:'✂️ Muito curto', btnTrenzas:'💈 Tranças',
+    lblOjos:'Cor dos olhos',
+    lblGafas:'Usa óculos?', lblPecas:'Tem sardas?',
+    secEstilo:'🎨 Estilo de ilustração',
+    secDedicatoria:'💌 Dedicatória pessoal',
+    estilos:[
+      {nombre:'Pixar', desc:'3D vivo e colorido'},
+      {nombre:'Aquarela', desc:'Suave e sonhador'},
+      {nombre:'Quadrinhos', desc:'Dinâmico e divertido'},
+      {nombre:'Clássico', desc:'Livro tradicional'},
+      {nombre:'Manga', desc:'Estilo japonês'}
+    ],
+    alertNombre:'Escreve o nome do personagem',
+    alertTema:'Escreve o tema da aventura',
+    alertPersonaje:'Escreve o personagem especial',
+    estadoPersonajes:'🦉 A coruja está a criar os personagens...',
+    estadoCuento:'🦉 A coruja está a escrever a história...',
+    estadoPortada:'🎨 A gerar a capa...',
+    estadoPagina:'🎨 A gerar a página',
+    estadoDe:'de',
+    ctaListo:'O teu livro está pronto!',
+    ctaSub:'Descarrega o PDF de alta qualidade, sem marca de água, pronto para imprimir e oferecer.',
+    btnDescargar:'📄 Descarregar PDF',
+    btnCrearOtro:'✨ Criar outra história',
+    backLink:'← Voltar ao StoryOwl',
+    subtituloFlip:'Pré-visualização · Descarregue o PDF para a versão completa em alta resolução',
+    watermark:'Pré-visualização · StoryOwl · Pré-visualização · StoryOwl · Pré-visualização',
+    watermarkFooter:'🦉 storyowl.com · Pré-visualização · 🦉 storyowl.com · Pré-visualização · 🦉',
+    finSub:'Uma história criada especialmente para',
+    backPhrase:'Que a magia das histórias\nte acompanhe sempre.',
+    dedicatoriaPara:'Para',
+    dedicatoriaEscribe:'escreve aqui a tua dedicatória',
+    pdfPagina:'PÁGINA',
+    pdfCreadoPara:'Uma história criada para',
+    pdfFrase:'Uma história única no mundo, tal como tu.',
+    pdfContraFrase:'Que a magia das histórias\nte acompanhe sempre.',
+  }
+};
+
+// Idioma en inglés de Claude para los prompts del cuento
+const LANG_NAMES = {
+  es: 'Spanish', en: 'English', de: 'German', fr: 'French', pt: 'Portuguese'
+};
+
+function toggleLang() {
+  document.getElementById('langDropdown').classList.toggle('open');
+}
+
+// Cerrar dropdown al hacer click fuera
+document.addEventListener('click', (e) => {
+  if (!document.getElementById('langSelector')?.contains(e.target)) {
+    document.getElementById('langDropdown')?.classList.remove('open');
+  }
+});
+
+function setLang(lang) {
+  idiomaActual = lang;
+  localStorage.setItem('storyowl_lang', lang);
+  document.getElementById('langDropdown').classList.remove('open');
+  const L = LANGS[lang];
+  document.getElementById('langFlag').textContent = L.flag;
+  document.getElementById('langCode').textContent  = L.code;
+  // Marcar activo
+  document.querySelectorAll('.lang-option').forEach(o => {
+    o.classList.toggle('active', o.textContent.includes(L.code) || o.onclick.toString().includes(`'${lang}'`));
+  });
+  aplicarIdioma(L);
+}
+
+function aplicarIdioma(L) {
+  // Hero
+  const h1 = document.querySelector('.hero h1');
+  if(h1) h1.innerHTML = `${L.heroTitle}<em>${L.heroEm}</em>`;
+  const ft = document.querySelector('.form-title');
+  if(ft) ft.innerHTML = `${L.formTitle} <em>${L.formTitleEm}</em>`;
+  const fs = document.querySelector('.form-sub');
+  if(fs) fs.textContent = L.formSub;
+
+  // Secciones
+  _setTxt('secProtagonista', L.secProtagonista);
+  _setTxt('secCuento',       L.labelSeccionCuento);
+  _setTxt('secEstilo',       L.secEstilo);
+  _setTxt('secDedicatoria',  L.secDedicatoria);
+
+  // Labels
+  _setTxt('lblNombre',           L.lblNombre);
+  _setTxt('lblEdad',             L.lblEdad);
+  _setTxt('lblEdadSub',          L.lblEdadSub);
+  _setTxt('lblGenero',           L.lblGenero);
+  _setTxt('lblPiel',             L.lblPiel);
+  _setTxt('lblPelo',             L.lblPelo);
+  _setTxt('lblTipoPelo',         L.lblTipoPelo);
+  _setTxt('lblOjos',             L.lblOjos);
+  _setTxt('lblGafas',            L.lblGafas);
+  _setTxt('lblPecas',            L.lblPecas);
+  _setTxt('lblDedicatoriaTexto', L.labelDedicatoriaTexto);
+  _setTxt('lblOpcional',         L.labelOpcional);
+
+  // Botones genero
+  _setTxt('btnNina',    L.btnNina);
+  _setTxt('btnNino',    L.btnNino);
+
+  // Botones tipo pelo
+  _setTxt('btnLiso',     L.btnLiso);
+  _setTxt('btnRizado',   L.btnRizado);
+  _setTxt('btnOndulado', L.btnOndulado);
+  _setTxt('btnMuyCorto', L.btnMuyCorto);
+  _setTxt('btnTrenzas',  L.btnTrenzas);
+
+  // Botones gafas/pecas
+  _setTxt('btnGafasNo', L.btnGafasNo);
+  _setTxt('btnGafasSi', L.btnGafasSi);
+  _setTxt('btnPecasNo', L.btnPecasNo);
+  _setTxt('btnPecasSi', L.btnPecasSi);
+
+  // Inputs
+  _setPlaceholder('nombre',            L.placeholderNombre);
+  _setPlaceholder('tema',              L.placeholderTema);
+  _setPlaceholder('personaje',         L.placeholderPersonaje);
+  _setPlaceholder('dedicatoriaPersonal', L.placeholderDedicatoria);
+
+  // Labels inputs con ID
+  _setTxt('lblTema',      L.labelTema);
+  _setTxt('lblPersonaje', L.labelPersonaje);
+
+  // Botón generar
+  _setTxt('btnGenerar', L.btnGenerar);
+
+  // Estilos
+  const cards = document.querySelectorAll('.style-card');
+  (L.estilos||[]).forEach((e,i) => {
+    if(cards[i]) {
+      const n = cards[i].querySelector('.style-name');
+      const d = cards[i].querySelector('.style-desc');
+      if(n) n.textContent = e.nombre;
+      if(d) d.textContent = e.desc;
+    }
+  });
+
+  // CTA flipbook
+  _setTxt('flipCta', null); // no sobreescribir el card entero
+  const ctaT = document.querySelector('.flipbook-cta-title');
+  if(ctaT) ctaT.textContent = L.ctaListo;
+  const ctaS = document.querySelector('.flipbook-cta-sub');
+  if(ctaS) ctaS.textContent = L.ctaSub;
+  _setTxt('btnPdf',      L.btnDescargar);
+
+  // Subtítulo flipbook
+  const fsub = document.querySelector('.flipbook-subtitle');
+  if(fsub) fsub.textContent = L.subtituloFlip||'';
+
+  // Watermark CSS dinámica
+  document.documentElement.style.setProperty('--wm-text',   `'${(L.watermark||'').replace(/'/g,"\\'")}'`);
+  document.documentElement.style.setProperty('--wm-footer', `'${(L.watermarkFooter||'').replace(/'/g,"\\'")}'`);
+
+  // Back link
+  const bl = document.querySelector('.back-link');
+  if(bl) bl.textContent = L.backLink||'';
+}
+
+function _setTxt(id, text) {
+  const el = document.getElementById(id);
+  if(el && text != null) el.textContent = text;
+}
+
+function _setPlaceholder(id, text) {
+  const el = document.getElementById(id);
+  if(el && text) el.placeholder = text;
+}
+
+// Aplicar idioma guardado al cargar
+document.addEventListener('DOMContentLoaded', () => {
+  if(idiomaActual !== 'es') setLang(idiomaActual);
+});
+
+// ── Estrellas hero ──────────────────────────────────────
+const starsEl = document.getElementById('stars');
+for(let i=0;i<50;i++){
+  const s=document.createElement('div'); s.className='star';
+  const sz=Math.random()*2.5+.5;
+  s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${Math.random()*3+1.5}s;--dl:${Math.random()*3}s;`;
+  starsEl.appendChild(s);
+}
+
+// ── Helpers UI ──────────────────────────────────────────
+function setOpt(btn, key, val){
+  btn.closest('.btn-group').querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); opciones[key]=val;
+}
+function setColor(el, key, val){
+  el.closest('.color-group').querySelectorAll('.color-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active'); opciones[key]=val;
+}
+function setEstilo(card, e){
+  document.querySelectorAll('.style-card').forEach(c=>c.classList.remove('active'));
+  card.classList.add('active'); estilo=e;
+}
+
+// ── Progress ────────────────────────────────────────────
+function crearProgreso(){
+  let b=document.getElementById('progress-bar');
+  if(!b){b=document.createElement('div');b.id='progress-bar';document.body.appendChild(b);}
+  let s=document.getElementById('status-bar');
+  if(!s){s=document.createElement('div');s.id='status-bar';s.innerHTML='<div class="status-dot"></div><span id="status-text">🦉 Preparando la magia...</span>';document.body.appendChild(s);}
+}
+function actualizarProgreso(n,total){const b=document.getElementById('progress-bar');if(b)b.style.width=Math.round((n/(total+2))*100)+'%';}
+function actualizarStatus(msg){const t=document.getElementById('status-text');if(t)t.textContent=msg;}
+function mostrarIndicador(n,total){
+  const c=document.getElementById('pagesContainer');if(!c)return;
+  const old=document.getElementById('gen-ind');if(old)old.remove();
+  const d=document.createElement('div');d.id='gen-ind';d.className='generating-indicator';
+  d.innerHTML=`<div class="generating-dot"></div><span>🎨 Creando spread ${n} de ${total}...</span>`;
+  c.appendChild(d);d.scrollIntoView({behavior:'smooth',block:'end'});
+}
+function quitarIndicador(){const d=document.getElementById('gen-ind');if(d)d.remove();}
+
+// ── GENERAR ─────────────────────────────────────────────
+async function generar(){
+  const nombre = document.getElementById('nombre').value.trim();
+  const tema   = document.getElementById('tema').value.trim();
+  const personaje = document.getElementById('personaje').value.trim();
+
+  if(!nombre)   { alert('Escribe el nombre del protagonista'); document.getElementById('nombre').focus(); return; }
+  if(!tema)     { alert('Escribe el tema de la aventura');     document.getElementById('tema').focus();   return; }
+  if(!personaje){ alert('Escribe el personaje especial');      document.getElementById('personaje').focus(); return; }
+
+  const edad = parseInt(document.getElementById('edad').value);
+  const dedicatoriaPersonal = document.getElementById('dedicatoriaPersonal')?.value || '';
+
+  const payload = { nombre, edad, tema, personaje, opciones, estilo, dedicatoriaPersonal, idioma: idiomaActual };
+  console.log('[StoryOwl] Enviando payload:', JSON.stringify(payload, null, 2));
+
+  document.getElementById('btnGenerar').disabled = true;
+  document.getElementById('bookSection').style.display = 'none';
+  document.getElementById('pagesContainer').innerHTML = '';
+
+  const coverImg = document.getElementById('coverImg');
+  coverImg.src = ''; coverImg.style.display = 'none';
+  crearProgreso();
+
+  try {
+    const resp = await fetch('/generar-cuento-doble', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if(!resp.ok) { const err = await resp.text(); throw new Error(`Error ${resp.status}: ${err}`); }
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    while(true){
+      const { done, value } = await reader.read();
+      if(done) break;
+      const chunk = decoder.decode(value);
+      for(const line of chunk.split('\n')){
+        if(!line.startsWith('data:')) continue;
+        try { procesarEvento(JSON.parse(line.slice(5))); } catch(e){ console.warn('Parse error:', e); }
+      }
+    }
+  } catch(e) {
+    console.error('[StoryOwl] Error en generación:', e);
+    const sb=document.getElementById('status-bar'); if(sb)sb.remove();
+    const pb=document.getElementById('progress-bar'); if(pb)pb.remove();
+    document.getElementById('btnGenerar').disabled = false;
+    alert('Error al generar el cuento: ' + e.message);
+  }
+}
+
+// ── Procesar eventos SSE ────────────────────────────────
+// El backend ahora emite: estado | cuento | imagen | spread | completado | error
+const TOTAL_SPREADS = 10;
+
+// ── Procesar eventos SSE ────────────────────────────────
+// Backend emite: estado | cuento | imagen | pagina | completado | error
+const TOTAL_PAGS = 16;
+
+function procesarEvento(data){
+  console.log('[StoryOwl] Evento:', data.tipo, data);
+
+  if(data.tipo === 'estado'){
+    // Traducir mensaje al idioma activo
+    const L = LANGS[idiomaActual];
+    let msg = data.mensaje;
+    if(msg.includes('creando los personajes') || msg.includes('creating the char') || msg.includes('Charaktere') || msg.includes('personnages') || msg.includes('personagens')) msg = L.estadoPersonajes||msg;
+    else if(msg.includes('escribiendo el cuento') || msg.includes('writing') || msg.includes('schreibt') || msg.includes('écrit') || msg.includes('escrever')) msg = L.estadoCuento||msg;
+    else if(msg.includes('portada') || msg.includes('cover') || msg.includes('Cover') || msg.includes('couverture') || msg.includes('capa')) msg = L.estadoPortada||msg;
+    else if(msg.includes('Generando página') || msg.includes('Generating page') || msg.includes('Seite') || msg.includes('page') || msg.includes('gerar a página')) {
+      const match = msg.match(/(\d+)\s*(?:de|of|von|sur)\s*(\d+)/);
+      if(match) msg = `${L.estadoPagina||'🎨 Generando página'} ${match[1]} ${L.estadoDe||'de'} ${match[2]}`;
+    }
+    actualizarStatus(msg);
+
+  } else if(data.tipo === 'cuento'){
+    document.getElementById('bookTitle').textContent = data.titulo;
+    document.getElementById('bookDed').textContent = data.dedicatoria;
+    flipDed = data.dedicatoria || '';
+    flipInit(data.titulo, document.getElementById('nombre')?.value || '');
+    actualizarProgreso(1, TOTAL_PAGS);
+    mostrarIndicador(1, TOTAL_PAGS);
+
+  } else if(data.tipo === 'imagen'){
+    // Portada
+    const img = document.getElementById('coverImg');
+    img.src = data.url; img.style.display = 'block';
+    flipShowCover(data.url, document.getElementById('bookTitle').textContent);
+    actualizarProgreso(2, TOTAL_PAGS);
+
+  } else if(data.tipo === 'pagina'){
+    quitarIndicador();
+    // Guardar en pagesContainer para el PDF
+    const container = document.getElementById('pagesContainer');
+    const page = document.createElement('div'); page.className = 'page';
+    page.dataset.mitad = data.mitad || '';
+    page.innerHTML = `
+      <img class="page-img" src="${data.url}" alt="Página ${data.numero}" loading="lazy" style="object-position:${data.mitad==='der'?'right':'left'} center"/>
+      <div class="page-body">
+        <div class="page-num">Página ${data.numero}</div>
+        <div class="page-title">${data.titulo}</div>
+        <p class="page-text">${data.texto}</p>
+      </div>`;
+    container.appendChild(page);
+    // Añadir al flipbook
+    flipAddPage({ tipo:'pagina', url: data.url, numero: data.numero, titulo: data.titulo, texto: data.texto, mitad: data.mitad });
+    actualizarProgreso(data.numero + 2, TOTAL_PAGS);
+    if(data.numero < TOTAL_PAGS) mostrarIndicador(data.numero + 1, TOTAL_PAGS);
+
+  } else if(data.tipo === 'completado'){
+    quitarIndicador();
+    document.getElementById('dedicatoriaPersonalTexto').textContent = data.dedicatoriaPersonal || '';
+    document.getElementById('nombreFinalTexto').textContent = data.nombre || '';
+    document.getElementById('fechaFinalTexto').textContent = data.fecha || '';
+    const pb=document.getElementById('progress-bar');
+    if(pb){ pb.style.width='100%'; setTimeout(()=>pb.style.opacity='0',1000); }
+    const sb=document.getElementById('status-bar');
+    if(sb){ sb.style.opacity='0'; setTimeout(()=>sb.remove(),500); }
+    flipComplete();
+    // Traducir CTA al idioma activo
+    const L = LANGS[idiomaActual];
+    const ctaT = document.querySelector('.flipbook-cta-title');
+    if(ctaT) ctaT.textContent = L.ctaListo;
+    const ctaS = document.querySelector('.flipbook-cta-sub');
+    if(ctaS) ctaS.textContent = L.ctaSub;
+    const btnPdf = document.getElementById('btnPdf');
+    if(btnPdf) btnPdf.textContent = L.btnDescargar;
+    document.getElementById('btnGenerar').disabled = false;
+
+  } else if(data.tipo === 'error'){
+    quitarIndicador();
+    console.error('[StoryOwl] Error del servidor:', data.mensaje);
+    const sb=document.getElementById('status-bar'); if(sb)sb.remove();
+    const pb=document.getElementById('progress-bar'); if(pb)pb.remove();
+    document.getElementById('btnGenerar').disabled = false;
+    alert('Error: ' + data.mensaje);
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// FLIPBOOK ENGINE
+// flipPages[] orden exacto — 20 entradas:
+//   [0]     portada
+//   [1]     dedicatoria
+//   [2..17] páginas 1-16
+//   [18]    fin
+//   [19]    contraportada
+//
+// Desktop: abre en flipIdx=1 → izq=dedicatoria, der=pág1
+// Contador: muestra número de página real 1-20
+// ═══════════════════════════════════════════════════════════
+
+let flipPages   = [];
+let flipIdx     = 0;
+let flipIsOpen  = false;
+let flipNombre  = '';
+let flipDed     = '';   // texto dedicatoria, se llena en 'cuento'
+
+// ── HTML de una página ────────────────────────────────────
+function buildPage(p) {
+  if (!p) return `<div style="width:100%;aspect-ratio:2/3;background:#080318;
+    display:flex;align-items:center;justify-content:center;">
+    <span style="color:rgba(255,255,255,.06);font-size:48px;">🦉</span></div>`;
+
+  if (p.tipo === 'portada') return `
+    <div class="fp-page">
+      <img src="${p.url}" alt="Portada" oncontextmenu="return false" ondragstart="return false"/>
+      <div class="fp-wm"></div>
+      <div class="fp-cover-panel">
+        <div class="fp-cover-title">${esc(p.titulo)}</div>
+        <div class="fp-cover-brand">🦉 StoryOwl</div>
+      </div>
+    </div>`;
+
+  if (p.tipo === 'dedicatoria') return `
+    <div class="fp-ded">
+      <div class="fp-ded-para">${LANGS[idiomaActual].dedicatoriaPara||"Para"}</div>
+      <div class="fp-ded-nombre">${esc(p.nombre)}</div>
+      ${p.texto ? `<div class="fp-ded-texto">${esc(p.texto)}</div>` : ''}
+      <div class="fp-ded-line"></div>
+    </div>`;
+
+  if (p.tipo === 'pagina') {
+    const imgHtml = p.mitad
+      ? `<div style="width:100%;height:100%;position:absolute;inset:0;
+           background-image:url('${p.url||''}');background-size:200% 100%;
+           background-position:${p.mitad==='der'?'right':'left'} center;background-repeat:no-repeat;"
+           oncontextmenu="return false"></div>`
+      : `<img src="${p.url||''}" alt="Página ${p.numero}" loading="lazy"
+           oncontextmenu="return false" ondragstart="return false"/>`;
+    return `
+    <div class="fp-page"${p.mitad ? ' style="aspect-ratio:3/4;overflow:hidden;"' : ''}>
+      ${imgHtml}
+      <div class="fp-wm"></div>
+      <div class="fp-text">
+        <div class="fp-num">Página ${p.numero}</div>
+        <div class="fp-title">${esc(p.titulo)}</div>
+        <div class="fp-body">${esc(p.texto)}</div>
+      </div>
+    </div>`;
+  }
+
+  if (p.tipo === 'fin') return `
+    <div class="fp-special fp-fin"><div>
+      <div class="fp-fin-icon">✨</div>
+      <div class="fp-fin-title">¡FIN!</div>
+      <div class="fp-fin-sub">${LANGS[idiomaActual].finSub||'Un cuento creado especialmente para'}<br>
+        <strong style="color:rgba(255,255,255,.85);font-size:15px;">${esc(flipNombre)}</strong>
+      </div>
+    </div></div>`;
+
+  if (p.tipo === 'contraportada') return `
+    <div class="fp-special fp-back"><div>
+      <div class="fp-back-icon">🦉</div>
+      <div class="fp-back-phrase">${(LANGS[idiomaActual].backPhrase||"Que la magia de las historias\nte acompañe siempre.").replace("\n","<br>")}</div>
+      <div class="fp-back-line"></div>
+      <div class="fp-back-brand">StoryOwl · storyowl.com</div>
+    </div></div>`;
+
+  return '';
+}
+
+function esc(s) {
+  return String(s||'')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ── Render ────────────────────────────────────────────────
+function flipRender(animate) {
+  const isMob = window.innerWidth <= 640;
+
+  if (isMob) {
+    const el = document.getElementById('pageSingle');
+    if (!el) return;
+    if (animate) { el.classList.remove('fp-flip'); void el.offsetWidth; el.classList.add('fp-flip'); setTimeout(()=>el.classList.remove('fp-flip'),400); }
+    el.innerHTML = buildPage(flipPages[flipIdx]);
+  } else {
+    const elL = document.getElementById('pageLeft');
+    const elR = document.getElementById('pageRight');
+    if (!elL||!elR) return;
+    if (animate) {
+      [elL,elR].forEach(el=>{ el.classList.remove('fp-flip'); void el.offsetWidth; el.classList.add('fp-flip'); setTimeout(()=>el.classList.remove('fp-flip'),400); });
+    }
+    elL.innerHTML = buildPage(flipPages[flipIdx]   || null);
+    elR.innerHTML = buildPage(flipPages[flipIdx+1] || null);
+  }
+
+  // Contador: página real de la izquierda (1-based, max 20)
+  const TOTAL = 20;
+  const pgNum = Math.min(flipIdx + 1, TOTAL);
+  document.getElementById('flipCounter').textContent = `${pgNum} / ${TOTAL}`;
+
+  // Prev/Next — Prev activo hasta flipIdx=0 (portada)
+  const step = isMob ? 1 : 2;
+  document.getElementById('flipPrev').disabled = flipIdx <= 0;
+  document.getElementById('flipNext').disabled = flipIdx + step > flipPages.length - 1;
+
+  // Dots — uno por spread visible (10 en desktop, 20 en móvil)
+  const dots = document.getElementById('flipDots');
+  if (dots) {
+    const numDots = isMob ? Math.min(flipPages.length, 20) : Math.min(Math.ceil(flipPages.length/2), 12);
+    const current = isMob ? flipIdx : Math.floor(flipIdx/2);
+    dots.innerHTML = '';
+    for (let i=0;i<numDots;i++) {
+      const d = document.createElement('div');
+      d.className = 'flip-dot'+(i===current?' active':'');
+      d.onclick = ()=>{ flipIdx = isMob ? i : Math.min(i*2, flipPages.length-2); flipRender(true); };
+      dots.appendChild(d);
+    }
+  }
+}
+
+// ── Navegación ─────────────────────────────────────────
+function flipPage(dir) {
+  const isMob = window.innerWidth <= 640;
+  const step  = isMob ? 1 : 2;
+  const n = flipIdx + dir * step;
+  if (n < 0 || n >= flipPages.length) return;
+  flipIdx = n;
+  flipRender(true);
+}
+
+// ── Abrir libro ────────────────────────────────────────
+// Arranca en flipIdx=0 → portada visible en izquierda
+// En desktop: izq=portada, der=dedicatoria
+// Así el usuario puede navegar ← para volver a portada
+function abrirLibro() {
+  if (flipIsOpen || flipPages.length < 2) return;
+  flipIsOpen = true;
+  flipIdx = 0; // empieza en portada, siempre accesible
+
+  const closed = document.getElementById('bookClosed');
+  closed.style.transition = 'opacity .4s, transform .5s';
+  closed.style.opacity = '0';
+  closed.style.transform = 'scale(.92)';
+  setTimeout(() => {
+    closed.style.display = 'none';
+    const open = document.getElementById('bookOpen');
+    open.style.display = 'block';
+    open.style.animation = 'openBook .45s ease forwards';
+    flipRender(false);
+  }, 420);
+}
+
+// ── API pública ────────────────────────────────────────
+function flipAddPage(p) {
+  // Insertar antes de fin/contraportada si ya existen al final
+  const finIdx = flipPages.findIndex(x => x.tipo==='fin');
+  if (finIdx !== -1) flipPages.splice(finIdx, 0, p);
+  else flipPages.push(p);
+  if (flipIsOpen) flipRender(false);
+}
+
+function flipShowCover(url, titulo) {
+  document.getElementById('coverSkeleton').style.display = 'none';
+  const img = document.getElementById('coverPreviewImg');
+  img.src = url; img.style.display = 'block';
+  document.getElementById('coverTitleText').textContent = titulo || '';
+  document.getElementById('coverTitlePanel').style.display = 'block';
+  document.getElementById('btnOpenBook').style.display = 'inline-block';
+  // [0] portada, [1] dedicatoria (placeholder hasta que llegue 'cuento')
+  if (!flipPages[0] || flipPages[0].tipo !== 'portada') {
+    flipPages.unshift({ tipo: 'portada', url, titulo });
+  }
+  // Asegurar que la dedicatoria ocupa índice 1
+  if (!flipPages[1] || flipPages[1].tipo !== 'dedicatoria') {
+    flipPages.splice(1, 0, { tipo: 'dedicatoria', nombre: flipNombre, texto: flipDed });
+  }
+}
+
+function flipInit(titulo, nombre) {
+  flipPages = []; flipIdx = 0; flipIsOpen = false;
+  flipNombre = nombre || ''; flipDed = '';
+  document.getElementById('flipbookSection').style.display = 'block';
+  document.getElementById('flipTitle').textContent = titulo || '';
+  document.getElementById('flipCta').style.display = 'none';
+  document.getElementById('bookClosed').style.cssText = 'text-align:center;padding-bottom:8px;';
+  document.getElementById('bookOpen').style.display = 'none';
+  document.getElementById('coverSkeleton').style.display = 'block';
+  document.getElementById('coverPreviewImg').style.display = 'none';
+  document.getElementById('coverTitlePanel').style.display = 'none';
+  document.getElementById('btnOpenBook').style.display = 'none';
+  document.getElementById('flipbookSection').scrollIntoView({ behavior: 'smooth' });
+}
+
+function flipComplete() {
+  // Actualizar dedicatoria con texto real si ya llegó
+  const dedIdx = flipPages.findIndex(x => x.tipo==='dedicatoria');
+  if (dedIdx !== -1) flipPages[dedIdx].texto = flipDed;
+  flipPages.push({ tipo: 'fin' });
+  flipPages.push({ tipo: 'contraportada' });
+  document.getElementById('flipCta').style.display = 'block';
+  if (flipIsOpen) flipRender(false);
+  setTimeout(()=>document.getElementById('flipCta').scrollIntoView({behavior:'smooth',block:'nearest'}),400);
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// PDF PIPELINE — Canvas compositor
+// Estructura: portada + dedicatoria + 16 páginas + colofón = 20 páginas
+// Cada página interior = imagen vertical individual a sangre completa
+// ═══════════════════════════════════════════════════════════
+
+function cargarImagen(url) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload  = () => res(img);
+    img.onerror = () => rej(new Error('No se pudo cargar: ' + url));
+    img.src = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
+  });
+}
+
+function calcLineas(ctx, texto, maxW) {
+  if (!texto) return [];
+  const words = texto.split(' ');
+  const lines = []; let line = '';
+  for (const w of words) {
+    const test = line ? line + ' ' + w : w;
+    if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = w; }
+    else line = test;
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+function fitFontSize(ctx, texto, fontTpl, maxW, maxLines, minSz, maxSz) {
+  for (let sz = maxSz; sz >= minSz; sz--) {
+    ctx.font = fontTpl.replace('SIZE', sz);
+    const lines = calcLineas(ctx, texto, maxW);
+    if (lines.length <= maxLines) return { sz, lines };
+  }
+  ctx.font = fontTpl.replace('SIZE', minSz);
+  return { sz: minSz, lines: calcLineas(ctx, texto, maxW) };
+}
+
+function drawCover(ctx, img, x, y, w, h) {
+  const scale = Math.max(w / img.width, h / img.height);
+  const sw = img.width * scale, sh = img.height * scale;
+  ctx.drawImage(img, x + (w - sw) / 2, y + (h - sh) / 2, sw, sh);
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+// A4 a 150dpi
+const PX = 1240, PY = 1754, PH = 88, PV = 52;
+
+// ── Página interior: media imagen panorámica a sangre + panel texto ──
+function drawCoverHalf(ctx, img, mitad, x, y, w, h) {
+  // Recorta la mitad izquierda o derecha de la imagen panorámica
+  const sw = img.width / 2;
+  const sx = mitad === 'der' ? sw : 0;
+  const scale = Math.max(w / sw, h / img.height);
+  const dw = sw * scale, dh = img.height * scale;
+  ctx.drawImage(img, sx, 0, sw, img.height, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
+}
+
+async function componerPaginaInterior(imgUrl, numero, titulo, texto, mitad) {
+  const cv = document.createElement('canvas'); cv.width = PX; cv.height = PY;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#1a0840'; ctx.fillRect(0, 0, PX, PY);
+
+  // Imagen a sangre completa
+  if (imgUrl) {
+    try {
+      const img = await cargarImagen(imgUrl);
+      if (mitad) drawCoverHalf(ctx, img, mitad, 0, 0, PX, PY);
+      else drawCover(ctx, img, 0, 0, PX, PY);
+    } catch(e) {
+      ctx.fillStyle = '#2a1060'; ctx.fillRect(0, 0, PX, PY);
+    }
+  }
+
+  // ── Panel translúcido — mismo estilo que la preview ──────
+  // Medidas tipográficas
+  const pX = 52, pW = PX - 104, tW = pW - 80;
+  const szNum = 26, hNum = szNum + 22;
+  const {sz:szT, lines:lT} = fitFontSize(ctx, titulo||'', 'italic bold SIZEpx Georgia,serif', tW, 2, 30, 54);
+  const hT = lT.length * Math.round(szT * 1.38) + 20;
+  const {sz:szB, lines:lB} = fitFontSize(ctx, texto||'', 'SIZEpx Georgia,serif', tW, 4, 28, 40);
+  const lhB = Math.round(szB * 1.65);
+  const hB  = lB.length * lhB;
+  const panH = 48 + hNum + hT + hB + 48;
+  const panY = PY - panH;
+
+  // Degradado oscuro sobre la imagen (igual que .fp-text en preview)
+  const gFade = ctx.createLinearGradient(0, panY - 120, 0, panY + panH);
+  gFade.addColorStop(0, 'rgba(4,1,12,0)');
+  gFade.addColorStop(0.35, 'rgba(4,1,12,0.55)');
+  gFade.addColorStop(1,    'rgba(4,1,12,0.92)');
+  ctx.fillStyle = gFade;
+  ctx.fillRect(0, panY - 120, PX, panH + 120);
+
+  // Panel translúcido redondeado — oscuro suave, imagen visible por detrás
+  ctx.save();
+  roundRect(ctx, pX, panY, pW, panH, 28);
+  ctx.fillStyle = 'rgba(8,3,24,0.45)';
+  ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 24;
+  ctx.fill(); ctx.restore();
+
+  // Línea dorada fina (acento visual)
+  ctx.strokeStyle = 'rgba(247,201,75,0.55)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(pX + 44, panY + 5); ctx.lineTo(pX + pW - 44, panY + 5); ctx.stroke();
+
+  let cy = panY + 48;
+
+  // Número de página — dorado con sombra para legibilidad
+  ctx.font = `800 ${szNum}px Arial,sans-serif`;
+  ctx.fillStyle = 'rgba(247,185,0,1)'; ctx.textAlign = 'left';
+  ctx.shadowColor = 'rgba(0,0,0,0.7)'; ctx.shadowBlur = 6;
+  ctx.fillText(`${LANGS[idiomaActual].pdfPagina||'PÁGINA'} ${numero}`, pX + 52, cy + szNum); cy += hNum;
+
+  // Título — cursiva lila con sombra
+  ctx.font = `italic bold ${szT}px Georgia,serif`;
+  ctx.fillStyle = 'rgba(210,150,255,1)';
+  ctx.shadowColor = 'rgba(0,0,0,0.7)'; ctx.shadowBlur = 5;
+  const lhT = Math.round(szT * 1.38);
+  for (const l of lT) { ctx.fillText(l, pX + 52, cy + lhT); cy += lhT; } cy += 20;
+
+  // Texto cuerpo — blanco puro con sombra fuerte
+  ctx.font = `${szB}px Georgia,serif`;
+  ctx.fillStyle = 'rgba(255,255,255,1)';
+  ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 7;
+  for (const l of lB) { ctx.fillText(l, pX + 52, cy + lhB); cy += lhB; }
+
+  // Logo discreto sin sombra
+  ctx.shadowBlur = 0;
+  ctx.font = 'bold 22px Arial,sans-serif';
+  ctx.fillStyle = 'rgba(247,201,75,0.35)';
+  ctx.textAlign = 'right';
+  ctx.fillText('🦉 storyowl.com', pX + pW - 44, panY + panH - 18);
+  ctx.textAlign = 'left';
+
+  return cv.toDataURL('image/jpeg', 0.92);
+}
+
+// PORTADA
+async function componerPortada(imgUrl, titulo) {
+  const cv = document.createElement('canvas'); cv.width = PX; cv.height = PY;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#1a0840'; ctx.fillRect(0, 0, PX, PY);
+  try { const img = await cargarImagen(imgUrl); drawCover(ctx, img, 0, 0, PX, PY); } catch(e){}
+  ctx.textAlign = 'center';
+  ctx.font = 'bold 26px Arial,sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 10;
+  ctx.fillText('🦉 StoryOwl', PX/2, PY - 50);
+  ctx.shadowBlur = 0; ctx.textAlign = 'left';
+  return cv.toDataURL('image/jpeg', 0.92);
+}
+
+// DEDICATORIA
+async function componerDedicatoria(nombre, dedPersonal) {
+  const cv = document.createElement('canvas'); cv.width = PX; cv.height = PY;
+  const ctx = cv.getContext('2d');
+  const bg = ctx.createLinearGradient(0, 0, PX, PY);
+  bg.addColorStop(0, '#fff9f0'); bg.addColorStop(0.5, '#fdf4ff'); bg.addColorStop(1, '#f0f6ff');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, PX, PY);
+
+  try {
+    const img = await cargarImagen('/imagenes/dedicatoria.png');
+    const scale = Math.min(PX / img.width, (PY * 0.52) / img.height);
+    const iw = img.width * scale, ih = img.height * scale;
+    ctx.drawImage(img, (PX - iw) / 2, 0, iw, ih);
+    const fade = ctx.createLinearGradient(0, ih - 100, 0, ih + 60);
+    fade.addColorStop(0, 'rgba(253,244,255,0)'); fade.addColorStop(1, 'rgba(253,244,255,1)');
+    ctx.fillStyle = fade; ctx.fillRect(0, ih - 100, PX, 160);
+  } catch(e) {
+    const cols = ['#f7c94b','#c084fc','#60a5fa','#f472b6'];
+    for (let i = 0; i < 22; i++) {
+      ctx.save(); ctx.globalAlpha = 0.10 + Math.random() * 0.16;
+      ctx.font = `${22 + Math.random() * 28}px serif`; ctx.fillStyle = cols[i%cols.length];
+      ctx.fillText('✦', Math.random() * PX, 60 + Math.random() * PY * 0.44); ctx.restore();
+    }
+  }
+
+  const tZ = Math.round(PY * 0.52); const cx = PX / 2;
+  ctx.textAlign = 'center';
+  ctx.strokeStyle = '#f7c94b'; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(cx - 230, tZ + 8); ctx.lineTo(cx + 230, tZ + 8); ctx.stroke();
+
+  ctx.font = 'italic 38px Georgia,serif'; ctx.fillStyle = '#9b6fd8';
+  ctx.fillText(LANGS[idiomaActual].dedicatoriaPara||'Para', cx, tZ + 66);
+
+  const {sz:szN, lines:lN} = fitFontSize(ctx, nombre||'', 'bold SIZEpx Georgia,serif', PX - 220, 1, 50, 96);
+  ctx.font = `bold ${szN}px Georgia,serif`; ctx.fillStyle = '#3a2070';
+  ctx.fillText(lN[0] || nombre, cx, tZ + 66 + szN + 16);
+
+  ctx.strokeStyle = 'rgba(160,120,220,0.22)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(cx - 190, tZ + 66 + szN + 40); ctx.lineTo(cx + 190, tZ + 66 + szN + 40); ctx.stroke();
+
+  let dedY = tZ + 66 + szN + 84;
+  const dedW = PX - 300;
+  if (dedPersonal && dedPersonal.trim()) {
+    const {sz:szD, lines:lD} = fitFontSize(ctx, dedPersonal, 'italic SIZEpx Georgia,serif', dedW, 5, 24, 36);
+    const lhD = Math.round(szD * 1.62);
+    ctx.font = `italic ${szD}px Georgia,serif`; ctx.fillStyle = '#5a3880';
+    for (const l of lD) { if (dedY + lhD > PY - 110) break; ctx.fillText(l, cx, dedY); dedY += lhD; }
+  } else {
+    ctx.strokeStyle = 'rgba(180,150,220,0.32)'; ctx.lineWidth = 1;
+    for (let i = 0; i < 4; i++) {
+      const ly = dedY + i * 52; if (ly > PY - 130) break;
+      ctx.beginPath(); ctx.moveTo(cx - 280, ly); ctx.lineTo(cx + 280, ly); ctx.stroke();
+    }
+    ctx.font = 'italic 24px Georgia,serif'; ctx.fillStyle = 'rgba(160,130,200,0.42)';
+    ctx.fillText(LANGS[idiomaActual].dedicatoriaEscribe||'escribe aquí tu dedicatoria', cx, dedY + 4 * 52 + 28);
+  }
+
+  ctx.font = 'bold 24px Arial,sans-serif'; ctx.fillStyle = 'rgba(107,63,168,0.32)';
+  ctx.fillText('🦉 StoryOwl', cx, PY - 50); ctx.textAlign = 'left';
+  return cv.toDataURL('image/jpeg', 0.92);
+}
+
+// COLOFÓN
+async function componerColofonPagina(nombre, fecha) {
+  const cv = document.createElement('canvas'); cv.width = PX; cv.height = PY;
+  const ctx = cv.getContext('2d');
+  const bg = ctx.createLinearGradient(0, 0, 0, PY);
+  bg.addColorStop(0, '#fffaf0'); bg.addColorStop(1, '#f8f4ff');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, PX, PY);
+
+  try {
+    const img = await cargarImagen('/imagenes/colofonowl.png');
+    const scale = Math.min(PX / img.width, (PY * 0.50) / img.height);
+    const iw = img.width * scale, ih = img.height * scale;
+    ctx.drawImage(img, (PX - iw) / 2, 0, iw, ih);
+    const fade = ctx.createLinearGradient(0, ih - 100, 0, ih + 60);
+    fade.addColorStop(0, 'rgba(248,244,255,0)'); fade.addColorStop(1, 'rgba(248,244,255,1)');
+    ctx.fillStyle = fade; ctx.fillRect(0, ih - 100, PX, 160);
+  } catch(e) {}
+
+  const bY = Math.round(PY * 0.51); const cx = PX / 2;
+  ctx.textAlign = 'center';
+
+  ctx.strokeStyle = '#f7c94b'; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(cx - 210, bY); ctx.lineTo(cx + 210, bY); ctx.stroke();
+
+  ctx.font = '34px Georgia,serif'; ctx.fillStyle = '#6b3fa8';
+  ctx.fillText('Este cuento fue creado especialmente para', cx, bY + 52);
+
+  const {sz:szN} = fitFontSize(ctx, nombre||'', 'bold SIZEpx Georgia,serif', PX - 200, 1, 46, 84);
+  ctx.font = `bold ${szN}px Georgia,serif`; ctx.fillStyle = '#3a2070';
+  ctx.fillText(nombre||'', cx, bY + 52 + szN + 18);
+
+  ctx.font = 'italic 30px Georgia,serif'; ctx.fillStyle = '#9b6fd8';
+  ctx.fillText('el ' + (fecha||''), cx, bY + 52 + szN + 66);
+
+  ctx.strokeStyle = 'rgba(247,201,75,0.35)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(cx - 240, bY + 52 + szN + 92); ctx.lineTo(cx + 240, bY + 52 + szN + 92); ctx.stroke();
+
+  ctx.font = 'italic 32px Georgia,serif'; ctx.fillStyle = '#5a3880';
+  ctx.fillText(LANGS[idiomaActual].pdfFrase||'Una historia única en el mundo, igual que tú.', cx, bY + 52 + szN + 142);
+
+  ctx.font = 'bold 24px Arial,sans-serif'; ctx.fillStyle = 'rgba(107,63,168,0.38)';
+  ctx.fillText('storyowl.com', cx, PY - 52); ctx.textAlign = 'left';
+  return cv.toDataURL('image/jpeg', 0.92);
+}
+
+// ── Descargar PDF ─────────────────────────────────────────
+// Estructura final: 20 páginas
+//   1  portada
+//   2  dedicatoria
+//   3-18  páginas interiores (16 páginas, imagen propia cada una)
+//   19 colofón/fin
+//   20 contraportada (blanco con logo)
+async function descargarPDF() {
+  const btn = document.getElementById('btnPdf');
+  btn.textContent = '⏳ Generando PDF...'; btn.disabled = true;
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const W = 210, H = 297;
+
+    const titulo      = document.getElementById('bookTitle').textContent;
+    const dedPersonal = document.getElementById('dedicatoriaPersonalTexto')?.textContent || '';
+    const nombreFinal = document.getElementById('nombreFinalTexto')?.textContent || '';
+    const fechaFinal  = document.getElementById('fechaFinalTexto')?.textContent || '';
+    const coverImg    = document.getElementById('coverImg');
+
+    // ── Pág 1: Portada ──────────────────────────────────
+    btn.textContent = '⏳ Componiendo portada...';
+    if (coverImg?.src && coverImg.style.display !== 'none') {
+      const url = await componerPortada(coverImg.src, titulo);
+      pdf.addImage(url, 'JPEG', 0, 0, W, H);
+    }
+
+    // ── Pág 2: Dedicatoria ──────────────────────────────
+    btn.textContent = '⏳ Componiendo dedicatoria...';
+    pdf.addPage();
+    pdf.addImage(await componerDedicatoria(nombreFinal, dedPersonal), 'JPEG', 0, 0, W, H);
+
+    // ── Págs 3-18: páginas interiores ──────────────────
+    const pages = document.querySelectorAll('.page');
+    let i = 1;
+    for (const page of pages) {
+      btn.textContent = `⏳ Componiendo página ${i} de ${pages.length}...`;
+      const imgEl   = page.querySelector('.page-img');
+      const mitad   = page.dataset.mitad || '';
+      const numTxt  = page.querySelector('.page-num')?.textContent?.replace('Página ','') || String(i);
+      const titTxt  = page.querySelector('.page-title')?.textContent || '';
+      const bodyTxt = page.querySelector('.page-text')?.textContent  || '';
+      pdf.addPage();
+      pdf.addImage(
+        await componerPaginaInterior(imgEl?.src || '', numTxt, titTxt, bodyTxt, mitad),
+        'JPEG', 0, 0, W, H
+      );
+      i++;
+    }
+
+    // ── Pág 19: Página final (FIN) ─────────────────────────
+    btn.textContent = '⏳ Componiendo página final...';
+    pdf.addPage();
+    {
+      const cvFin = document.createElement('canvas');
+      cvFin.width = PX; cvFin.height = PY;
+      const ctxFin = cvFin.getContext('2d');
+      // Fondo degradado oscuro
+      const bgFin = ctxFin.createLinearGradient(0, 0, 0, PY);
+      bgFin.addColorStop(0, '#0d0820'); bgFin.addColorStop(1, '#160a35');
+      ctxFin.fillStyle = bgFin; ctxFin.fillRect(0, 0, PX, PY);
+      // Estrellas decorativas
+      ctxFin.fillStyle = 'rgba(255,255,255,0.15)';
+      for (let s = 0; s < 60; s++) {
+        const sx = Math.random()*PX, sy = Math.random()*PY*0.6;
+        const sr = Math.random()*3+1;
+        ctxFin.beginPath(); ctxFin.arc(sx,sy,sr,0,Math.PI*2); ctxFin.fill();
+      }
+      // Línea dorada central
+      ctxFin.strokeStyle = 'rgba(247,201,75,0.4)'; ctxFin.lineWidth = 2;
+      ctxFin.beginPath(); ctxFin.moveTo(PX*0.2, PY*0.42); ctxFin.lineTo(PX*0.8, PY*0.42); ctxFin.stroke();
+      // ✨ FIN ✨
+      ctxFin.textAlign = 'center';
+      ctxFin.font = 'bold 260px Arial,sans-serif';
+      ctxFin.fillStyle = 'rgba(247,201,75,0.18)';
+      ctxFin.fillText('✨', PX/2, PY*0.38);
+      ctxFin.font = 'italic bold 180px Georgia,serif';
+      ctxFin.fillStyle = 'rgba(255,255,255,0.95)';
+      ctxFin.shadowColor = 'rgba(107,63,168,0.6)'; ctxFin.shadowBlur = 40;
+      ctxFin.fillText('¡FIN!', PX/2, PY*0.55);
+      ctxFin.shadowBlur = 0;
+      // Nombre del protagonista
+      if (nombreFinal) {
+        ctxFin.font = 'italic 60px Georgia,serif';
+        ctxFin.fillStyle = 'rgba(255,255,255,0.5)';
+        ctxFin.fillText(LANGS[idiomaActual].pdfCreadoPara||'Un cuento creado para', PX/2, PY*0.64);
+        ctxFin.font = 'bold 80px Georgia,serif';
+        ctxFin.fillStyle = 'rgba(192,132,252,0.9)';
+        ctxFin.fillText(nombreFinal, PX/2, PY*0.72);
+      }
+      // Línea dorada inferior
+      ctxFin.strokeStyle = 'rgba(247,201,75,0.3)'; ctxFin.lineWidth = 2;
+      ctxFin.beginPath(); ctxFin.moveTo(PX*0.25, PY*0.8); ctxFin.lineTo(PX*0.75, PY*0.8); ctxFin.stroke();
+      ctxFin.font = 'bold 36px Arial,sans-serif'; ctxFin.fillStyle = 'rgba(247,201,75,0.35)';
+      ctxFin.fillText('🦉 storyowl.com', PX/2, PY*0.88);
+      pdf.addImage(cvFin.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, W, H);
+    }
+
+    // ── Pág 20: Contraportada ───────────────────────────────
+    btn.textContent = '⏳ Componiendo contraportada...';
+    pdf.addPage();
+    {
+      const cvBack = document.createElement('canvas');
+      cvBack.width = PX; cvBack.height = PY;
+      const ctxBack = cvBack.getContext('2d');
+      // Fondo degradado oscuro suave
+      const bgBack = cvBack.getContext('2d').createLinearGradient(0, 0, 0, PY);
+      bgBack.addColorStop(0, '#080318'); bgBack.addColorStop(0.5, '#1a0840'); bgBack.addColorStop(1, '#080318');
+      ctxBack.fillStyle = bgBack; ctxBack.fillRect(0, 0, PX, PY);
+      // Círculo decorativo central
+      const radGrad = ctxBack.createRadialGradient(PX/2, PY/2, 0, PX/2, PY/2, PX*0.45);
+      radGrad.addColorStop(0, 'rgba(107,63,168,0.18)'); radGrad.addColorStop(1, 'rgba(107,63,168,0)');
+      ctxBack.fillStyle = radGrad; ctxBack.fillRect(0, 0, PX, PY);
+      // Contenido centrado
+      ctxBack.textAlign = 'center';
+      ctxBack.font = 'bold 200px Arial,sans-serif'; ctxBack.fillStyle = 'rgba(247,201,75,0.55)';
+      ctxBack.fillText('🦉', PX/2, PY*0.38);
+      ctxBack.strokeStyle = 'rgba(247,201,75,0.25)'; ctxBack.lineWidth = 2;
+      ctxBack.beginPath(); ctxBack.moveTo(PX*0.2, PY*0.42); ctxBack.lineTo(PX*0.8, PY*0.42); ctxBack.stroke();
+      ctxBack.font = 'italic bold 72px Georgia,serif'; ctxBack.fillStyle = 'rgba(255,255,255,0.7)';
+      ctxBack.shadowColor = 'rgba(0,0,0,0.4)'; ctxBack.shadowBlur = 10;
+      { const cp=(LANGS[idiomaActual].pdfContraFrase||'Que la magia de las historias\nte acompañe siempre.').split('\n'); ctxBack.fillText(cp[0], PX/2, PY*0.52);
+      ctxBack.fillText(cp[1]||'te acompañe siempre.', PX/2, PY*0.60); }
+      ctxBack.shadowBlur = 0;
+      ctxBack.strokeStyle = 'rgba(247,201,75,0.2)'; ctxBack.lineWidth = 2;
+      ctxBack.beginPath(); ctxBack.moveTo(PX*0.25, PY*0.67); ctxBack.lineTo(PX*0.75, PY*0.67); ctxBack.stroke();
+      ctxBack.font = 'bold 48px Arial,sans-serif'; ctxBack.fillStyle = 'rgba(247,201,75,0.5)';
+      ctxBack.fillText('StoryOwl · storyowl.com', PX/2, PY*0.75);
+      pdf.addImage(cvBack.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, W, H);
+    }
+
+    pdf.save((titulo || 'mi-cuento') + '.pdf');
+
+  } catch(e) {
+    console.error('[StoryOwl] Error PDF:', e);
+    alert('Error al generar el PDF: ' + e.message);
+  }
+
+  btn.textContent = '📄 Descargar PDF'; btn.disabled = false;
+}
+
+
+</script>
+</body>
+</html>
